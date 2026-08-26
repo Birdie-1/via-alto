@@ -1,0 +1,231 @@
+export const CATEGORIES = [
+  {
+    id: 'backpacks',
+    name: 'Backpacks',
+    image: '/images/cat_backpacks.jpg',
+    description: 'Engineered for durability, balance, and carrying comfort on every ascent.'
+  },
+  {
+    id: 'clothing',
+    name: 'Clothing',
+    image: '/images/cat_clothing.jpg',
+    description: 'Weather-protective alpine shells, utility layers, and thermal essentials.'
+  },
+  {
+    id: 'footwear',
+    name: 'Footwear',
+    image: '/images/cat_footwear.jpg',
+    description: 'High-traction footwear crafted for stability on rocky European trails.'
+  },
+  {
+    id: 'camping',
+    name: 'Camping',
+    image: '/images/cat_camping.jpg',
+    description: 'Ultralight mountain shelters, insulated sleeping systems, and camp gear.'
+  },
+  {
+    id: 'accessories',
+    name: 'Accessories',
+    image: '/images/cat_accessories.jpg',
+    description: 'Precision trekking poles, insulated flasks, and trail navigation tools.'
+  }
+];
+
+export const PRODUCTS = [
+  {
+    id: 1,
+    name: 'Alpine 35L Backpack',
+    category: 'Backpacks',
+    categoryId: 'backpacks',
+    price: 2490,
+    rating: 4.9,
+    reviewsCount: 128,
+    shortDesc: 'Lightweight day-to-multi-day hiking pack with ergonomic harness system.',
+    description: 'Engineered for alpine routes and multi-day traverses. Built from ultra-durable ripstop nylon with an ergonomic back system that promotes airflow while keeping weight balanced close to your center of gravity.',
+    image: '/images/prod_alpine_35l.jpg',
+    badge: 'BESTSELLER',
+    isFeatured: true,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 2,
+    name: 'Trail 25L Daypack',
+    category: 'Backpacks',
+    categoryId: 'backpacks',
+    price: 1890,
+    rating: 4.7,
+    reviewsCount: 94,
+    shortDesc: 'Compact aerodynamic daypack built for fast and light mountain ascents.',
+    description: 'A versatile technical daypack featuring hydration reservoir routing, quick-stash stretch pockets, and a ventilated back panel designed for rapid pace day treks.',
+    image: '/images/prod_trail_25l.jpg',
+    badge: 'POPULAR',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 3,
+    name: 'Summit 50L Backpack',
+    category: 'Backpacks',
+    categoryId: 'backpacks',
+    price: 3490,
+    rating: 4.9,
+    reviewsCount: 62,
+    shortDesc: 'Expedition-grade trekking pack engineered for heavy loads on remote trails.',
+    description: 'Heavy-duty long-distance load hauler featuring an internal aluminum frame, floating top lid with security pocket, and multi-point compression straps for alpine expeditions.',
+    image: '/images/prod_summit_50l.jpg',
+    badge: 'EXPEDITION',
+    isFeatured: false,
+    sizes: ['M', 'L'],
+    inStock: true
+  },
+  {
+    id: 4,
+    name: 'Alpine Shell Jacket',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 2890,
+    rating: 4.8,
+    reviewsCount: 74,
+    shortDesc: '3-layer waterproof and windproof technical mountain shell jacket.',
+    description: 'Crafted from breathable 3-layer weatherproof membrane with fully taped seams, storm hood with halo adjustment, and water-repellent AquaGuard ventilation zippers.',
+    image: '/images/prod_alpine_shell.jpg',
+    badge: 'ESSENTIAL',
+    isFeatured: true,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 5,
+    name: 'Trail Utility Pants',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 1990,
+    rating: 4.6,
+    reviewsCount: 53,
+    shortDesc: 'Durable 4-way stretch trekking pants with reinforced abrasion panels.',
+    description: 'Constructed with articulated knees and high-tenacity Cordura reinforcements at the seat and ankles. Water-resistant DWR coating sheds light rain and trail dust.',
+    image: '/images/prod_trail_pants.jpg',
+    badge: 'NEW',
+    isFeatured: false,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 6,
+    name: 'Mountain Base Tee',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 890,
+    rating: 4.5,
+    reviewsCount: 88,
+    shortDesc: 'Ultra-soft natural merino wool blend base layer tee for odor resistance.',
+    description: 'Combines temperature-regulating natural merino wool with durable recycled poly fibers. Naturally antimicrobial, quick-drying, and supremely comfortable next to skin.',
+    image: '/images/prod_mountain_tee.jpg',
+    badge: 'NATURAL',
+    isFeatured: false,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 7,
+    name: 'Terra Hiking Shoes',
+    category: 'Footwear',
+    categoryId: 'footwear',
+    price: 3290,
+    rating: 4.8,
+    reviewsCount: 96,
+    shortDesc: 'Low-profile trail shoes offering agility, grip, and all-day comfort.',
+    description: 'Aggressive Vibram Megagrip rubber lugs deliver unwavering traction across wet rock and loose scree, combined with a responsive dual-density EVA midsole.',
+    image: '/images/prod_terra_shoes.jpg',
+    badge: 'FEATURED',
+    isFeatured: true,
+    sizes: ['M', 'L'],
+    inStock: true
+  },
+  {
+    id: 8,
+    name: 'Alto Trek Boots',
+    category: 'Footwear',
+    categoryId: 'footwear',
+    price: 3890,
+    rating: 4.9,
+    reviewsCount: 47,
+    shortDesc: 'Mid-cut waterproof trekking boots providing superior ankle stability.',
+    description: 'Built with oiled Italian nubuck leather and a waterproof breathable membrane. High-cuff construction guards against rolled ankles on high alpine ascents.',
+    image: '/images/prod_alto_boots.jpg',
+    badge: 'ALPINE PRO',
+    isFeatured: false,
+    sizes: ['M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 9,
+    name: 'Alpine Shelter Tent',
+    category: 'Camping',
+    categoryId: 'camping',
+    price: 4490,
+    rating: 4.9,
+    reviewsCount: 38,
+    shortDesc: 'Ultralight 2-person alpine freestanding dome tent with storm resistance.',
+    description: 'Engineered for high-altitude weather resilience. Aircraft-grade aluminum hub poles provide rock-solid stability against mountain gusts while weighing only 1.4kg.',
+    image: '/images/prod_alpine_tent.jpg',
+    badge: 'ULTRALIGHT',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 10,
+    name: 'Trail Sleeping Bag',
+    category: 'Camping',
+    categoryId: 'camping',
+    price: 2190,
+    rating: 4.7,
+    reviewsCount: 41,
+    shortDesc: 'Mummy sleeping bag rated to 0°C with hydrophobic down insulation.',
+    description: 'Packed with 650-fill hydrophobic down in trapezoidal baffles that eliminate cold spots. Features an ergonomic draft collar and snag-free two-way zipper.',
+    image: '/images/prod_sleeping_bag.jpg',
+    badge: '0°C RATED',
+    isFeatured: false,
+    sizes: ['M', 'L'],
+    inStock: true
+  },
+  {
+    id: 11,
+    name: 'Summit Trekking Poles',
+    category: 'Accessories',
+    categoryId: 'accessories',
+    price: 1290,
+    rating: 4.6,
+    reviewsCount: 58,
+    shortDesc: 'Carbon fiber telescoping trekking poles with natural ergonomic cork grips.',
+    description: 'Ultra-stiff 100% carbon fiber shafts reduce joint impact by up to 25%. Natural moisture-wicking cork handles with padded breathable wrist loops.',
+    image: '/images/prod_trekking_poles.jpg',
+    badge: 'PAIR',
+    isFeatured: true,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 12,
+    name: 'Terra Insulated Bottle',
+    category: 'Accessories',
+    categoryId: 'accessories',
+    price: 690,
+    rating: 4.7,
+    reviewsCount: 112,
+    shortDesc: 'Double-wall vacuum insulated stainless steel 750ml flask in matte finish.',
+    description: 'Maintains beverages icy cold for 24 hours or steaming hot for 12 hours. Constructed from puncture-resistant 18/8 food-grade stainless steel with BPA-free loop cap.',
+    image: '/images/prod_insulated_bottle.jpg',
+    badge: 'ECO',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  }
+];
+
+export const formatPrice = (price) => {
+  return `฿${price.toLocaleString('en-US')}`;
+};
