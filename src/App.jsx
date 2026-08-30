@@ -3,20 +3,42 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import SearchModal from './components/layout/SearchModal';
 import CartDrawer from './components/layout/CartDrawer';
+import AuthModal from './components/auth/AuthModal';
 import Toast from './components/ui/Toast';
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
+import AccountPage from './pages/AccountPage';
+import {
+  initializeAuthStore,
+  getCurrentUser,
+  loginUser,
+  registerUser,
+  updateProfile,
+  logoutUser
+} from './data/auth';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [shopCategory, setShopCategory] = useState('all');
   const [cartItems, setCartItems] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState([1, 4]); // default sample wishlist
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState('signin');
+  const [currentUser, setCurrentUser] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+
+  // Initialize auth store on startup
+  useEffect(() => {
+    initializeAuthStore();
+    const stored = getCurrentUser();
+    if (stored) {
+      setCurrentUser(stored);
+    }
+  }, []);
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -29,6 +51,58 @@ export default function App() {
       setShopCategory(params.category);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Auth Handlers
+  const handleOpenAuth = (tab = 'signin') => {
+    setAuthModalTab(tab);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleLoginSuccess = (credentialsOrUser) => {
+    try {
+      let loggedUser;
+      if (credentialsOrUser.id) {
+        // Direct demo user object
+        loggedUser = credentialsOrUser;
+      } else {
+        loggedUser = loginUser(credentialsOrUser.email, credentialsOrUser.password);
+      }
+      setCurrentUser(loggedUser);
+      showToast(`Welcome back, ${loggedUser.fullName}!`);
+      setIsAuthModalOpen(false);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const handleRegisterSuccess = (formData) => {
+    try {
+      const newUser = registerUser(formData);
+      setCurrentUser(newUser);
+      showToast(`Account created! Welcome to VIA ALTO Explorer Club, ${newUser.fullName}!`);
+      setIsAuthModalOpen(false);
+      setCurrentPage('account');
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setCurrentUser(null);
+    showToast('You have been signed out.');
+    setCurrentPage('home');
+  };
+
+  const handleUpdateProfile = (userId, updatedFields) => {
+    try {
+      const updated = updateProfile(userId, updatedFields);
+      setCurrentUser(updated);
+      showToast('Profile preferences updated.');
+    } catch (err) {
+      showToast('Failed to update profile.');
+    }
   };
 
   // Add to Bag handler
@@ -104,11 +178,13 @@ export default function App() {
         cartCount={totalCartCount}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenCart={() => setIsCartOpen(true)}
+        currentUser={currentUser}
+        onOpenAuthModal={() => handleOpenAuth('signin')}
       />
 
       {/* 2. Main Page Content */}
       <main className="flex-1">
-        {currentPage === 'home' ? (
+        {currentPage === 'home' && (
           <HomePage
             onNavigate={handleNavigate}
             onAddToCart={handleAddToCart}
@@ -117,7 +193,9 @@ export default function App() {
               handleNavigate('shop');
             }}
           />
-        ) : (
+        )}
+
+        {currentPage === 'shop' && (
           <ShopPage
             initialCategory={shopCategory}
             onAddToCart={handleAddToCart}
@@ -125,6 +203,17 @@ export default function App() {
             onToggleWishlist={handleToggleWishlist}
             quickViewProduct={quickViewProduct}
             setQuickViewProduct={setQuickViewProduct}
+          />
+        )}
+
+        {currentPage === 'account' && (
+          <AccountPage
+            user={currentUser}
+            onLogout={handleLogout}
+            onUpdateProfile={handleUpdateProfile}
+            wishlist={wishlist}
+            onAddToCart={handleAddToCart}
+            onNavigate={handleNavigate}
           />
         )}
       </main>
@@ -153,7 +242,16 @@ export default function App() {
         onNavigateToShop={() => handleNavigate('shop')}
       />
 
-      {/* 6. Toast Notification */}
+      {/* 6. Authentication Modal (Sign In / Register) */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab={authModalTab}
+        onLoginSuccess={handleLoginSuccess}
+        onRegisterSuccess={handleRegisterSuccess}
+      />
+
+      {/* 7. Toast Notification */}
       <Toast
         message={toastMessage}
         visible={toastVisible}

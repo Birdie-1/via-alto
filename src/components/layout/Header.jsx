@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, ShoppingBag, Menu, X } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, X, Compass, LogIn } from 'lucide-react';
 
 export default function Header({
   currentPage,
@@ -7,7 +7,8 @@ export default function Header({
   cartCount = 0,
   onOpenSearch,
   onOpenCart,
-  isHeroOverlaid = true
+  currentUser = null,
+  onOpenAuthModal
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,6 +61,14 @@ export default function Header({
       return;
     }
     onNavigate(id);
+  };
+
+  const handleAccountClick = () => {
+    if (currentUser) {
+      onNavigate('account');
+    } else {
+      onOpenAuthModal?.();
+    }
   };
 
   // Header appearance based on page & scroll state
@@ -139,7 +148,7 @@ export default function Header({
           </nav>
 
           {/* Right: Actions (Search, Account, Bag) */}
-          <div className="flex items-center space-x-4 sm:space-x-5">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <button
               onClick={onOpenSearch}
               className={`p-2 transition-colors cursor-pointer ${textColorClass} ${navHoverClass}`}
@@ -148,16 +157,38 @@ export default function Header({
               <Search size={20} />
             </button>
 
-            <button
-              onClick={() => {
-                alert('Account functionality is scheduled for Stage 2 (Post-review).');
-              }}
-              className={`p-2 transition-colors cursor-pointer hidden sm:block ${textColorClass} ${navHoverClass}`}
-              aria-label="User Account"
-            >
-              <User size={20} />
-            </button>
+            {/* Account Button / User Pill */}
+            {currentUser ? (
+              <button
+                onClick={handleAccountClick}
+                className={`hidden sm:inline-flex items-center gap-2 px-3 py-1.5 border rounded-xs transition-all cursor-pointer ${
+                  isDarkHero
+                    ? 'border-white/40 bg-white/10 text-white hover:bg-white/20'
+                    : 'border-forest/40 bg-forest/5 text-forest hover:bg-forest hover:text-white'
+                }`}
+              >
+                <div className="w-5 h-5 rounded-full bg-forest text-offwhite flex items-center justify-center text-[10px] font-bold">
+                  {currentUser.fullName?.[0] || 'E'}
+                </div>
+                <span className="text-xs uppercase tracking-wider font-semibold">
+                  {currentUser.fullName?.split(' ')[0]}
+                </span>
+                <span className="text-[10px] opacity-70">
+                  ({currentUser.points || 500} pts)
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={handleAccountClick}
+                className={`p-2 transition-colors cursor-pointer hidden sm:block ${textColorClass} ${navHoverClass}`}
+                aria-label="User Account"
+                title="Sign In / Register"
+              >
+                <User size={20} />
+              </button>
+            )}
 
+            {/* Shopping Bag Button */}
             <button
               onClick={onOpenCart}
               className={`p-2 transition-colors cursor-pointer relative ${textColorClass} ${navHoverClass}`}
@@ -200,6 +231,18 @@ export default function Header({
                   {item.label}
                 </button>
               ))}
+
+              {/* Mobile Account Link */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleAccountClick();
+                }}
+                className="text-left text-sm uppercase tracking-brand font-bold text-forest py-2 border-b border-stone-light/30 flex items-center justify-between"
+              >
+                <span>{currentUser ? `MY ACCOUNT (${currentUser.fullName})` : 'SIGN IN / REGISTER'}</span>
+                <User size={16} />
+              </button>
             </div>
 
             <div className="pt-2 flex items-center justify-between text-xs text-stone tracking-wider uppercase">
