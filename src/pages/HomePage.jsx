@@ -5,58 +5,44 @@ import FeaturedProducts from '../components/home/FeaturedProducts';
 import BrandStory from '../components/home/BrandStory';
 import FinalCTA from '../components/home/FinalCTA';
 
-export default function HomePage({
-  onNavigate,
-  onAddToCart,
-  onSelectProduct
-}) {
-  const handleExploreClick = () => {
-    onNavigate('shop');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleDiscoverClick = () => {
-    const philosophySection = document.getElementById('brand-story');
-    if (philosophySection) {
-      philosophySection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleSelectCategory = (categoryId) => {
-    onNavigate('shop', { category: categoryId });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleStoryClick = () => {
-    const philosophySection = document.getElementById('brand-story');
-    if (philosophySection) {
-      philosophySection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
+export default function HomePage({ onNavigate, onAddToCart, onSelectProduct, lang = 'en' }) {
   return (
     <div className="w-full">
       {/* 1. Hero Section */}
       <Hero
-        onExploreClick={handleExploreClick}
-        onDiscoverClick={handleDiscoverClick}
+        onExploreClick={() => onNavigate('shop')}
+        onDiscoverClick={() => {
+          const story = document.getElementById('brand-story');
+          if (story) story.scrollIntoView({ behavior: 'smooth' });
+        }}
+        lang={lang}
       />
 
-      {/* 2. Featured Categories (EXPLORE THE TRAIL) */}
-      <CategoryCards onSelectCategory={handleSelectCategory} />
+      {/* 2. Featured Category Cards */}
+      <CategoryCards
+        onSelectCategory={(categoryId) => onNavigate('shop', { category: categoryId })}
+        lang={lang}
+      />
 
-      {/* 3. Featured Products (ESSENTIAL GEAR) */}
+      {/* 3. Essential Gear (Featured Products) */}
       <FeaturedProducts
         onAddToCart={onAddToCart}
         onSelectProduct={onSelectProduct}
-        onNavigateToShop={handleExploreClick}
+        onNavigateToShop={() => onNavigate('shop')}
+        lang={lang}
       />
 
-      {/* 4. Brand Story / Philosophy Section */}
-      <BrandStory onStoryClick={handleStoryClick} />
+      {/* 4. Brand Philosophy / Editorial Story */}
+      <BrandStory
+        onStoryClick={() => onNavigate('shop')}
+        lang={lang}
+      />
 
-      {/* 5. Final CTA Section (READY TO GO BEYOND?) */}
-      <FinalCTA onExploreGearClick={handleExploreClick} />
+      {/* 5. Final CTA */}
+      <FinalCTA
+        onExploreClick={() => onNavigate('shop')}
+        lang={lang}
+      />
     </div>
   );
 }

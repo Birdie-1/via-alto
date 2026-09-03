@@ -12,70 +12,75 @@ export default function ShopPage({
   wishlist = [],
   onToggleWishlist,
   quickViewProduct,
-  setQuickViewProduct
+  setQuickViewProduct,
+  lang = 'en'
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-  const [selectedPriceRange, setSelectedPriceRange] = useState('all');
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [minRating, setMinRating] = useState(0);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Sync when initialCategory prop changes (e.g. clicked category from Home or Footer)
+  // Sidebar Filter States
+  const [filters, setFilters] = useState({
+    category: initialCategory,
+    priceRange: 'all',
+    size: 'all',
+    minRating: 0
+  });
+
   useEffect(() => {
     if (initialCategory) {
       setSelectedCategory(initialCategory);
+      setFilters((prev) => ({ ...prev, category: initialCategory }));
     }
   }, [initialCategory]);
 
-  const handleToggleSize = (size) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-    );
+  const handleCategoryNavSelect = (catId) => {
+    setSelectedCategory(catId);
+    setFilters((prev) => ({ ...prev, category: catId }));
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => {
+      const updated = { ...prev, [key]: value };
+      if (key === 'category') {
+        setSelectedCategory(value);
+      }
+      return updated;
+    });
   };
 
   const handleResetFilters = () => {
     setSelectedCategory('all');
-    setSelectedPriceRange('all');
-    setSelectedSizes([]);
-    setMinRating(0);
+    setFilters({
+      category: 'all',
+      priceRange: 'all',
+      size: 'all',
+      minRating: 0
+    });
     setSortBy('featured');
   };
 
-  const hasActiveFilters =
-    selectedCategory !== 'all' ||
-    selectedPriceRange !== 'all' ||
-    selectedSizes.length > 0 ||
-    minRating > 0;
-
-  const activeFilterCount =
-    (selectedCategory !== 'all' ? 1 : 0) +
-    (selectedPriceRange !== 'all' ? 1 : 0) +
-    selectedSizes.length +
-    (minRating > 0 ? 1 : 0);
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
+  // Filter & Sort Logic
+  const filteredAndSortedProducts = useMemo(() => {
     return PRODUCTS.filter((product) => {
       // 1. Category filter
-      if (selectedCategory !== 'all' && product.categoryId !== selectedCategory) {
+      if (filters.category !== 'all' && product.categoryId !== filters.category) {
         return false;
       }
 
       // 2. Price filter
-      if (selectedPriceRange === 'under-1000' && product.price >= 1000) return false;
-      if (selectedPriceRange === '1000-2000' && (product.price < 1000 || product.price > 2000)) return false;
-      if (selectedPriceRange === '2000-3000' && (product.price < 2000 || product.price > 3000)) return false;
-      if (selectedPriceRange === '3000-plus' && product.price < 3000) return false;
+      if (filters.priceRange === 'under-1000' && product.price >= 1000) return false;
+      if (filters.priceRange === '1000-2000' && (product.price < 1000 || product.price > 2000)) return false;
+      if (filters.priceRange === '2000-3000' && (product.price < 2000 || product.price > 3000)) return false;
+      if (filters.priceRange === '3000-plus' && product.price < 3000) return false;
 
       // 3. Size filter
-      if (selectedSizes.length > 0) {
-        const hasSize = product.sizes?.some((s) => selectedSizes.includes(s));
-        if (!hasSize) return false;
+      if (filters.size !== 'all' && (!product.sizes || !product.sizes.includes(filters.size))) {
+        return false;
       }
 
       // 4. Rating filter
-      if (minRating > 0 && product.rating < minRating) {
+      if (filters.minRating > 0 && product.rating < filters.minRating) {
         return false;
       }
 
@@ -84,71 +89,71 @@ export default function ShopPage({
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
       if (sortBy === 'rating') return b.rating - a.rating;
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'name') {
+        const nameA = lang === 'th' ? a.name_th || a.name : a.name;
+        const nameB = lang === 'th' ? b.name_th || b.name : b.name;
+        return nameA.localeCompare(nameB);
+      }
       // 'featured'
-      if (a.isFeatured && !b.isFeatured) return -1;
-      if (!a.isFeatured && b.isFeatured) return 1;
-      return a.id - b.id;
+      return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
     });
-  }, [selectedCategory, selectedPriceRange, selectedSizes, minRating, sortBy]);
+  }, [filters, sortBy, lang]);
+
+  const activeFilterCount =
+    (filters.category !== 'all' ? 1 : 0) +
+    (filters.priceRange !== 'all' ? 1 : 0) +
+    (filters.size !== 'all' ? 1 : 0) +
+    (filters.minRating > 0 ? 1 : 0);
 
   return (
-    <div className="w-full min-h-screen bg-[#F7F5F0]">
-      {/* 1. Page Header */}
-      <ShopHeader />
+    <div className="w-full bg-[#F7F5F0] min-h-screen">
+      {/* 1. Shop Header */}
+      <ShopHeader totalProducts={PRODUCTS.length} lang={lang} />
 
-      {/* 2. Category Tab Navigation */}
+      {/* 2. Sticky Horizontal Category Navigation */}
       <CategoryNav
         activeCategory={selectedCategory}
-        onSelectCategory={(catId) => setSelectedCategory(catId)}
+        onSelectCategory={handleCategoryNavSelect}
+        lang={lang}
       />
 
-      {/* 3. Main Catalog Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      {/* 3. Main Catalog Area (Filter Sidebar + Responsive Product Grid) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          
-          {/* Left: Filter Sidebar */}
+          {/* Sidebar */}
           <FilterSidebar
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            selectedPriceRange={selectedPriceRange}
-            onSelectPriceRange={setSelectedPriceRange}
-            selectedSizes={selectedSizes}
-            onToggleSize={handleToggleSize}
-            minRating={minRating}
-            onSelectMinRating={setMinRating}
+            filters={filters}
+            onFilterChange={handleFilterChange}
             onResetFilters={handleResetFilters}
-            hasActiveFilters={hasActiveFilters}
-            isOpenOnMobile={mobileFiltersOpen}
-            onCloseMobile={() => setMobileFiltersOpen(false)}
+            isOpenMobile={isMobileFilterOpen}
+            onCloseMobile={() => setIsMobileFilterOpen(false)}
+            lang={lang}
           />
 
-          {/* Right: Product Grid & Sorting */}
+          {/* Product Grid */}
           <ProductGrid
-            products={filteredProducts}
-            totalCount={PRODUCTS.length}
+            products={filteredAndSortedProducts}
             sortBy={sortBy}
             onSortChange={setSortBy}
-            onOpenMobileFilters={() => setMobileFiltersOpen(true)}
-            activeFilterCount={activeFilterCount}
             onAddToCart={onAddToCart}
-            onQuickView={(p) => setQuickViewProduct(p)}
+            onQuickView={(product) => setQuickViewProduct(product)}
+            onOpenMobileFilters={() => setIsMobileFilterOpen(true)}
+            activeFilterCount={activeFilterCount}
+            onResetFilters={handleResetFilters}
             wishlist={wishlist}
             onToggleWishlist={onToggleWishlist}
-            onResetFilters={handleResetFilters}
+            lang={lang}
           />
         </div>
       </div>
 
-      {/* Quick View Modal */}
+      {/* 4. Quick View / Product Detail Modal */}
       {quickViewProduct && (
         <ProductDetailModal
           product={quickViewProduct}
-          isOpen={Boolean(quickViewProduct)}
           onClose={() => setQuickViewProduct(null)}
           onAddToCart={onAddToCart}
-          isWishlisted={wishlist.includes(quickViewProduct?.id)}
-          onToggleWishlist={onToggleWishlist}
+          lang={lang}
         />
       )}
     </div>

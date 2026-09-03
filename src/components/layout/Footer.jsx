@@ -1,170 +1,161 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { Mail, ArrowRight, Compass, Globe, Share2 } from 'lucide-react';
+import { TRANSLATIONS } from '../../data/translations';
 
-export default function Footer({ onNavigate }) {
-  const currentYear = new Date().getFullYear();
-
-  const handleCategoryClick = (catId) => {
-    onNavigate('shop', { category: catId });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+export default function Footer({ onNavigate, lang = 'en' }) {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   return (
-    <footer className="bg-[#183C32] text-offwhite pt-16 pb-12 border-t border-forest-light">
+    <footer className="bg-charcoal text-offwhite pt-16 pb-12 border-t border-charcoal-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/10">
           
-          {/* Brand Info Column */}
-          <div className="md:col-span-5 space-y-5">
+          {/* Brand Info */}
+          <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white p-0.5 shadow-md">
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-white/90 p-0.5 border border-forest/20">
                 <img
                   src="/images/logo.png"
-                  alt="VIA ALTO"
+                  alt="VIA ALTO Logo"
                   className="w-full h-full object-contain rounded-full"
                 />
               </div>
-              <div>
-                <h3 className="font-serif text-2xl font-bold tracking-widest text-offwhite">
-                  VIA ALTO
-                </h3>
-                <p className="text-[10px] uppercase tracking-brand text-beige">
-                  OUTDOOR EQUIPMENT
-                </p>
-              </div>
+              <span className="font-serif text-2xl font-bold tracking-widest text-white">
+                VIA ALTO
+              </span>
             </div>
-
-            <p className="text-stone-light text-sm max-w-sm font-sans font-light leading-relaxed">
-              Via = The Path. Alto = High / Elevated. Born in the European Alps, crafted for those who choose the path to higher ground.
+            
+            <p className="text-xs sm:text-sm text-stone-light font-sans max-w-sm leading-relaxed">
+              {t.footer_desc}
             </p>
 
-            <div className="pt-2">
-              <span className="inline-block text-xs uppercase tracking-brand font-semibold text-beige border-b border-beige/40 pb-0.5">
-                GO BEYOND.
+            <div className="flex space-x-4 pt-2 text-stone-light">
+              <span className="inline-flex items-center gap-1.5 text-xs text-beige/80">
+                <Compass size={14} />
+                <span>Dolomites Alpine Standard</span>
               </span>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="md:col-span-2 space-y-4">
-            <h4 className="text-xs uppercase tracking-brand font-bold text-beige">
-              SHOP
-            </h4>
-            <ul className="space-y-2.5 text-xs text-stone-light font-sans tracking-wide">
+          <div className="lg:col-span-2 space-y-3">
+            <span className="text-xs uppercase tracking-brand font-semibold text-white block">
+              {t.footer_shop}
+            </span>
+            <ul className="space-y-2 text-xs text-stone-light font-sans">
               <li>
                 <button
-                  onClick={() => onNavigate('shop')}
-                  className="hover:text-offwhite transition-colors"
+                  onClick={() => onNavigate('shop', { category: 'backpacks' })}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  All Equipment
+                  {t.cat_backpacks}
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleCategoryClick('backpacks')}
-                  className="hover:text-offwhite transition-colors"
+                  onClick={() => onNavigate('shop', { category: 'clothing' })}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Backpacks
+                  {t.cat_clothing}
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleCategoryClick('clothing')}
-                  className="hover:text-offwhite transition-colors"
+                  onClick={() => onNavigate('shop', { category: 'footwear' })}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Apparel & Shells
+                  {t.cat_footwear}
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleCategoryClick('footwear')}
-                  className="hover:text-offwhite transition-colors"
+                  onClick={() => onNavigate('shop', { category: 'camping' })}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Alpine Footwear
+                  {t.cat_camping}
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleCategoryClick('camping')}
-                  className="hover:text-offwhite transition-colors"
+                  onClick={() => onNavigate('shop', { category: 'accessories' })}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Tents & Sleeping
+                  {t.cat_accessories}
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Categories */}
-          <div className="md:col-span-2 space-y-4">
-            <h4 className="text-xs uppercase tracking-brand font-bold text-beige">
-              ABOUT
-            </h4>
-            <ul className="space-y-2.5 text-xs text-stone-light font-sans tracking-wide">
+          {/* Brand Philosophy / Story Links */}
+          <div className="lg:col-span-2 space-y-3">
+            <span className="text-xs uppercase tracking-brand font-semibold text-white block">
+              {t.footer_about}
+            </span>
+            <ul className="space-y-2 text-xs text-stone-light font-sans">
               <li>
                 <button
                   onClick={() => {
                     onNavigate('home');
                     setTimeout(() => {
-                      document.getElementById('brand-story')?.scrollIntoView({ behavior: 'smooth' });
+                      const story = document.getElementById('brand-story');
+                      if (story) story.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }}
-                  className="hover:text-offwhite transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Our Philosophy
+                  {t.phil_cta}
                 </button>
               </li>
               <li>
-                <span className="text-stone-light/60 cursor-default">Sustainability</span>
-              </li>
-              <li>
-                <span className="text-stone-light/60 cursor-default">Alpine Craft</span>
-              </li>
-              <li>
-                <span className="text-stone-light/60 cursor-default">Careers</span>
+                <button
+                  onClick={() => onNavigate('home')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  {t.hero_slogan}
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Newsletter / Contact Column */}
-          <div className="md:col-span-3 space-y-4">
-            <h4 className="text-xs uppercase tracking-brand font-bold text-beige">
-              THE VIA ALTO JOURNAL
-            </h4>
-            <p className="text-xs text-stone-light font-sans leading-relaxed">
-              Subscribe for new expedition gear drops, technical guides, and alpine stories.
+          {/* Newsletter / Journal Box */}
+          <div className="lg:col-span-3 space-y-3">
+            <span className="text-xs uppercase tracking-brand font-semibold text-white block">
+              {t.footer_journal_title}
+            </span>
+            <p className="text-xs text-stone-light font-sans">
+              {t.footer_journal_desc}
             </p>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Thank you for subscribing to VIA ALTO.');
+                alert(lang === 'th' ? 'ขอบคุณสำหรับการสมัครรับข่าวสาร VIA ALTO!' : 'Thank you for subscribing to The VIA ALTO Journal.');
               }}
-              className="flex items-center border border-white/20 hover:border-beige transition-colors"
+              className="flex"
             >
               <input
                 type="email"
                 required
-                placeholder="Enter your email"
-                className="bg-transparent px-3 py-2 text-xs text-offwhite placeholder:text-stone-light/60 w-full focus:outline-none font-sans"
+                placeholder="email@example.com"
+                className="bg-charcoal-light border border-white/20 text-xs text-white px-3 py-2 w-full focus:outline-none focus:border-beige font-sans"
               />
               <button
                 type="submit"
-                className="bg-beige text-charcoal px-3 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white transition-colors"
+                className="bg-beige text-forest px-3 py-2 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0"
               >
-                JOIN
+                {t.footer_join}
               </button>
             </form>
           </div>
+
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-light/70 font-sans tracking-wider gap-4">
-          <div>
-            © {currentYear} VIA ALTO OUTDOOR EQUIPMENT. ALL RIGHTS RESERVED.
-          </div>
-          <div className="flex items-center space-x-6 text-xs uppercase tracking-wider">
-            <span className="hover:text-offwhite cursor-pointer transition-colors">Privacy</span>
-            <span className="hover:text-offwhite cursor-pointer transition-colors">Terms</span>
-            <span className="hover:text-offwhite cursor-pointer transition-colors">Cookies</span>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone font-sans gap-4">
+          <span>© {new Date().getFullYear()} {t.footer_rights}</span>
+          <div className="flex space-x-6">
+            <span>GO BEYOND.</span>
+            <span>ELEVATION: 3,842M</span>
+            <span>DOLOMITES, ITALY</span>
           </div>
         </div>
       </div>

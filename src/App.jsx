@@ -31,6 +31,22 @@ export default function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
+  // Language state (en / th) with localStorage persistence
+  const [lang, setLang] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('via_alto_lang') || 'en';
+    }
+    return 'en';
+  });
+
+  const handleToggleLang = (newLang) => {
+    setLang(newLang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('via_alto_lang', newLang);
+    }
+    showToast(newLang === 'th' ? 'เปลี่ยนภาษาเป็น ภาษาไทย เรียบร้อยแล้ว' : 'Language switched to English');
+  };
+
   // Initialize auth store on startup
   useEffect(() => {
     initializeAuthStore();
@@ -69,7 +85,7 @@ export default function App() {
         loggedUser = loginUser(credentialsOrUser.email, credentialsOrUser.password);
       }
       setCurrentUser(loggedUser);
-      showToast(`Welcome back, ${loggedUser.fullName}!`);
+      showToast(lang === 'th' ? `ยินดีต้อนรับกลับ, คุณ ${loggedUser.fullName}!` : `Welcome back, ${loggedUser.fullName}!`);
       setIsAuthModalOpen(false);
     } catch (err) {
       throw err;
@@ -80,7 +96,11 @@ export default function App() {
     try {
       const newUser = registerUser(formData);
       setCurrentUser(newUser);
-      showToast(`Account created! Welcome to VIA ALTO Explorer Club, ${newUser.fullName}!`);
+      showToast(
+        lang === 'th'
+          ? `สร้างบัญชีสำเร็จ! ยินดีต้อนรับสู่ Explorer Club, คุณ ${newUser.fullName}!`
+          : `Account created! Welcome to VIA ALTO Explorer Club, ${newUser.fullName}!`
+      );
       setIsAuthModalOpen(false);
       setCurrentPage('account');
     } catch (err) {
@@ -91,7 +111,7 @@ export default function App() {
   const handleLogout = () => {
     logoutUser();
     setCurrentUser(null);
-    showToast('You have been signed out.');
+    showToast(lang === 'th' ? 'คุณได้ออกจากระบบเรียบร้อยแล้ว' : 'You have been signed out.');
     setCurrentPage('home');
   };
 
@@ -99,9 +119,9 @@ export default function App() {
     try {
       const updated = updateProfile(userId, updatedFields);
       setCurrentUser(updated);
-      showToast('Profile preferences updated.');
+      showToast(lang === 'th' ? 'บันทึกการตั้งค่าโปรไฟล์เรียบร้อย' : 'Profile preferences updated.');
     } catch (err) {
-      showToast('Failed to update profile.');
+      showToast(lang === 'th' ? 'เกิดข้อผิดพลาดในการบันทึกโปรไฟล์' : 'Failed to update profile.');
     }
   };
 
@@ -126,7 +146,8 @@ export default function App() {
       }
     });
 
-    showToast(`Added "${product.name}" to your bag`);
+    const pName = lang === 'th' ? product.name_th || product.name : product.name;
+    showToast(lang === 'th' ? `เพิ่ม "${pName}" ลงในถุงสินค้าแล้ว` : `Added "${pName}" to your bag`);
   };
 
   // Update Cart Quantity
@@ -158,10 +179,10 @@ export default function App() {
     setWishlist((prev) => {
       const isAlready = prev.includes(productId);
       if (isAlready) {
-        showToast('Removed from wishlist');
+        showToast(lang === 'th' ? 'นำออกจากรายการที่บันทึกแล้ว' : 'Removed from wishlist');
         return prev.filter((id) => id !== productId);
       } else {
-        showToast('Saved to your wishlist');
+        showToast(lang === 'th' ? 'บันทึกรายการลงใน Wishlist แล้ว' : 'Saved to your wishlist');
         return [...prev, productId];
       }
     });
@@ -180,6 +201,8 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         currentUser={currentUser}
         onOpenAuthModal={() => handleOpenAuth('signin')}
+        lang={lang}
+        onToggleLang={handleToggleLang}
       />
 
       {/* 2. Main Page Content */}
@@ -192,6 +215,7 @@ export default function App() {
               setQuickViewProduct(product);
               handleNavigate('shop');
             }}
+            lang={lang}
           />
         )}
 
@@ -203,6 +227,7 @@ export default function App() {
             onToggleWishlist={handleToggleWishlist}
             quickViewProduct={quickViewProduct}
             setQuickViewProduct={setQuickViewProduct}
+            lang={lang}
           />
         )}
 
@@ -219,7 +244,7 @@ export default function App() {
       </main>
 
       {/* 3. Footer */}
-      <Footer onNavigate={handleNavigate} />
+      <Footer onNavigate={handleNavigate} lang={lang} />
 
       {/* 4. Global Search Modal */}
       <SearchModal
@@ -230,6 +255,7 @@ export default function App() {
           handleNavigate('shop');
         }}
         onNavigateToShop={() => handleNavigate('shop')}
+        lang={lang}
       />
 
       {/* 5. Shopping Bag Drawer */}
@@ -240,6 +266,7 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveFromCart}
         onNavigateToShop={() => handleNavigate('shop')}
+        lang={lang}
       />
 
       {/* 6. Authentication Modal (Sign In / Register) */}

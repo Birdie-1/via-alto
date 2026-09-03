@@ -1,90 +1,84 @@
-import React, { useState } from 'react';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
-import { formatPrice } from '../../data/products';
+import React from 'react';
+import { ShoppingBag, Eye, Heart } from 'lucide-react';
 import StarRating from '../ui/StarRating';
+import { formatPrice } from '../../data/products';
+import { TRANSLATIONS } from '../../data/translations';
 
 export default function ProductCard({
   product,
   onAddToCart,
   onQuickView,
   isWishlisted = false,
-  onToggleWishlist
+  onToggleWishlist,
+  lang = 'en'
 }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const productName = lang === 'th' ? product.name_th || product.name : product.name;
+  const productCategory = lang === 'th' ? product.category_th || product.category : product.category;
+  const productBadge = lang === 'th' ? product.badge_th || product.badge : product.badge;
 
   return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group bg-white border border-stone-light/60 hover:border-forest/50 transition-all duration-300 flex flex-col justify-between shadow-2xs hover:shadow-md relative"
-    >
-      {/* Product Image Box */}
+    <div className="group bg-white border border-stone-light/60 hover:border-forest/50 transition-all duration-300 flex flex-col justify-between shadow-2xs hover:shadow-md relative">
+      
+      {/* Product Image Area */}
       <div className="relative aspect-square overflow-hidden bg-[#F7F5F0]">
         <img
           src={product.image}
-          alt={product.name}
+          alt={productName}
           className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
-        {/* Badge (e.g. BESTSELLER, NEW, 0°C RATED) */}
-        {product.badge && (
-          <div className="absolute top-3 left-3 bg-forest text-offwhite text-[9px] uppercase font-bold tracking-brand px-2.5 py-1 shadow-xs">
-            {product.badge}
+        {/* Badge */}
+        {productBadge && (
+          <div className="absolute top-3 left-3 bg-forest text-offwhite text-[9px] uppercase font-bold tracking-brand px-2 py-1 shadow-xs z-10">
+            {productBadge}
           </div>
         )}
 
-        {/* Wishlist Heart Button */}
+        {/* Wishlist Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleWishlist?.(product.id);
           }}
-          className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 cursor-pointer ${
+          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
             isWishlisted
-              ? 'bg-white text-red-600 shadow-md opacity-100'
-              : 'bg-white/90 text-charcoal hover:text-forest shadow-xs opacity-0 group-hover:opacity-100'
+              ? 'bg-red-50 text-red-600 border border-red-200'
+              : 'bg-white/80 hover:bg-white text-stone hover:text-charcoal border border-stone-light/60'
           }`}
-          aria-label="Add to wishlist"
+          title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+          aria-label="Wishlist"
         >
-          <Heart
-            size={16}
-            className={isWishlisted ? 'fill-red-600 text-red-600' : ''}
-          />
+          <Heart size={14} className={isWishlisted ? 'fill-current' : ''} />
         </button>
 
-        {/* Quick View Button overlay on hover */}
-        <button
-          onClick={() => onQuickView?.(product)}
-          className="absolute inset-x-4 bottom-4 py-2 bg-charcoal/90 text-offwhite text-xs font-semibold uppercase tracking-brand flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-forest cursor-pointer shadow-md backdrop-blur-xs"
-        >
-          <Eye size={14} />
-          <span>QUICK VIEW</span>
-        </button>
+        {/* Quick View Hover Overlay Button (Desktop) */}
+        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+          <button
+            onClick={() => onQuickView(product)}
+            className="w-full py-2 bg-white/95 hover:bg-white text-charcoal text-[11px] uppercase tracking-brand font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <Eye size={13} />
+            <span>{t.card_quick_view}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Product Details Area */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-1.5">
-          {/* Category */}
+      {/* Product Information */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
           <span className="text-[10px] uppercase tracking-brand-wide font-semibold text-stone">
-            {product.category}
+            {productCategory}
           </span>
-
-          {/* Product Title */}
+          
           <h3
-            onClick={() => onQuickView?.(product)}
-            className="font-sans text-base font-semibold text-charcoal group-hover:text-forest transition-colors cursor-pointer line-clamp-1"
+            onClick={() => onQuickView(product)}
+            className="font-sans text-base font-semibold text-charcoal group-hover:text-forest transition-colors cursor-pointer mt-1 line-clamp-1"
           >
-            {product.name}
+            {productName}
           </h3>
 
-          {/* Short Description */}
-          <p className="text-xs text-stone font-sans line-clamp-2 leading-relaxed">
-            “{product.shortDesc}”
-          </p>
-
-          {/* Star Rating */}
-          <div className="pt-1">
+          <div className="mt-2.5">
             <StarRating
               rating={product.rating}
               reviewsCount={product.reviewsCount}
@@ -93,21 +87,26 @@ export default function ProductCard({
           </div>
         </div>
 
-        {/* Bottom Price & Add to Bag */}
-        <div className="pt-4 border-t border-stone-light/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <span className="text-lg font-bold text-charcoal font-sans">
-            {formatPrice(product.price)}
-          </span>
+        {/* Price & Quick Add Button Bar */}
+        <div className="mt-5 pt-4 border-t border-stone-light/40 flex items-center justify-between">
+          <div>
+            <span className="text-base sm:text-lg font-bold text-charcoal font-sans">
+              {formatPrice(product.price)}
+            </span>
+          </div>
 
           <button
             onClick={() => onAddToCart(product)}
-            className="bg-transparent hover:bg-forest text-forest hover:text-offwhite border border-forest px-4 py-2 text-xs font-semibold uppercase tracking-brand transition-all duration-200 cursor-pointer active:scale-95 text-center flex items-center justify-center gap-1.5"
+            className="h-9 px-3.5 bg-forest text-offwhite flex items-center justify-center gap-1.5 hover:bg-forest-light active:scale-95 transition-all text-xs font-semibold uppercase tracking-wider shadow-xs cursor-pointer"
+            title={t.card_add_to_bag}
+            aria-label={`Add ${productName} to Bag`}
           >
-            <ShoppingBag size={13} />
-            <span>ADD TO BAG</span>
+            <ShoppingBag size={14} />
+            <span className="hidden sm:inline text-[11px]">{t.card_add_to_bag}</span>
           </button>
         </div>
       </div>
+
     </div>
   );
 }

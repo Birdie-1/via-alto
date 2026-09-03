@@ -1,7 +1,8 @@
 import React from 'react';
 import { X, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
-import { formatPrice } from '../../data/products';
 import Button from '../ui/Button';
+import { formatPrice } from '../../data/products';
+import { TRANSLATIONS } from '../../data/translations';
 
 export default function CartDrawer({
   isOpen,
@@ -9,151 +10,173 @@ export default function CartDrawer({
   cartItems = [],
   onUpdateQuantity,
   onRemoveItem,
-  onNavigateToShop
+  onNavigateToShop,
+  lang = 'en'
 }) {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   if (!isOpen) return null;
 
-  const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
     0
   );
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-charcoal/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="absolute inset-0" onClick={onClose} />
+    <div className="fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-charcoal/60 backdrop-blur-xs transition-opacity"
+        onClick={onClose}
+      />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#F7F5F0] border-l border-stone-light/60 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-          
-          {/* Cart Header */}
-          <div className="p-6 border-b border-stone-light/60 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <ShoppingBag size={20} className="text-forest" />
-              <h2 className="font-serif text-xl font-bold tracking-wide text-charcoal">
-                YOUR BAG ({cartItems.reduce((acc, i) => acc + i.quantity, 0)})
+        <div
+          className="w-screen max-w-md bg-[#F7F5F0] border-l border-stone-light/80 shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Top Header */}
+          <div className="p-6 border-b border-stone-light/60 flex items-center justify-between bg-white">
+            <div className="flex items-center space-x-2">
+              <ShoppingBag size={18} className="text-forest" />
+              <h2 className="font-serif text-xl font-bold uppercase tracking-wider text-charcoal">
+                {t.cart_title} ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 text-stone hover:text-charcoal cursor-pointer"
-              aria-label="Close bag"
+              className="p-2 text-stone hover:text-charcoal cursor-pointer rounded-full hover:bg-stone-light/20 transition-colors"
+              aria-label="Close cart"
             >
               <X size={20} />
             </button>
           </div>
 
-          {/* Cart Item List */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {/* Cart Items List */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 divide-y divide-stone-light/40">
             {cartItems.length === 0 ? (
-              <div className="text-center py-16 space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-beige/40 flex items-center justify-center text-forest">
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-16">
+                <div className="w-16 h-16 rounded-full bg-white border border-stone-light flex items-center justify-center text-stone">
                   <ShoppingBag size={28} />
                 </div>
-                <h3 className="font-serif text-lg text-charcoal">Your bag is empty</h3>
-                <p className="text-xs text-stone max-w-xs mx-auto">
-                  Equip yourself with gear built for the highest summits and wildest trails.
+                <h3 className="font-serif text-xl font-bold text-charcoal">
+                  {t.cart_empty}
+                </h3>
+                <p className="text-xs text-stone max-w-xs font-sans">
+                  {t.cart_empty_desc}
                 </p>
-                <div className="pt-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      onClose();
-                      onNavigateToShop();
-                    }}
-                  >
-                    EXPLORE COLLECTION
-                  </Button>
-                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    onClose();
+                    onNavigateToShop();
+                  }}
+                  className="mt-2"
+                >
+                  {t.cart_explore}
+                </Button>
               </div>
             ) : (
-              cartItems.map((item) => (
-                <div
-                  key={`${item.product.id}-${item.selectedSize}`}
-                  className="flex gap-4 p-3.5 bg-white border border-stone-light/40 hover:border-stone-light transition-all"
-                >
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="w-20 h-20 object-cover bg-offwhite"
-                  />
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-start justify-between">
-                        <h4 className="text-xs font-semibold text-charcoal font-sans">
-                          {item.product.name}
-                        </h4>
+              cartItems.map((item, index) => {
+                const pName = lang === 'th' ? item.product.name_th || item.product.name : item.product.name;
+                return (
+                  <div key={`${item.product.id}-${item.selectedSize}-${index}`} className="pt-6 first:pt-0 flex space-x-4">
+                    {/* Item Thumbnail */}
+                    <div className="w-20 h-20 bg-white border border-stone-light/60 shrink-0 overflow-hidden">
+                      <img
+                        src={item.product.image}
+                        alt={pName}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    </div>
+
+                    {/* Item Info */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-sans text-sm font-semibold text-charcoal">
+                            {pName}
+                          </h4>
+                          <span className="text-[11px] text-stone">
+                            {t.modal_size}: {item.selectedSize}
+                          </span>
+                        </div>
                         <button
                           onClick={() => onRemoveItem(item.product.id, item.selectedSize)}
-                          className="text-stone hover:text-red-600 transition-colors p-1"
-                          title="Remove"
+                          className="text-stone hover:text-red-700 transition-colors p-1 cursor-pointer"
+                          aria-label="Remove item"
                         >
                           <Trash2 size={14} />
                         </button>
                       </div>
-                      <p className="text-[11px] text-stone uppercase tracking-wider">
-                        {item.product.category} {item.selectedSize ? `• ${item.selectedSize}` : ''}
-                      </p>
-                    </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="flex items-center border border-stone-light">
-                        <button
-                          onClick={() =>
-                            onUpdateQuantity(
-                              item.product.id,
-                              item.selectedSize,
-                              item.quantity - 1
-                            )
-                          }
-                          className="px-2 py-0.5 text-xs text-stone hover:bg-beige"
-                        >
-                          -
-                        </button>
-                        <span className="px-2 text-xs font-medium text-charcoal">
-                          {item.quantity}
+                      <div className="flex items-center justify-between pt-2">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center border border-stone-light bg-white">
+                          <button
+                            onClick={() =>
+                              onUpdateQuantity(
+                                item.product.id,
+                                item.selectedSize,
+                                item.quantity - 1
+                              )
+                            }
+                            className="px-2 py-0.5 text-xs text-stone hover:text-charcoal cursor-pointer"
+                          >
+                            -
+                          </button>
+                          <span className="px-2 text-xs font-mono font-bold text-charcoal">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              onUpdateQuantity(
+                                item.product.id,
+                                item.selectedSize,
+                                item.quantity + 1
+                              )
+                            }
+                            className="px-2 py-0.5 text-xs text-stone hover:text-charcoal cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Line Total */}
+                        <span className="text-sm font-bold text-charcoal font-sans">
+                          {formatPrice(item.product.price * item.quantity)}
                         </span>
-                        <button
-                          onClick={() =>
-                            onUpdateQuantity(
-                              item.product.id,
-                              item.selectedSize,
-                              item.quantity + 1
-                            )
-                          }
-                          className="px-2 py-0.5 text-xs text-stone hover:bg-beige"
-                        >
-                          +
-                        </button>
                       </div>
-                      <span className="text-xs font-bold text-charcoal">
-                        {formatPrice(item.product.price * item.quantity)}
-                      </span>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
-          {/* Cart Footer */}
+          {/* Subtotal & Checkout Footer */}
           {cartItems.length > 0 && (
-            <div className="p-6 border-t border-stone-light/60 bg-white/70 space-y-4">
-              <div className="flex justify-between items-center text-sm font-sans">
-                <span className="text-stone uppercase tracking-wider text-xs">Estimated Subtotal</span>
-                <span className="text-base font-bold text-charcoal">{formatPrice(totalAmount)}</span>
+            <div className="p-6 bg-white border-t border-stone-light/80 space-y-4 shadow-lg">
+              <div className="flex justify-between items-center text-sm font-semibold text-charcoal">
+                <span>{t.cart_subtotal}</span>
+                <span className="text-xl font-bold font-sans text-forest">
+                  {formatPrice(subtotal)}
+                </span>
               </div>
-              <p className="text-[11px] text-stone leading-tight">
-                Shipping and taxes calculated at stage 2 checkout.
+              <p className="text-[11px] text-stone italic">
+                {t.cart_tax_note}
               </p>
               <Button
                 variant="primary"
-                className="w-full"
+                size="lg"
+                className="w-full justify-center"
+                icon={ArrowRight}
+                iconPosition="right"
                 onClick={() => {
-                  alert('Checkout flow will be implemented in Stage 2 after design review!');
+                  alert(lang === 'th' ? 'ขอบคุณสำหรับการทดสอบ! ระบบชำระเงินจะเปิดใน Stage 2' : 'Demo Mode: Checkout is ready for Stage 2 integration.');
                 }}
               >
-                PROCEED TO CHECKOUT
+                {t.cart_checkout}
               </Button>
             </div>
           )}

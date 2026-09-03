@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, ShoppingBag, Menu, X, Compass, LogIn } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, X, Globe } from 'lucide-react';
+import { TRANSLATIONS } from '../../data/translations';
 
 export default function Header({
   currentPage,
@@ -8,10 +9,13 @@ export default function Header({
   onOpenSearch,
   onOpenCart,
   currentUser = null,
-  onOpenAuthModal
+  onOpenAuthModal,
+  lang = 'en',
+  onToggleLang
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,10 +30,10 @@ export default function Header({
   }, []);
 
   const navItems = [
-    { id: 'home', label: 'HOME' },
-    { id: 'shop', label: 'SHOP' },
-    { id: 'categories', label: 'CATEGORIES' },
-    { id: 'about', label: 'ABOUT' }
+    { id: 'home', label: t.nav_home },
+    { id: 'shop', label: t.nav_shop },
+    { id: 'categories', label: t.nav_categories },
+    { id: 'about', label: t.nav_about }
   ];
 
   const handleNavClick = (id) => {
@@ -147,14 +151,53 @@ export default function Header({
             })}
           </nav>
 
-          {/* Right: Actions (Search, Account, Bag) */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Right: Language Switcher, Search, Account, Bag */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            
+            {/* Language Toggle Button (EN | TH) */}
+            <div
+              className={`flex items-center text-[11px] font-bold tracking-wider rounded-xs border p-0.5 transition-all ${
+                isDarkHero
+                  ? 'border-white/30 bg-black/20 text-white'
+                  : 'border-stone-light bg-white/80 text-charcoal shadow-2xs'
+              }`}
+            >
+              <button
+                onClick={() => onToggleLang('en')}
+                className={`px-2 py-1 rounded-2xs transition-colors cursor-pointer ${
+                  lang === 'en'
+                    ? isDarkHero
+                      ? 'bg-white text-forest font-extrabold'
+                      : 'bg-forest text-offwhite font-extrabold'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+                title="English"
+              >
+                EN
+              </button>
+              <span className="opacity-40 px-0.5">|</span>
+              <button
+                onClick={() => onToggleLang('th')}
+                className={`px-2 py-1 rounded-2xs transition-colors cursor-pointer ${
+                  lang === 'th'
+                    ? isDarkHero
+                      ? 'bg-white text-forest font-extrabold'
+                      : 'bg-forest text-offwhite font-extrabold'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+                title="ภาษาไทย"
+              >
+                TH
+              </button>
+            </div>
+
+            {/* Search Button */}
             <button
               onClick={onOpenSearch}
               className={`p-2 transition-colors cursor-pointer ${textColorClass} ${navHoverClass}`}
               aria-label="Search equipment"
             >
-              <Search size={20} />
+              <Search size={19} />
             </button>
 
             {/* Account Button / User Pill */}
@@ -182,9 +225,9 @@ export default function Header({
                 onClick={handleAccountClick}
                 className={`p-2 transition-colors cursor-pointer hidden sm:block ${textColorClass} ${navHoverClass}`}
                 aria-label="User Account"
-                title="Sign In / Register"
+                title={t.nav_signin}
               >
-                <User size={20} />
+                <User size={19} />
               </button>
             )}
 
@@ -194,7 +237,7 @@ export default function Header({
               className={`p-2 transition-colors cursor-pointer relative ${textColorClass} ${navHoverClass}`}
               aria-label="Shopping Bag"
             >
-              <ShoppingBag size={20} />
+              <ShoppingBag size={19} />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-forest text-offwhite text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-offwhite">
                   {cartCount}
@@ -240,7 +283,7 @@ export default function Header({
                 }}
                 className="text-left text-sm uppercase tracking-brand font-bold text-forest py-2 border-b border-stone-light/30 flex items-center justify-between"
               >
-                <span>{currentUser ? `MY ACCOUNT (${currentUser.fullName})` : 'SIGN IN / REGISTER'}</span>
+                <span>{currentUser ? `${t.nav_account} (${currentUser.fullName})` : t.nav_signin}</span>
                 <User size={16} />
               </button>
             </div>

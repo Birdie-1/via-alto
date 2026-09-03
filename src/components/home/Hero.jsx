@@ -1,8 +1,10 @@
 import React from 'react';
 import Button from '../ui/Button';
-import { ArrowRight } from 'lucide-react';
+import { TRANSLATIONS } from '../../data/translations';
 
-export default function Hero({ onExploreClick, onDiscoverClick }) {
+export default function Hero({ onExploreClick, onDiscoverClick, lang = 'en' }) {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
   return (
     <section className="relative min-h-[90vh] lg:min-h-screen flex items-center justify-start overflow-hidden pt-20">
       {/* Background Image with Cinematic Alpine Atmosphere */}
@@ -25,19 +27,19 @@ export default function Hero({ onExploreClick, onDiscoverClick }) {
           <div className="inline-flex items-center gap-2">
             <span className="h-px w-6 bg-beige/80" />
             <span className="text-xs sm:text-sm uppercase tracking-brand-wide font-medium text-beige">
-              GO BEYOND.
+              {t.hero_slogan}
             </span>
           </div>
 
           {/* Main Headline */}
           <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]">
-            FIND YOUR <br />
-            WAY HIGHER.
+            {t.hero_headline_1} <br />
+            {t.hero_headline_2}
           </h1>
 
           {/* Supporting Text */}
           <p className="text-base sm:text-xl text-offwhite/90 font-sans font-light max-w-lg leading-relaxed">
-            Gear designed for the trail, built for the journey.
+            {t.hero_subtitle}
           </p>
 
           {/* CTA Buttons */}
@@ -48,7 +50,7 @@ export default function Hero({ onExploreClick, onDiscoverClick }) {
               onClick={onExploreClick}
               className="bg-forest hover:bg-forest-light border border-forest-light/50 shadow-lg text-white"
             >
-              EXPLORE THE COLLECTION
+              {t.hero_cta_explore}
             </Button>
 
             <Button
@@ -56,7 +58,7 @@ export default function Hero({ onExploreClick, onDiscoverClick }) {
               size="lg"
               onClick={onDiscoverClick}
             >
-              DISCOVER VIA ALTO
+              {t.hero_cta_discover}
             </Button>
           </div>
         </div>
@@ -64,11 +66,11 @@ export default function Hero({ onExploreClick, onDiscoverClick }) {
 
       {/* Bottom Coordinates / Altitude Indicator Decoration */}
       <div className="absolute bottom-8 right-8 z-10 hidden lg:flex items-center gap-6 text-white/60 text-[10px] uppercase tracking-brand font-mono">
-        <span>ELEVATION: 3,842 M</span>
+        <span>{t.nav_elevation}</span>
         <span>•</span>
-        <span>LAT: 45.8326° N</span>
+        <span>{t.nav_lat}</span>
         <span>•</span>
-        <span>ALPINE SERIES</span>
+        <span>{t.nav_series}</span>
       </div>
     </section>
   );
