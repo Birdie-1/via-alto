@@ -32,6 +32,7 @@ export const CATEGORIES = [
 ];
 
 export const PRODUCTS = [
+  // --- BACKPACKS ---
   {
     id: 1,
     name: 'Alpine 35L Backpack',
@@ -81,6 +82,24 @@ export const PRODUCTS = [
     inStock: true
   },
   {
+    id: 13,
+    name: 'Alpine Summit 18L Pack',
+    category: 'Backpacks',
+    categoryId: 'backpacks',
+    price: 1490,
+    rating: 4.8,
+    reviewsCount: 45,
+    shortDesc: 'Ultralight packable summit assault daypack with minimalist profile.',
+    description: 'Weighing under 380 grams, this packable summit daypack stows into its own top pocket. Built from silicone-treated Cordura ripstop for scramble routes and ridge runs.',
+    image: '/images/prod_summit_18l.jpg',
+    badge: 'ULTRALIGHT',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+
+  // --- CLOTHING ---
+  {
     id: 4,
     name: 'Alpine Shell Jacket',
     category: 'Clothing',
@@ -129,6 +148,56 @@ export const PRODUCTS = [
     inStock: true
   },
   {
+    id: 14,
+    name: 'Nordic Merino Thermal Fleece',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 2490,
+    rating: 4.9,
+    reviewsCount: 67,
+    shortDesc: 'Heavyweight grid fleece midlayer for sub-zero alpine ascents.',
+    description: 'Micro-grid interior channels body heat while releasing excess vapor during high-exertion climbs. Features a tailored high collar and deep chest pocket.',
+    image: '/images/prod_merino_fleece.jpg',
+    badge: 'THERMAL',
+    isFeatured: false,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 15,
+    name: 'Dolomite Trail Windbreaker',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 1690,
+    rating: 4.7,
+    reviewsCount: 39,
+    shortDesc: 'Ultralight packable DWR weather-resistant trail running wind shell.',
+    description: 'Blocks mountain wind chill while packing down to the size of an apple. Engineered with laser-cut underarm ventilation and reflective logo accents.',
+    image: '/images/prod_windbreaker.jpg',
+    badge: 'NEW',
+    isFeatured: false,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+  {
+    id: 16,
+    name: 'Alpine Pro Waterproof Gloves',
+    category: 'Clothing',
+    categoryId: 'clothing',
+    price: 1190,
+    rating: 4.6,
+    reviewsCount: 31,
+    shortDesc: 'Touchscreen-compatible mountain gloves with goat leather grip.',
+    description: 'Waterproof breathable insert with brushed fleece lining. Abrasion-resistant leather palm ensures steady grip on trekking poles and via ferrata cables.',
+    image: '/images/prod_gloves.jpg',
+    badge: 'WEATHERPROOF',
+    isFeatured: false,
+    sizes: ['S', 'M', 'L', 'XL'],
+    inStock: true
+  },
+
+  // --- FOOTWEAR ---
+  {
     id: 7,
     name: 'Terra Hiking Shoes',
     category: 'Footwear',
@@ -160,6 +229,24 @@ export const PRODUCTS = [
     sizes: ['M', 'L', 'XL'],
     inStock: true
   },
+  {
+    id: 17,
+    name: 'Veloce Mountain Trail Runners',
+    category: 'Footwear',
+    categoryId: 'footwear',
+    price: 2990,
+    rating: 4.7,
+    reviewsCount: 54,
+    shortDesc: 'Speed hiking and trail running shoes with rock protection plate.',
+    description: 'Designed for fast mountain terrain. Features an integrated rock defense plate, TPU toe bumper, and 5mm multi-directional traction lugs.',
+    image: '/images/prod_trail_runners.jpg',
+    badge: 'SPEED TRAIL',
+    isFeatured: false,
+    sizes: ['M', 'L'],
+    inStock: true
+  },
+
+  // --- CAMPING ---
   {
     id: 9,
     name: 'Alpine Shelter Tent',
@@ -193,6 +280,40 @@ export const PRODUCTS = [
     inStock: true
   },
   {
+    id: 18,
+    name: 'Alpine Insulated Air Sleeping Pad',
+    category: 'Camping',
+    categoryId: 'camping',
+    price: 1890,
+    rating: 4.8,
+    reviewsCount: 62,
+    shortDesc: 'R-Value 4.8 thermal insulated inflatable sleeping mattress pad.',
+    description: 'Multi-layer reflective thermal film reflects radiant body heat back to the sleeper. Packs smaller than a 1-liter water bottle while offering 7.5cm of cushion.',
+    image: '/images/prod_sleeping_pad.jpg',
+    badge: 'R-VALUE 4.8',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 19,
+    name: 'Titanium Expedition Stove & Pot',
+    category: 'Camping',
+    categoryId: 'camping',
+    price: 1390,
+    rating: 4.9,
+    reviewsCount: 48,
+    shortDesc: 'Ultralight 800ml titanium cookset with piezo micro gas burner.',
+    description: 'Pure titanium construction guarantees zero metallic taste and extreme corrosion resistance. The micro-burner boils 500ml of mountain water in under 2.5 minutes.',
+    image: '/images/prod_titanium_stove.jpg',
+    badge: 'TITANIUM',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+
+  // --- ACCESSORIES ---
+  {
     id: 11,
     name: 'Summit Trekking Poles',
     category: 'Accessories',
@@ -220,6 +341,22 @@ export const PRODUCTS = [
     description: 'Maintains beverages icy cold for 24 hours or steaming hot for 12 hours. Constructed from puncture-resistant 18/8 food-grade stainless steel with BPA-free loop cap.',
     image: '/images/prod_insulated_bottle.jpg',
     badge: 'ECO',
+    isFeatured: false,
+    sizes: ['One Size'],
+    inStock: true
+  },
+  {
+    id: 20,
+    name: 'Alpine Tech LED Headlamp 600lm',
+    category: 'Accessories',
+    categoryId: 'accessories',
+    price: 990,
+    rating: 4.8,
+    reviewsCount: 79,
+    shortDesc: 'Rechargeable 600-lumen IPX8 waterproof beam headlamp with red night vision.',
+    description: 'Dual-beam optics with white spot beam and wide floodlight for night navigation. USB-C fast charging with lock mode to prevent accidental turn-on in your pack.',
+    image: '/images/prod_headlamp.jpg',
+    badge: '600 LUMENS',
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true
