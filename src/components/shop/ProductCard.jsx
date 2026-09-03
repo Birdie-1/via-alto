@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, Eye, Heart } from 'lucide-react';
+import { ShoppingBag, Eye, Heart, Scale, Check } from 'lucide-react';
 import StarRating from '../ui/StarRating';
 import { formatPrice } from '../../data/products';
 import { TRANSLATIONS } from '../../data/translations';
@@ -10,6 +10,8 @@ export default function ProductCard({
   onQuickView,
   isWishlisted = false,
   onToggleWishlist,
+  isCompared = false,
+  onToggleCompare,
   lang = 'en'
 }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -35,22 +37,42 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Wishlist Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleWishlist?.(product.id);
-          }}
-          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-            isWishlisted
-              ? 'bg-red-50 text-red-600 border border-red-200'
-              : 'bg-white/80 hover:bg-white text-stone hover:text-charcoal border border-stone-light/60'
-          }`}
-          title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
-          aria-label="Wishlist"
-        >
-          <Heart size={14} className={isWishlisted ? 'fill-current' : ''} />
-        </button>
+        {/* Action icons top right (Wishlist + Compare) */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
+          {/* Wishlist Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleWishlist?.(product.id);
+            }}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs ${
+              isWishlisted
+                ? 'bg-red-50 text-red-600 border border-red-200'
+                : 'bg-white/85 hover:bg-white text-stone hover:text-charcoal border border-stone-light/60'
+            }`}
+            title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+            aria-label="Wishlist"
+          >
+            <Heart size={14} className={isWishlisted ? 'fill-current' : ''} />
+          </button>
+
+          {/* Compare Toggle Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleCompare?.(product);
+            }}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs ${
+              isCompared
+                ? 'bg-forest text-offwhite border border-forest font-bold'
+                : 'bg-white/85 hover:bg-white text-stone hover:text-forest border border-stone-light/60'
+            }`}
+            title={isCompared ? 'Remove from compare' : 'Add to compare'}
+            aria-label="Compare"
+          >
+            {isCompared ? <Check size={14} /> : <Scale size={14} />}
+          </button>
+        </div>
 
         {/* Quick View Hover Overlay Button (Desktop) */}
         <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
@@ -67,9 +89,18 @@ export default function ProductCard({
       {/* Product Information */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-          <span className="text-[10px] uppercase tracking-brand-wide font-semibold text-stone">
-            {productCategory}
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-brand-wide font-semibold text-stone">
+              {productCategory}
+            </span>
+
+            {/* Micro weight indicator */}
+            {product.specs?.weight && (
+              <span className="text-[10px] text-stone/80 font-mono">
+                {product.specs.weight}
+              </span>
+            )}
+          </div>
           
           <h3
             onClick={() => onQuickView(product)}

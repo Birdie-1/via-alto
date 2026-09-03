@@ -61,7 +61,16 @@ export const PRODUCTS = [
     badge_th: 'ขายดีอันดับ 1',
     isFeatured: true,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '980 g',
+      materials: '210D High-Tenacity Ripstop Nylon / Cordura® Base',
+      materials_th: 'ไนลอนริปสตอป 210D เสริมก้นกระเป๋าด้วยผ้า Cordura® กันรอยขูดขีด',
+      waterproofRating: 'DWR Coated (1,500 mm rain shield)',
+      dimensions: '58 x 30 x 22 cm (35 Liters)',
+      bestUse: 'Multi-Day Treks & Alpine Ridge Routes',
+      bestUse_th: 'เดินป่าค้างแรม 2-3 วัน และเส้นทางสันเขาหินชัน'
+    }
   },
   {
     id: 2,
@@ -81,7 +90,16 @@ export const PRODUCTS = [
     badge_th: 'ยอดนิยม',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '640 g',
+      materials: '100D Recycled Mini-Ripstop / AirMesh Harness',
+      materials_th: 'ผ้าไนลอนรีไซเคิล 100D มินิริปสตอป และตาข่ายระบายอากาศ AirMesh',
+      waterproofRating: 'DWR Coated (Water-Repellent)',
+      dimensions: '48 x 26 x 18 cm (25 Liters)',
+      bestUse: 'Single-Day Fast Hiking & Summit Assault',
+      bestUse_th: 'เดย์ทริปเดินเขา 1 วัน และการปีนขึ้นยอดเขาแบบรวดเร็ว'
+    }
   },
   {
     id: 3,
@@ -101,7 +119,16 @@ export const PRODUCTS = [
     badge_th: 'เกรดเดินสำรวจ',
     isFeatured: false,
     sizes: ['M', 'L'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '1,420 g',
+      materials: '420D Oxford Nylon + 7075 T6 Aluminum Stay Frame',
+      materials_th: 'ผ้า Oxford Nylon 420D โครงอลูมิเนียมเกรดอากาศยาน 7075 T6',
+      waterproofRating: '2,000 mm + Integrated Rain Cover included',
+      dimensions: '72 x 34 x 28 cm (50+10 Liters)',
+      bestUse: 'Remote Expeditions & Multi-Week Wilderness',
+      bestUse_th: 'การเดินป่าระยะไกลหลายวัน และเส้นทางสำรวจทุรกันดาร'
+    }
   },
   {
     id: 13,
@@ -121,7 +148,16 @@ export const PRODUCTS = [
     badge_th: 'เบาพิเศษ',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '380 g',
+      materials: '70D Siliconized Cordura® Ripstop Nylon',
+      materials_th: 'ผ้าไนลอน Cordura® 70D เคลือบซิลิโคน กันน้ำและรอยฉีกขาด',
+      waterproofRating: '1,500 mm Polyurethane Coat',
+      dimensions: '42 x 22 x 15 cm (Packs into 14x10 cm pouch)',
+      bestUse: 'Rock Scrambling, Ridge Runs & Packable Travel',
+      bestUse_th: 'การปีนหิน วิ่งสันเขา และพับพกพาในกระเป๋าเดินทาง'
+    }
   },
 
   // --- CLOTHING ---
@@ -143,7 +179,16 @@ export const PRODUCTS = [
     badge_th: 'รุ่นหลัก',
     isFeatured: true,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '410 g',
+      materials: '3-Layer eVent® Breathable Membrane / 40D Recycled Nylon Face',
+      materials_th: 'เมมเบรน 3 ชั้นระบายความชื้น eVent® ผิวผ้าไนลอนรีไซเคิล 40D',
+      waterproofRating: '20,000 mm Hydrostatic Head / 20,000 g/m² Breathability',
+      dimensions: 'Athletic Alpine Cut (Layer-Friendly)',
+      bestUse: 'Heavy Alpine Rain, Snow & High Mountain Winds',
+      bestUse_th: 'ลุยพายุฝนหนัก ลมแรงบนสันเขา และหิมะในเขตหนาว'
+    }
   },
   {
     id: 5,
@@ -163,7 +208,16 @@ export const PRODUCTS = [
     badge_th: 'มาใหม่',
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '360 g',
+      materials: '88% Polyamide, 12% Elastane 4-Way Stretch + Cordura® Knees',
+      materials_th: 'โพลีเอไมด์ 88% อิลาสเทน 12% ยืดหยุ่น 4 ทิศทาง เสริมเข่าด้วย Cordura®',
+      waterproofRating: 'DWR PFC-Free Water Repellent Coating',
+      dimensions: 'Standard Trail Fit / Articulated Knees',
+      bestUse: 'Bushwhacking, Rocky Scrambles & All-Season Trekking',
+      bestUse_th: 'ลุยป่ารก ปีนป่ายโขดหิน และเดินป่าได้ทุกฤดูกาล'
+    }
   },
   {
     id: 6,
@@ -183,7 +237,16 @@ export const PRODUCTS = [
     badge_th: 'ขนแกะธรรมชาติ',
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '145 g',
+      materials: '65% Australian Merino Wool (17.5 Micron), 35% Recycled Poly',
+      materials_th: 'ขนแกะเมอริโนออสเตรเลีย 65% เส้นใย 17.5 ไมครอน ผสมโพลีเอสเตอร์ 35%',
+      waterproofRating: 'Hydrophobic Moisture Wicking / Quick-Dry',
+      dimensions: 'Slim Next-to-Skin Alpine Cut',
+      bestUse: 'Multi-Day Trekking without Washing (Natural Anti-Odor)',
+      bestUse_th: 'เดินป่าต่อเนื่องหลายวันโดยไม่เหม็นอับ ป้องกันกลิ่นตามธรรมชาติ'
+    }
   },
   {
     id: 14,
@@ -203,7 +266,16 @@ export const PRODUCTS = [
     badge_th: 'เก็บความร้อน',
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '390 g',
+      materials: 'Polartec® Power Grid™ Fleece (280 g/m²)',
+      materials_th: 'ผ้าฟลีซ Polartec® Power Grid™ ลายรังผึ้งเก็บกักความร้อน 280 g/m²',
+      waterproofRating: 'Wind-Resistant / High Breathability',
+      dimensions: 'Mid-Layer Fit with High Thermal Collar',
+      bestUse: 'Sub-Zero Summit Days & Cold Camp Evenings (0°C to -10°C)',
+      bestUse_th: 'เดินเขาสภาพอากาศหนาวจัด 0°C ถึง -10°C และสวมใส่ยามค่ำในแคมป์'
+    }
   },
   {
     id: 15,
@@ -223,7 +295,16 @@ export const PRODUCTS = [
     badge_th: 'มาใหม่',
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '115 g',
+      materials: '20D Ultra-Dense Ripstop Nylon (Air-Permeable)',
+      materials_th: 'ผ้าไนลอนริปสตอปทอแน่นพิเศษ 20D น้ำหนักเบาดุจขนนก',
+      waterproofRating: 'Windproof 1 CFM / DWR Light Rain Resistant',
+      dimensions: 'Packs into its own chest pocket (8 x 7 cm)',
+      bestUse: 'Speed Trail Running, Fast Hiking & Ridge Breezes',
+      bestUse_th: 'วิ่งเทรลความเร็วสูง เดินเขาเร็ว และกันลมหนาวบนสันเขา'
+    }
   },
   {
     id: 16,
@@ -243,7 +324,16 @@ export const PRODUCTS = [
     badge_th: 'กันน้ำกันลม',
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '130 g (pair)',
+      materials: 'Full-Grain Goatskin Leather Palm + Waterproof Insert + Fleece',
+      materials_th: 'ฝ่ามือหนังแพะแท้ ทนทานต่อการเสียดสี แทรกเยื่อกันน้ำและซับในฟลีซ',
+      waterproofRating: '10,000 mm Waterproof / Windproof',
+      dimensions: 'Pre-Curved Ergonomic Alpine Grip',
+      bestUse: 'Via Ferrata, Cold Trekking Poles Grip & Scrambling',
+      bestUse_th: 'ปีนผาเหล็ก Via Ferrata จับไม้เท้าเดินป่าในที่หนาวเย็น'
+    }
   },
 
   // --- FOOTWEAR ---
@@ -265,7 +355,16 @@ export const PRODUCTS = [
     badge_th: 'แนะนำ',
     isFeatured: true,
     sizes: ['M', 'L'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '390 g (Single shoe EU 42)',
+      materials: 'Abrasion-Resistant Mesh + TPU Welded Overlays + Vibram® Outsole',
+      materials_th: 'ผ้าตาข่ายทนทาน เสริมโครง TPU ไร้รอยต่อ และพื้นยาง Vibram® Megagrip',
+      waterproofRating: 'DWR Water-Resistant (Quick-Draining Breathable)',
+      dimensions: 'Drop: 6 mm / Lug Depth: 4.5 mm',
+      bestUse: 'Fast Technical Day Treks, Loose Scree & Forest Trails',
+      bestUse_th: 'เดินป่าทางขรุขระ ทางดิน หินกรวด และเส้นทางธรรมชาติทั่วไป'
+    }
   },
   {
     id: 8,
@@ -285,7 +384,16 @@ export const PRODUCTS = [
     badge_th: 'อัลไพน์โปร',
     isFeatured: false,
     sizes: ['M', 'L', 'XL'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '560 g (Single boot EU 42)',
+      materials: '2.2 mm Oiled Italian Nubuck Leather + Gore-Tex® Lining',
+      materials_th: 'หนังนูบัคแท้จากอิตาลีหนา 2.2 มม. เคลือบน้ำมัน ซับใน Gore-Tex® กันน้ำ',
+      waterproofRating: '28,000 mm Hydrostatic Head (100% Waterproof)',
+      dimensions: 'High-Ankle Support / 5 mm Vibram® Trekking Lugs',
+      bestUse: 'Heavy Backpacking, High Alpine Passages & Rocky Passes',
+      bestUse_th: 'เดินป่าพร้อมเป้หนัก ข้ามช่องเขาหินสูงชัน และสภาพอากาศฝนตกชุก'
+    }
   },
   {
     id: 17,
@@ -305,7 +413,16 @@ export const PRODUCTS = [
     badge_th: 'สปีดเทรล',
     isFeatured: false,
     sizes: ['M', 'L'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '290 g (Single shoe EU 42)',
+      materials: 'Jacquard Engineered Mesh + Forefoot Carbon Rock Plate',
+      materials_th: 'ผ้าตาข่าย Jacquard Mesh ระบายอากาศสูง พร้อมแผ่นคาร์บอนกันหินทิ่ม',
+      waterproofRating: 'Hydrophobic Water-Shedding Upper',
+      dimensions: 'Drop: 4 mm / Lug Depth: 5 mm',
+      bestUse: 'Mountain Trail Running, Ultra-Marathon & Fastpacking',
+      bestUse_th: 'วิ่งเทรลบนภูเขา งานวิ่งเทรลระยะไกล และเดินเขาแบบเร็ว'
+    }
   },
 
   // --- CAMPING ---
@@ -327,7 +444,16 @@ export const PRODUCTS = [
     badge_th: 'เบาพิเศษ',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '1,420 g (Trail Weight)',
+      materials: '20D Ripstop Silnylon Fly / DAC Featherlite NSL Aluminum Poles',
+      materials_th: 'ฟลายชีตผ้า Silnylon 20D เคลือบซิลิโคน เสาอลูมิเนียม DAC Featherlite',
+      waterproofRating: '3,000 mm Fly / 5,000 mm Bathtub Floor',
+      dimensions: 'Floor: 215 x 130 cm / Peak Height: 105 cm (Packs 42 x 13 cm)',
+      bestUse: '3-Season High Altitude Camping & Alpine Storm Resistance',
+      bestUse_th: 'กางแคมป์บนยอดเขาสูง 3 ฤดู ต้านทานลมพายุและฝนตกหนักได้ดีเยี่ยม'
+    }
   },
   {
     id: 10,
@@ -347,7 +473,16 @@ export const PRODUCTS = [
     badge_th: 'กันหนาว 0°C',
     isFeatured: false,
     sizes: ['M', 'L'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '780 g',
+      materials: '650+ Fill Hydrophobic RDS Goose Down / 20D Taffeta Lining',
+      materials_th: 'ขนห่านเกรด RDS 650+ ฟิลเพาเวอร์ เคลือบสารกันชื้น ซับในผ้าทัฟเฟต้า 20D',
+      waterproofRating: 'DWR Water-Resistant Outer Shell',
+      dimensions: 'Length: 205 cm (fits up to 188 cm height) / Compressed: 28 x 16 cm',
+      bestUse: 'Alpine Camping down to 0°C (Doi Inthanon, Doi Luang Chiang Dao)',
+      bestUse_th: 'แคมป์ปิ้งบนดอยสูงอากาศหนาวถึง 0°C เช่น ดอยอินทนนท์ เชียงดาว'
+    }
   },
   {
     id: 18,
@@ -367,7 +502,16 @@ export const PRODUCTS = [
     badge_th: 'ฉนวน R 4.8',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '490 g',
+      materials: '30D Ripstop Polyester with ThermaBarrier™ Reflective Film',
+      materials_th: 'โพลีเอสเตอร์ริปสตอป 30D เสริมแผ่นฟิล์มสะท้อนความร้อน ThermaBarrier™',
+      waterproofRating: 'Airtight TPU Laminate Insulation',
+      dimensions: '183 x 52 x 7.5 cm (Packs into 20 x 9 cm)',
+      bestUse: '4-Season Ground Insulation on Frozen Earth & Mountain Rocks',
+      bestUse_th: 'ตัดความเย็นจากพื้นดินและหินภูเขา นอนอุ่นสบายตลอด 4 ฤดูกาล'
+    }
   },
   {
     id: 19,
@@ -387,7 +531,16 @@ export const PRODUCTS = [
     badge_th: 'ไทเทเนียมแท้',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '168 g (Pot: 95g + Stove: 73g)',
+      materials: 'Grade 1 Pure Titanium (0.4mm wall) + Brass Micro Jet Valve',
+      materials_th: 'ไทเทเนียมบริสุทธิ์เกรด 1 บางเบา 0.4 มม. วาล์วทองเหลืองทนแรงดัน',
+      waterproofRating: 'Corrosion-Proof & Rust-Proof Lifetime Metal',
+      dimensions: 'Pot: 800 ml (11.5 cm diameter x 9 cm height)',
+      bestUse: 'Fast Boiling Coffee, Dehydrated Meals & Solo Mountaineering',
+      bestUse_th: 'ต้มน้ำร้อน ชงกาแฟ และปรุงอาหารอบแห้งบนยอดเขาแบบคนเดียว'
+    }
   },
 
   // --- ACCESSORIES ---
@@ -409,7 +562,16 @@ export const PRODUCTS = [
     badge_th: 'คู่',
     isFeatured: true,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '380 g (pair)',
+      materials: '3-Section 100% 3K Carbon Fiber + Natural Portuguese Cork',
+      materials_th: 'คาร์บอนไฟเบอร์ 3K แท้ 100% 3 ท่อน ด้ามจับไม้ก๊อกธรรมชาติโปรตุเกส',
+      waterproofRating: 'Carbide Tungsten Tips + Mud / Snow Baskets',
+      dimensions: 'Collapsed: 63 cm / Extended: 100 – 135 cm',
+      bestUse: 'Knee Joint Pressure Relief on Steep Descents & Rocky Ascents',
+      bestUse_th: 'ลดแรงกระแทกหัวเข่าและข้อเท้าขณะเดินลงเขาชัน'
+    }
   },
   {
     id: 12,
@@ -429,7 +591,16 @@ export const PRODUCTS = [
     badge_th: 'รักษ์โลก',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '340 g',
+      materials: '18/8 Food-Grade Pro Stainless Steel (Powder Coated)',
+      materials_th: 'สแตนเลสฟู้ดเกรด 18/8 ปลอดสาร BPA พ่นเคลือบสีแบบ Powder Coat',
+      waterproofRating: 'Leak-Proof Silicone Sealed Loop Lid',
+      dimensions: '750 ml Capacity (26 cm height x 7.5 cm base)',
+      bestUse: 'All-Day Trail Hydration (Cold 24h / Warm Tea 12h)',
+      bestUse_th: 'ดื่มน้ำบนเส้นทางเทรล เก็บความเย็น 24 ชั่วโมง หรือน้ำอุ่น 12 ชั่วโมง'
+    }
   },
   {
     id: 20,
@@ -449,7 +620,16 @@ export const PRODUCTS = [
     badge_th: '600 ลูเมน',
     isFeatured: false,
     sizes: ['One Size'],
-    inStock: true
+    inStock: true,
+    specs: {
+      weight: '72 g (with battery)',
+      materials: 'Aircraft Anodized Aluminum Body + Reflective Elastic Headband',
+      materials_th: 'บอดี้อลูมิเนียมเกรดอากาศยาน อโนไดซ์แข็ง สายคาดศีรษะสะท้อนแสง',
+      waterproofRating: 'IPX8 Waterproof (Submersible up to 2 meters for 30 min)',
+      dimensions: 'Beam Distance: 120 meters / Battery: 1,800 mAh USB-C',
+      bestUse: 'Night Trekking, Pre-Dawn Summit Push & Camp Cooking',
+      bestUse_th: 'เดินป่ายามค่ำคืน เดินขึ้นยอดเขาชมพระอาทิตย์ขึ้น และทำอาหารในแคมป์'
+    }
   }
 ];
 

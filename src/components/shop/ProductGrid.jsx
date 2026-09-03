@@ -14,6 +14,8 @@ export default function ProductGrid({
   onResetFilters,
   wishlist = [],
   onToggleWishlist,
+  comparedProducts = [],
+  onToggleCompare,
   lang = 'en'
 }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -87,6 +89,8 @@ export default function ProductGrid({
               onQuickView={onQuickView}
               isWishlisted={wishlist.includes(product.id)}
               onToggleWishlist={onToggleWishlist}
+              isCompared={comparedProducts.some((p) => p.id === product.id)}
+              onToggleCompare={onToggleCompare}
               lang={lang}
             />
           ))}

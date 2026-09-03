@@ -4,6 +4,8 @@ import CategoryNav from '../components/shop/CategoryNav';
 import FilterSidebar from '../components/shop/FilterSidebar';
 import ProductGrid from '../components/shop/ProductGrid';
 import ProductDetailModal from '../components/shop/ProductDetailModal';
+import CompareBar from '../components/shop/CompareBar';
+import CompareModal from '../components/shop/CompareModal';
 import { PRODUCTS } from '../data/products';
 
 export default function ShopPage({
@@ -18,6 +20,10 @@ export default function ShopPage({
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
+
+  // Comparison State
+  const [comparedProducts, setComparedProducts] = useState([]);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   // Sidebar Filter States
   const [filters, setFilters] = useState({
@@ -58,6 +64,29 @@ export default function ShopPage({
       minRating: 0
     });
     setSortBy('featured');
+  };
+
+  // Compare Handlers
+  const handleToggleCompare = (product) => {
+    setComparedProducts((prev) => {
+      const exists = prev.some((p) => p.id === product.id);
+      if (exists) {
+        return prev.filter((p) => p.id !== product.id);
+      }
+      if (prev.length >= 3) {
+        alert(lang === 'th' ? 'สามารถเปรียบเทียบได้สูงสุด 3 รายการพร้อมกัน' : 'You can compare up to 3 products at a time.');
+        return prev;
+      }
+      return [...prev, product];
+    });
+  };
+
+  const handleRemoveCompare = (productId) => {
+    setComparedProducts((prev) => prev.filter((p) => p.id !== productId));
+  };
+
+  const handleClearCompare = () => {
+    setComparedProducts([]);
   };
 
   // Filter & Sort Logic
@@ -106,7 +135,7 @@ export default function ShopPage({
     (filters.minRating > 0 ? 1 : 0);
 
   return (
-    <div className="w-full bg-[#F7F5F0] min-h-screen">
+    <div className="w-full bg-[#F7F5F0] min-h-screen relative pb-16">
       {/* 1. Shop Header */}
       <ShopHeader totalProducts={PRODUCTS.length} lang={lang} />
 
@@ -142,6 +171,8 @@ export default function ShopPage({
             onResetFilters={handleResetFilters}
             wishlist={wishlist}
             onToggleWishlist={onToggleWishlist}
+            comparedProducts={comparedProducts}
+            onToggleCompare={handleToggleCompare}
             lang={lang}
           />
         </div>
@@ -156,6 +187,25 @@ export default function ShopPage({
           lang={lang}
         />
       )}
+
+      {/* 5. Floating Compare Bar */}
+      <CompareBar
+        comparedProducts={comparedProducts}
+        onOpenCompareModal={() => setIsCompareModalOpen(true)}
+        onRemoveCompare={handleRemoveCompare}
+        onClearCompare={handleClearCompare}
+        lang={lang}
+      />
+
+      {/* 6. Side-by-Side Comparison Modal */}
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        comparedProducts={comparedProducts}
+        onRemoveCompare={handleRemoveCompare}
+        onAddToCart={onAddToCart}
+        lang={lang}
+      />
     </div>
   );
 }

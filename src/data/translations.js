@@ -99,14 +99,54 @@ export const TRANSLATIONS = {
     grid_reset_all: 'RESET ALL FILTERS',
     card_quick_view: 'QUICK VIEW',
     card_add_to_bag: 'ADD TO BAG',
+    card_compare: 'Compare',
+    card_compared: 'Comparing',
 
-    // Quick View Modal
+    // Quick View Modal & Tabs
+    modal_tab_overview: 'OVERVIEW',
+    modal_tab_specs: 'TECHNICAL SPECS',
+    modal_tab_sizeguide: 'SIZE & FIT GUIDE',
     modal_size: 'Size',
     modal_selected: 'Selected:',
     modal_qty: 'Quantity',
     modal_lifetime: 'Lifetime Craft',
     modal_express: 'Free Express',
     modal_return: '30-Day Return',
+
+    // Technical Specs Table
+    spec_weight: 'Total Weight',
+    spec_materials: 'Primary Materials',
+    spec_waterproof: 'Weatherproof Rating',
+    spec_dimensions: 'Capacity / Dimensions',
+    spec_best_use: 'Best Trail Use',
+    spec_origin: 'Design Origin',
+    spec_origin_val: 'Dolomites, Northern Italy',
+
+    // Size Guide
+    sizeguide_title_apparel: 'Alpine Apparel Sizing (Unisex/Standard)',
+    sizeguide_tip_apparel: 'For layering over thermal fleece, consider sizing up one size.',
+    sizeguide_title_footwear: 'Alpine Footwear Sizing & Trail Fit',
+    sizeguide_tip_footwear: 'We recommend +0.5 to +1 size larger than your casual shoes to prevent bruised toes on steep alpine descents.',
+    sizeguide_chest: 'Chest (cm)',
+    sizeguide_waist: 'Waist (cm)',
+    sizeguide_sleeve: 'Sleeve (cm)',
+    sizeguide_eu: 'EU Size',
+    sizeguide_us: 'US Men / Women',
+    sizeguide_foot_length: 'Foot Length (cm)',
+
+    // Product Comparison Tool
+    compare_bar_title: 'Compare Gear',
+    compare_bar_selected: 'selected for comparison',
+    compare_bar_btn: 'COMPARE NOW',
+    compare_bar_clear: 'Clear',
+    compare_modal_title: 'SIDE-BY-SIDE GEAR COMPARISON',
+    compare_modal_subtitle: 'Compare alpine specifications, weight, and materials side by side.',
+    compare_metric: 'Metric',
+    compare_price: 'Price',
+    compare_rating: 'Rating',
+    compare_category: 'Discipline',
+    compare_remove: 'Remove',
+    compare_empty: 'Select at least 2 products to compare.',
 
     // Cart Drawer
     cart_title: 'YOUR BAG',
@@ -249,14 +289,54 @@ export const TRANSLATIONS = {
     grid_reset_all: 'ล้างตัวกรองทั้งหมด',
     card_quick_view: 'ดูรายละเอียดด่วน',
     card_add_to_bag: 'ใส่ถุงสินค้า',
+    card_compare: 'เปรียบเทียบ',
+    card_compared: 'เลือกแล้ว',
 
-    // Quick View Modal
+    // Quick View Modal & Tabs
+    modal_tab_overview: 'ภาพรวมสินค้า',
+    modal_tab_specs: 'สเปกทางเทคนิค',
+    modal_tab_sizeguide: 'ตารางขนาดและคำแนะนำ',
     modal_size: 'ขนาดสินค้า',
     modal_selected: 'เลือกขนาด:',
     modal_qty: 'จำนวน',
     modal_lifetime: 'รับประกันตลอดอายุงาน',
     modal_express: 'จัดส่งด่วนฟรี',
     modal_return: 'คืนสินค้าได้ใน 30 วัน',
+
+    // Technical Specs Table
+    spec_weight: 'น้ำหนักสุทธิ',
+    spec_materials: 'วัสดุหลักที่ใช้ผลิต',
+    spec_waterproof: 'ระดับการกันน้ำและสภาพอากาศ',
+    spec_dimensions: 'ความจุ / ขนาดสัดส่วน',
+    spec_best_use: 'ประเภทเส้นทางที่เหมาะสม',
+    spec_origin: 'แหล่งกำเนิดงานออกแบบ',
+    spec_origin_val: 'เทือกเขาโดโลไมต์, อิตาลีตอนเหนือ',
+
+    // Size Guide
+    sizeguide_title_apparel: 'ตารางขนาดเสื้อผ้าอัลไพน์ (มาตรฐาน Unisex)',
+    sizeguide_tip_apparel: 'หากต้องการสวมทับเสื้อฟลีซกันหนาว แนะนำให้เลือกใหญ่ขึ้น 1 ไซส์เพื่อความคล่องตัว',
+    sizeguide_title_footwear: 'ตารางขนาดรองเท้าเดินป่า & คำแนะนำทรงสวม',
+    sizeguide_tip_footwear: 'แนะนำให้เลือกขนาดใหญ่กว่ารองเท้าปกติ +0.5 ถึง +1 เบอร์ เพื่อป้องกันปลายเท้ากระแทกขณะเดินลงเขาชัน',
+    sizeguide_chest: 'รอบอก (ซม.)',
+    sizeguide_waist: 'รอบเอว (ซม.)',
+    sizeguide_sleeve: 'ความยาวแขน (ซม.)',
+    sizeguide_eu: 'ไซส์ยุโรป (EU)',
+    sizeguide_us: 'ไซส์ US (ชาย / หญิง)',
+    sizeguide_foot_length: 'ความยาวเท้า (ซม.)',
+
+    // Product Comparison Tool
+    compare_bar_title: 'เปรียบเทียบอุปกรณ์',
+    compare_bar_selected: 'ชิ้นที่เลือกเปรียบเทียบ',
+    compare_bar_btn: 'ดูตารางเปรียบเทียบ',
+    compare_bar_clear: 'ล้างค่า',
+    compare_modal_title: 'ตารางเปรียบเทียบอุปกรณ์ข้างต่อข้าง',
+    compare_modal_subtitle: 'เปรียบเทียบสเปกทางเทคนิค น้ำหนัก และวัสดุ เพื่อเลือกอุปกรณ์ที่ตรงกับการเดินทางของคุณ',
+    compare_metric: 'คุณสมบัติ',
+    compare_price: 'ราคาจำหน่าย',
+    compare_rating: 'คะแนนรีวิว',
+    compare_category: 'หมวดหมู่อุปกรณ์',
+    compare_remove: 'นำออก',
+    compare_empty: 'กรุณาเลือกอุปกรณ์อย่างน้อย 2 รายการเพื่อเปรียบเทียบ',
 
     // Cart Drawer
     cart_title: 'ถุงสินค้าของคุณ',
