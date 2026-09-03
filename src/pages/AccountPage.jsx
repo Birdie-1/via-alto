@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import { User, Compass, Gift, Tag, Heart, Package, ShieldCheck, LogOut, Check, Sparkles, ArrowRight, Save } from 'lucide-react';
+import {
+  User,
+  Compass,
+  Gift,
+  Tag,
+  Heart,
+  Package,
+  ShieldCheck,
+  LogOut,
+  Check,
+  Sparkles,
+  ArrowRight,
+  Save,
+  Share2,
+  MapPin,
+  HelpCircle
+} from 'lucide-react';
 import Button from '../components/ui/Button';
 import { PRODUCTS, formatPrice } from '../data/products';
 
@@ -13,6 +29,7 @@ export default function AccountPage({
 }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [copiedCode, setCopiedCode] = useState('');
+  const [copiedReferral, setCopiedReferral] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Profile Form Edit State
@@ -23,6 +40,8 @@ export default function AccountPage({
   const [editExperience, setEditExperience] = useState(user?.marketingProfile?.experienceLevel || 'intermediate');
   const [editApparel, setEditApparel] = useState(user?.marketingProfile?.sizes?.apparel || 'M');
   const [editFootwear, setEditFootwear] = useState(user?.marketingProfile?.sizes?.footwear || '42');
+  const [editRegion, setEditRegion] = useState(user?.marketingProfile?.region || 'northern');
+  const [editDiscoverySource, setEditDiscoverySource] = useState(user?.marketingProfile?.discoverySource || 'instagram');
   const [editLineId, setEditLineId] = useState(user?.marketingProfile?.lineId || '');
 
   if (!user) {
@@ -50,6 +69,14 @@ export default function AccountPage({
     setTimeout(() => setCopiedCode(''), 2500);
   };
 
+  const myReferralCode = user.marketingProfile?.referralCode || `ALTO-${user.fullName?.split(' ')[0]?.toUpperCase() || 'EXPLORER'}`;
+
+  const handleCopyReferral = () => {
+    navigator.clipboard?.writeText(myReferralCode);
+    setCopiedReferral(true);
+    setTimeout(() => setCopiedReferral(false), 2500);
+  };
+
   const handleSaveProfile = (e) => {
     e.preventDefault();
     onUpdateProfile(user.id, {
@@ -63,6 +90,8 @@ export default function AccountPage({
           apparel: editApparel,
           footwear: editFootwear
         },
+        region: editRegion,
+        discoverySource: editDiscoverySource,
         lineId: editLineId
       }
     });
@@ -85,6 +114,14 @@ export default function AccountPage({
     camping: 'Mountain Camping',
     trail_running: 'Trail Running',
     travel: 'Travel & Lifestyle'
+  };
+
+  const regionLabels = {
+    northern: 'Northern Thailand (Doi & High Elevation)',
+    central: 'Central & Bangkok (Weekend Trails)',
+    southern: 'Southern & Coastal (Rain Shells)',
+    northeastern: 'Northeastern (Plateau)',
+    international: 'International Expeditions'
   };
 
   return (
@@ -171,7 +208,7 @@ export default function AccountPage({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {user.vouchers?.map((v, i) => (
                   <div
                     key={i}
@@ -213,6 +250,38 @@ export default function AccountPage({
               </div>
             </div>
 
+            {/* Member-Get-Member Referral Growth Card */}
+            <div className="p-6 bg-white border border-stone-light/80 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 text-forest text-xs uppercase font-bold tracking-brand">
+                  <Share2 size={14} />
+                  <span>MEMBER-GET-MEMBER PROGRAM</span>
+                </div>
+                <h4 className="font-serif text-xl font-bold text-charcoal">
+                  Invite Fellow Trekkers & Earn 150 Alpine Points
+                </h4>
+                <p className="text-xs text-stone max-w-lg">
+                  Share your personal invite code. When a friend joins VIA ALTO, they get ฿150 off their first order and you receive 150 points.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="px-4 py-2 bg-beige/40 border border-stone-light font-mono font-bold text-forest text-sm">
+                  {myReferralCode}
+                </div>
+                <button
+                  onClick={handleCopyReferral}
+                  className={`px-4 py-2 text-xs uppercase tracking-brand font-bold border transition-colors cursor-pointer ${
+                    copiedReferral
+                      ? 'bg-forest text-offwhite border-forest'
+                      : 'bg-forest text-offwhite hover:bg-forest-light'
+                  }`}
+                >
+                  {copiedReferral ? 'COPIED!' : 'COPY INVITE CODE'}
+                </button>
+              </div>
+            </div>
+
             {/* Quick Profile Snapshot */}
             <div className="p-6 bg-beige/40 border border-stone-light/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
@@ -223,7 +292,7 @@ export default function AccountPage({
                   Tailored Gear Preferences: {editActivities.map((a) => activityLabels[a] || a).join(', ') || 'General Alpine'}
                 </h4>
                 <p className="text-xs text-stone">
-                  Sizes: Apparel ({editApparel}) • Footwear (EU {editFootwear}) • Experience ({editExperience})
+                  Region: {regionLabels[editRegion] || editRegion} • Sizes: Apparel ({editApparel}), Footwear (EU {editFootwear})
                 </p>
               </div>
 
@@ -330,7 +399,7 @@ export default function AccountPage({
                 </div>
               </div>
 
-              {/* Sizing & Experience */}
+              {/* Sizing & Region */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs uppercase tracking-brand font-semibold text-charcoal mb-1">
@@ -367,16 +436,18 @@ export default function AccountPage({
 
                 <div>
                   <label className="block text-xs uppercase tracking-brand font-semibold text-charcoal mb-1">
-                    Experience
+                    Preferred Region
                   </label>
                   <select
-                    value={editExperience}
-                    onChange={(e) => setEditExperience(e.target.value)}
+                    value={editRegion}
+                    onChange={(e) => setEditRegion(e.target.value)}
                     className="w-full px-3 py-2.5 bg-offwhite border border-stone-light text-xs text-charcoal font-medium"
                   >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Weekend Trekker</option>
-                    <option value="advanced">Alpine Pro</option>
+                    {Object.entries(regionLabels).map(([id, label]) => (
+                      <option key={id} value={id}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

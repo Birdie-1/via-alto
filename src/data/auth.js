@@ -21,6 +21,9 @@ export const DEMO_USER = {
       apparel: 'L',
       footwear: '43'
     },
+    region: 'northern',
+    discoverySource: 'instagram',
+    referralCode: 'ALTO-TRAIL',
     lineId: '@marcosilva',
     marketingConsent: true,
     consentTimestamp: '2026-01-15T08:30:00Z'
@@ -38,6 +41,13 @@ export const DEMO_USER = {
       discount: '15% OFF',
       description: 'Annual VIP Alpine Birthday Reward Voucher',
       expiresAt: '2026-11-30',
+      isValid: true
+    },
+    {
+      code: 'FRIEND150',
+      discount: '฿150 OFF',
+      description: 'Explorer Referral Invitation Reward',
+      expiresAt: '2026-12-31',
       isValid: true
     }
   ],
@@ -105,6 +115,9 @@ export const registerUser = (formData) => {
     throw new Error('An account with this email already exists.');
   }
 
+  const hasReferral = Boolean(formData.referralCode && formData.referralCode.trim());
+  const bonusPoints = (formData.marketingProfile?.primaryActivities?.length > 0 ? 200 : 0) + (hasReferral ? 150 : 0);
+
   const newUser = {
     id: `usr_${Date.now()}`,
     fullName: formData.fullName,
@@ -112,7 +125,7 @@ export const registerUser = (formData) => {
     telNo: formData.telNo || '',
     password: formData.password,
     tier: 'Alpine Ridge Member',
-    points: 500 + (formData.marketingProfile?.primaryActivities?.length > 0 ? 200 : 0),
+    points: 500 + bonusPoints,
     dateOfBirth: formData.dateOfBirth || '',
     joinedDate: new Date().toISOString().split('T')[0],
     marketingProfile: {
@@ -122,8 +135,11 @@ export const registerUser = (formData) => {
         apparel: formData.marketingProfile?.sizes?.apparel || 'M',
         footwear: formData.marketingProfile?.sizes?.footwear || '42'
       },
+      region: formData.marketingProfile?.region || 'central',
+      discoverySource: formData.marketingProfile?.discoverySource || 'direct',
+      referralCode: formData.referralCode || '',
       lineId: formData.marketingProfile?.lineId || '',
-      marketingConsent: formData.marketingConsent || true,
+      marketingConsent: formData.marketingConsent ?? true,
       consentTimestamp: new Date().toISOString()
     },
     vouchers: [
@@ -138,6 +154,13 @@ export const registerUser = (formData) => {
         code: 'BIRTHDAY15',
         discount: '15% OFF',
         description: 'Special Annual Alpine Birthday Reward',
+        expiresAt: '2026-12-31',
+        isValid: true
+      }] : []),
+      ...(hasReferral ? [{
+        code: 'FRIEND150',
+        discount: '฿150 OFF',
+        description: 'Explorer Referral Invitation Bonus',
         expiresAt: '2026-12-31',
         isValid: true
       }] : [])
