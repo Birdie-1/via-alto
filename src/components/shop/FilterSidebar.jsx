@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORIES } from '../../data/products';
+import { CATEGORIES, COLOR_PALETTE } from '../../data/products';
 import { X, RotateCcw } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 
@@ -109,7 +109,49 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* 3. Size Filter */}
+      {/* 3. Color Palette Filter */}
+      <div className="space-y-3 pt-4 border-t border-stone-light/40">
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs uppercase tracking-brand font-semibold text-charcoal">
+            {t.filter_color}
+          </h4>
+          {filters.color && filters.color !== 'all' && (
+            <button
+              onClick={() => onFilterChange('color', 'all')}
+              className="text-[10px] text-stone hover:text-forest underline cursor-pointer"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {COLOR_PALETTE.map((c) => {
+            const isSelected = filters.color === c.id;
+            const cName = lang === 'th' ? c.name_th : c.name;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onFilterChange('color', isSelected ? 'all' : c.id)}
+                className={`flex items-center gap-1.5 px-2 py-1 border text-[11px] transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-white border-forest ring-1 ring-forest font-bold text-forest'
+                    : 'bg-white border-stone-light/80 text-stone hover:border-forest/40'
+                }`}
+                title={cName}
+              >
+                <span
+                  className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                  style={{ backgroundColor: c.hex }}
+                />
+                <span>{cName}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4. Size Filter */}
       <div className="space-y-3 pt-4 border-t border-stone-light/40">
         <h4 className="text-xs uppercase tracking-brand font-semibold text-charcoal">
           {t.filter_size}
@@ -135,7 +177,7 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* 4. Rating Filter */}
+      {/* 5. Rating Filter */}
       <div className="space-y-3 pt-4 border-t border-stone-light/40">
         <h4 className="text-xs uppercase tracking-brand font-semibold text-charcoal">
           {t.filter_rating}

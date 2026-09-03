@@ -79,12 +79,18 @@ export default function CartDrawer({
             ) : (
               cartItems.map((item, index) => {
                 const pName = lang === 'th' ? item.product.name_th || item.product.name : item.product.name;
+                const itemImg = item.selectedColor?.image || item.product.image;
+                const colorId = item.selectedColor?.id || 'default';
+                const colorName = item.selectedColor
+                  ? (lang === 'th' ? item.selectedColor.name_th || item.selectedColor.name : item.selectedColor.name)
+                  : null;
+
                 return (
-                  <div key={`${item.product.id}-${item.selectedSize}-${index}`} className="pt-6 first:pt-0 flex space-x-4">
+                  <div key={`${item.product.id}-${item.selectedSize}-${colorId}-${index}`} className="pt-6 first:pt-0 flex space-x-4">
                     {/* Item Thumbnail */}
                     <div className="w-20 h-20 bg-white border border-stone-light/60 shrink-0 overflow-hidden">
                       <img
-                        src={item.product.image}
+                        src={itemImg}
                         alt={pName}
                         className="w-full h-full object-cover object-center"
                       />
@@ -97,12 +103,22 @@ export default function CartDrawer({
                           <h4 className="font-sans text-sm font-semibold text-charcoal">
                             {pName}
                           </h4>
-                          <span className="text-[11px] text-stone">
-                            {t.modal_size}: {item.selectedSize}
-                          </span>
+                          <div className="flex items-center gap-1.5 text-[11px] text-stone mt-0.5">
+                            {colorName && (
+                              <span className="inline-flex items-center gap-1">
+                                <span
+                                  className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                                  style={{ backgroundColor: item.selectedColor.hex }}
+                                />
+                                <span>{colorName}</span>
+                              </span>
+                            )}
+                            {colorName && <span>•</span>}
+                            <span>{t.modal_size}: {item.selectedSize}</span>
+                          </div>
                         </div>
                         <button
-                          onClick={() => onRemoveItem(item.product.id, item.selectedSize)}
+                          onClick={() => onRemoveItem(item.product.id, item.selectedSize, colorId)}
                           className="text-stone hover:text-red-700 transition-colors p-1 cursor-pointer"
                           aria-label="Remove item"
                         >
@@ -118,6 +134,7 @@ export default function CartDrawer({
                               onUpdateQuantity(
                                 item.product.id,
                                 item.selectedSize,
+                                colorId,
                                 item.quantity - 1
                               )
                             }
@@ -133,6 +150,7 @@ export default function CartDrawer({
                               onUpdateQuantity(
                                 item.product.id,
                                 item.selectedSize,
+                                colorId,
                                 item.quantity + 1
                               )
                             }

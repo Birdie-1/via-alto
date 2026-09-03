@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   ShoppingBag,
@@ -10,9 +10,7 @@ import {
   Droplets,
   Compass,
   Maximize2,
-  HelpCircle,
-  Sparkles,
-  Info
+  Check
 } from 'lucide-react';
 import StarRating from '../ui/StarRating';
 import Button from '../ui/Button';
@@ -22,8 +20,17 @@ import { TRANSLATIONS } from '../../data/translations';
 export default function ProductDetailModal({ product, onClose, onAddToCart, lang = 'en' }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'specs' | 'sizeguide'
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'One Size');
+  const [selectedColor, setSelectedColor] = useState(product?.selectedColor || product?.colors?.[0] || null);
   const [quantity, setQuantity] = useState(1);
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  useEffect(() => {
+    if (product) {
+      setSelectedSize(product.sizes?.[0] || 'One Size');
+      setSelectedColor(product.selectedColor || product.colors?.[0] || null);
+      setQuantity(1);
+    }
+  }, [product]);
 
   if (!product) return null;
 
@@ -32,14 +39,19 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
   const productBadge = lang === 'th' ? product.badge_th || product.badge : product.badge;
   const productShortDesc = lang === 'th' ? product.shortDesc_th || product.shortDesc : product.shortDesc;
 
+  const activeImage = selectedColor?.image || product.image;
   const specs = product.specs || {};
   const isFootwear = product.categoryId === 'footwear';
   const isApparel = product.categoryId === 'clothing';
 
   const handleAdd = () => {
-    onAddToCart(product, quantity, selectedSize);
+    onAddToCart(product, quantity, selectedSize, selectedColor);
     onClose();
   };
+
+  const selectedColorName = selectedColor
+    ? (lang === 'th' ? selectedColor.name_th || selectedColor.name : selectedColor.name)
+    : '';
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-charcoal/70 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
@@ -63,9 +75,9 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
           <div className="md:col-span-5 relative bg-white border-b md:border-b-0 md:border-r border-stone-light/60 overflow-hidden flex flex-col justify-between">
             <div className="relative aspect-square w-full">
               <img
-                src={product.image}
+                src={activeImage}
                 alt={productName}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center transition-all duration-500"
               />
               {productBadge && (
                 <div className="absolute top-4 left-4 bg-forest text-offwhite text-[10px] uppercase font-bold tracking-brand px-3 py-1 shadow-xs">
@@ -129,7 +141,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
 
             {/* TAB 1: OVERVIEW */}
             {activeTab === 'overview' && (
-              <div className="p-6 sm:p-8 space-y-6 flex-1 animate-in fade-in duration-200">
+              <div className="p-6 sm:p-8 space-y-5 flex-1 animate-in fade-in duration-200">
                 <div className="space-y-3">
                   <div>
                     <span className="text-xs uppercase tracking-brand font-semibold text-stone">
@@ -155,6 +167,43 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
                   <p className="text-xs sm:text-sm text-stone font-sans leading-relaxed">
                     {productShortDesc || product.description}
                   </p>
+
+                  {/* Colorway Selector */}
+                  {product.colors && product.colors.length > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-stone-light/40">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-semibold uppercase tracking-brand text-charcoal">
+                          {t.modal_color}:
+                        </span>
+                        <span className="font-medium text-forest">{selectedColorName}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2.5">
+                        {product.colors.map((color) => {
+                          const isSelected = selectedColor?.id === color.id;
+                          const cName = lang === 'th' ? color.name_th || color.name : color.name;
+                          return (
+                            <button
+                              key={color.id}
+                              type="button"
+                              onClick={() => setSelectedColor(color)}
+                              className={`flex items-center gap-1.5 px-2.5 py-1.5 border text-xs transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-white border-forest ring-1 ring-forest text-charcoal font-semibold shadow-xs'
+                                  : 'bg-white border-stone-light text-stone hover:border-forest/50'
+                              }`}
+                            >
+                              <span
+                                className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0"
+                                style={{ backgroundColor: color.hex }}
+                              />
+                              <span>{cName}</span>
+                              {isSelected && <Check size={12} className="text-forest" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Sizing Selector */}
                   {product.sizes && product.sizes.length > 0 && (

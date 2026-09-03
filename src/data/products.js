@@ -41,6 +41,14 @@ export const CATEGORIES = [
   }
 ];
 
+export const COLOR_PALETTE = [
+  { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32' },
+  { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28' },
+  { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E' },
+  { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B' },
+  { id: 'glacier_slate', name: 'Glacier Slate', name_th: 'เทากลาเซียร์', hex: '#6B7A82' }
+];
+
 export const PRODUCTS = [
   // --- BACKPACKS ---
   {
@@ -62,6 +70,11 @@ export const PRODUCTS = [
     isFeatured: true,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_alpine_35l.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_alpine_35l_charcoal.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_alpine_35l_sand.jpg' }
+    ],
     specs: {
       weight: '980 g',
       materials: '210D High-Tenacity Ripstop Nylon / Cordura® Base',
@@ -91,6 +104,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_trail_25l.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_trail_25l.jpg' },
+      { id: 'glacier_slate', name: 'Glacier Slate', name_th: 'เทากลาเซียร์', hex: '#6B7A82', image: '/images/prod_trail_25l.jpg' }
+    ],
     specs: {
       weight: '640 g',
       materials: '100D Recycled Mini-Ripstop / AirMesh Harness',
@@ -120,6 +138,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['M', 'L'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_summit_50l.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_summit_50l.jpg' }
+    ],
     specs: {
       weight: '1,420 g',
       materials: '420D Oxford Nylon + 7075 T6 Aluminum Stay Frame',
@@ -149,6 +171,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_summit_18l.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_summit_18l.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_summit_18l.jpg' }
+    ],
     specs: {
       weight: '380 g',
       materials: '70D Siliconized Cordura® Ripstop Nylon',
@@ -180,6 +207,11 @@ export const PRODUCTS = [
     isFeatured: true,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_alpine_shell.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_alpine_shell_ember.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_alpine_shell_charcoal.jpg' }
+    ],
     specs: {
       weight: '410 g',
       materials: '3-Layer eVent® Breathable Membrane / 40D Recycled Nylon Face',
@@ -209,6 +241,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_trail_pants.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_trail_pants.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_trail_pants.jpg' }
+    ],
     specs: {
       weight: '360 g',
       materials: '88% Polyamide, 12% Elastane 4-Way Stretch + Cordura® Knees',
@@ -238,6 +275,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'glacier_slate', name: 'Glacier Slate', name_th: 'เทากลาเซียร์', hex: '#6B7A82', image: '/images/prod_mountain_tee.jpg' },
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_mountain_tee.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_mountain_tee.jpg' }
+    ],
     specs: {
       weight: '145 g',
       materials: '65% Australian Merino Wool (17.5 Micron), 35% Recycled Poly',
@@ -267,6 +309,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_merino_fleece.jpg' },
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_merino_fleece.jpg' }
+    ],
     specs: {
       weight: '390 g',
       materials: 'Polartec® Power Grid™ Fleece (280 g/m²)',
@@ -296,6 +342,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_windbreaker.jpg' },
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_windbreaker.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_windbreaker.jpg' }
+    ],
     specs: {
       weight: '115 g',
       materials: '20D Ultra-Dense Ripstop Nylon (Air-Permeable)',
@@ -325,6 +376,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['S', 'M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_gloves.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_gloves.jpg' }
+    ],
     specs: {
       weight: '130 g (pair)',
       materials: 'Full-Grain Goatskin Leather Palm + Waterproof Insert + Fleece',
@@ -356,6 +411,11 @@ export const PRODUCTS = [
     isFeatured: true,
     sizes: ['M', 'L'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_terra_shoes.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_terra_shoes.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_terra_shoes.jpg' }
+    ],
     specs: {
       weight: '390 g (Single shoe EU 42)',
       materials: 'Abrasion-Resistant Mesh + TPU Welded Overlays + Vibram® Outsole',
@@ -385,6 +445,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['M', 'L', 'XL'],
     inStock: true,
+    colors: [
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_alto_boots.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_alto_boots.jpg' }
+    ],
     specs: {
       weight: '560 g (Single boot EU 42)',
       materials: '2.2 mm Oiled Italian Nubuck Leather + Gore-Tex® Lining',
@@ -414,6 +478,11 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['M', 'L'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_trail_runners.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_trail_runners.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_trail_runners.jpg' }
+    ],
     specs: {
       weight: '290 g (Single shoe EU 42)',
       materials: 'Jacquard Engineered Mesh + Forefoot Carbon Rock Plate',
@@ -445,6 +514,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_alpine_tent.jpg' },
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_alpine_tent.jpg' }
+    ],
     specs: {
       weight: '1,420 g (Trail Weight)',
       materials: '20D Ripstop Silnylon Fly / DAC Featherlite NSL Aluminum Poles',
@@ -474,6 +547,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['M', 'L'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_sleeping_bag.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_sleeping_bag.jpg' }
+    ],
     specs: {
       weight: '780 g',
       materials: '650+ Fill Hydrophobic RDS Goose Down / 20D Taffeta Lining',
@@ -503,6 +580,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_sleeping_pad.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_sleeping_pad.jpg' }
+    ],
     specs: {
       weight: '490 g',
       materials: '30D Ripstop Polyester with ThermaBarrier™ Reflective Film',
@@ -532,6 +613,9 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'glacier_slate', name: 'Glacier Slate', name_th: 'เทากลาเซียร์', hex: '#6B7A82', image: '/images/prod_titanium_stove.jpg' }
+    ],
     specs: {
       weight: '168 g (Pot: 95g + Stove: 73g)',
       materials: 'Grade 1 Pure Titanium (0.4mm wall) + Brass Micro Jet Valve',
@@ -563,6 +647,10 @@ export const PRODUCTS = [
     isFeatured: true,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_trekking_poles.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_trekking_poles.jpg' }
+    ],
     specs: {
       weight: '380 g (pair)',
       materials: '3-Section 100% 3K Carbon Fiber + Natural Portuguese Cork',
@@ -592,6 +680,12 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32', image: '/images/prod_insulated_bottle.jpg' },
+      { id: 'dolomite_sand', name: 'Dolomite Sand', name_th: 'เบจโดโลไมต์', hex: '#C8B89E', image: '/images/prod_insulated_bottle.jpg' },
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_insulated_bottle.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_insulated_bottle.jpg' }
+    ],
     specs: {
       weight: '340 g',
       materials: '18/8 Food-Grade Pro Stainless Steel (Powder Coated)',
@@ -621,6 +715,10 @@ export const PRODUCTS = [
     isFeatured: false,
     sizes: ['One Size'],
     inStock: true,
+    colors: [
+      { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28', image: '/images/prod_headlamp.jpg' },
+      { id: 'summit_ember', name: 'Summit Ember', name_th: 'ส้มเอมเบอร์', hex: '#D05A2B', image: '/images/prod_headlamp.jpg' }
+    ],
     specs: {
       weight: '72 g (with battery)',
       materials: 'Aircraft Anodized Aluminum Body + Reflective Elastic Headband',

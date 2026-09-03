@@ -128,12 +128,17 @@ export default function App() {
   };
 
   // Add to Bag handler (Single item)
-  const handleAddToCart = (product, quantity = 1, size = null) => {
+  const handleAddToCart = (product, quantity = 1, size = null, color = null) => {
     const selectedSize = size || product.sizes?.[0] || 'Standard';
+    const selectedColor = color || product.selectedColor || product.colors?.[0] || null;
+    const colorId = selectedColor?.id || 'default';
 
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
-        (item) => item.product.id === product.id && item.selectedSize === selectedSize
+        (item) =>
+          item.product.id === product.id &&
+          item.selectedSize === selectedSize &&
+          (item.selectedColor?.id || 'default') === colorId
       );
 
       if (existingIndex > -1) {
@@ -144,21 +149,27 @@ export default function App() {
         };
         return updated;
       } else {
-        return [...prev, { product, quantity, selectedSize }];
+        return [...prev, { product, quantity, selectedSize, selectedColor }];
       }
     });
 
     const pName = lang === 'th' ? product.name_th || product.name : product.name;
-    showToast(lang === 'th' ? `เพิ่ม "${pName}" ลงในถุงสินค้าแล้ว` : `Added "${pName}" to your bag`);
+    const cName = selectedColor ? ` (${lang === 'th' ? selectedColor.name_th || selectedColor.name : selectedColor.name})` : '';
+    showToast(lang === 'th' ? `เพิ่ม "${pName}${cName}" ลงในถุงสินค้าแล้ว` : `Added "${pName}${cName}" to your bag`);
   };
 
   // Add to Bag Batch handler (from Gear Finder)
   const handleAddToCartBatch = (items = []) => {
     setCartItems((prev) => {
       let updated = [...prev];
-      items.forEach(({ product, quantity = 1, selectedSize = 'Standard' }) => {
+      items.forEach(({ product, quantity = 1, selectedSize = 'Standard', selectedColor = null }) => {
+        const color = selectedColor || product.colors?.[0] || null;
+        const colorId = color?.id || 'default';
         const existingIndex = updated.findIndex(
-          (item) => item.product.id === product.id && item.selectedSize === selectedSize
+          (item) =>
+            item.product.id === product.id &&
+            item.selectedSize === selectedSize &&
+            (item.selectedColor?.id || 'default') === colorId
         );
         if (existingIndex > -1) {
           updated[existingIndex] = {
@@ -166,7 +177,7 @@ export default function App() {
             quantity: updated[existingIndex].quantity + quantity
           };
         } else {
-          updated.push({ product, quantity, selectedSize });
+          updated.push({ product, quantity, selectedSize, selectedColor: color });
         }
       });
       return updated;
@@ -181,14 +192,16 @@ export default function App() {
   };
 
   // Update Cart Quantity
-  const handleUpdateQuantity = (productId, selectedSize, newQty) => {
+  const handleUpdateQuantity = (productId, selectedSize, selectedColorId, newQty) => {
     if (newQty <= 0) {
-      handleRemoveFromCart(productId, selectedSize);
+      handleRemoveFromCart(productId, selectedSize, selectedColorId);
       return;
     }
     setCartItems((prev) =>
       prev.map((item) =>
-        item.product.id === productId && item.selectedSize === selectedSize
+        item.product.id === productId &&
+        item.selectedSize === selectedSize &&
+        (item.selectedColor?.id || 'default') === (selectedColorId || 'default')
           ? { ...item, quantity: newQty }
           : item
       )
@@ -196,10 +209,15 @@ export default function App() {
   };
 
   // Remove from Cart
-  const handleRemoveFromCart = (productId, selectedSize) => {
+  const handleRemoveFromCart = (productId, selectedSize, selectedColorId) => {
     setCartItems((prev) =>
       prev.filter(
-        (item) => !(item.product.id === productId && item.selectedSize === selectedSize)
+        (item) =>
+          !(
+            item.product.id === productId &&
+            item.selectedSize === selectedSize &&
+            (item.selectedColor?.id || 'default') === (selectedColorId || 'default')
+          )
       )
     );
   };

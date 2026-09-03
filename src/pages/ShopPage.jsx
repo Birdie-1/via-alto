@@ -30,6 +30,7 @@ export default function ShopPage({
   const [filters, setFilters] = useState({
     category: initialCategory,
     priceRange: 'all',
+    color: 'all',
     size: 'all',
     minRating: 0
   });
@@ -61,6 +62,7 @@ export default function ShopPage({
     setFilters({
       category: 'all',
       priceRange: 'all',
+      color: 'all',
       size: 'all',
       minRating: 0
     });
@@ -104,12 +106,17 @@ export default function ShopPage({
       if (filters.priceRange === '2000-3000' && (product.price < 2000 || product.price > 3000)) return false;
       if (filters.priceRange === '3000-plus' && product.price < 3000) return false;
 
-      // 3. Size filter
+      // 3. Color Palette filter
+      if (filters.color !== 'all' && (!product.colors || !product.colors.some((c) => c.id === filters.color))) {
+        return false;
+      }
+
+      // 4. Size filter
       if (filters.size !== 'all' && (!product.sizes || !product.sizes.includes(filters.size))) {
         return false;
       }
 
-      // 4. Rating filter
+      // 5. Rating filter
       if (filters.minRating > 0 && product.rating < filters.minRating) {
         return false;
       }
@@ -132,6 +139,7 @@ export default function ShopPage({
   const activeFilterCount =
     (filters.category !== 'all' ? 1 : 0) +
     (filters.priceRange !== 'all' ? 1 : 0) +
+    (filters.color !== 'all' ? 1 : 0) +
     (filters.size !== 'all' ? 1 : 0) +
     (filters.minRating > 0 ? 1 : 0);
 

@@ -81,6 +81,8 @@ export const TRANSLATIONS = {
     filter_all_ratings: 'All Ratings',
     filter_4_stars: '4 Stars & Above',
     filter_3_stars: '3 Stars & Above',
+    filter_color: 'Color Palette',
+    filter_all_colors: 'All Colors',
     filter_refine_search: 'REFINE SEARCH',
     filter_apply: 'APPLY FILTERS',
 
@@ -101,11 +103,13 @@ export const TRANSLATIONS = {
     card_add_to_bag: 'ADD TO BAG',
     card_compare: 'Compare',
     card_compared: 'Comparing',
+    card_colors_available: 'Colors',
 
     // Quick View Modal & Tabs
     modal_tab_overview: 'OVERVIEW',
     modal_tab_specs: 'TECHNICAL SPECS',
     modal_tab_sizeguide: 'SIZE & FIT GUIDE',
+    modal_color: 'Colorway',
     modal_size: 'Size',
     modal_selected: 'Selected:',
     modal_qty: 'Quantity',
@@ -292,6 +296,8 @@ export const TRANSLATIONS = {
     filter_all_ratings: 'คะแนนทั้งหมด',
     filter_4_stars: '4 ดาวขึ้นไป',
     filter_3_stars: '3 ดาวขึ้นไป',
+    filter_color: 'โทนสีอุปกรณ์',
+    filter_all_colors: 'ทุกเฉดสี',
     filter_refine_search: 'กรองผลการค้นหา',
     filter_apply: 'ใช้ตัวกรอง',
 
@@ -312,11 +318,13 @@ export const TRANSLATIONS = {
     card_add_to_bag: 'ใส่ถุงสินค้า',
     card_compare: 'เปรียบเทียบ',
     card_compared: 'เลือกแล้ว',
+    card_colors_available: 'สี',
 
     // Quick View Modal & Tabs
     modal_tab_overview: 'ภาพรวมสินค้า',
     modal_tab_specs: 'สเปกทางเทคนิค',
     modal_tab_sizeguide: 'ตารางขนาดและคำแนะนำ',
+    modal_color: 'โทนสี',
     modal_size: 'ขนาดสินค้า',
     modal_selected: 'เลือกขนาด:',
     modal_qty: 'จำนวน',
