@@ -3,9 +3,16 @@ import Hero from '../components/home/Hero';
 import CategoryCards from '../components/home/CategoryCards';
 import FeaturedProducts from '../components/home/FeaturedProducts';
 import BrandStory from '../components/home/BrandStory';
+import GearFinderBanner from '../components/home/GearFinderBanner';
 import FinalCTA from '../components/home/FinalCTA';
 
-export default function HomePage({ onNavigate, onAddToCart, onSelectProduct, lang = 'en' }) {
+export default function HomePage({
+  onNavigate,
+  onAddToCart,
+  onSelectProduct,
+  onOpenGearFinder,
+  lang = 'en'
+}) {
   return (
     <div className="w-full">
       {/* 1. Hero Section */}
@@ -38,7 +45,13 @@ export default function HomePage({ onNavigate, onAddToCart, onSelectProduct, lan
         lang={lang}
       />
 
-      {/* 5. Final CTA */}
+      {/* 5. Interactive Gear Finder Promotion Banner */}
+      <GearFinderBanner
+        onOpenGearFinder={onOpenGearFinder}
+        lang={lang}
+      />
+
+      {/* 6. Final CTA */}
       <FinalCTA
         onExploreClick={() => onNavigate('shop')}
         lang={lang}

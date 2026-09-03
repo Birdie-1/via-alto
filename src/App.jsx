@@ -4,6 +4,7 @@ import Footer from './components/layout/Footer';
 import SearchModal from './components/layout/SearchModal';
 import CartDrawer from './components/layout/CartDrawer';
 import AuthModal from './components/auth/AuthModal';
+import GearFinderModal from './components/finder/GearFinderModal';
 import Toast from './components/ui/Toast';
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
@@ -25,6 +26,7 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isGearFinderOpen, setIsGearFinderOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState('signin');
   const [currentUser, setCurrentUser] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -125,7 +127,7 @@ export default function App() {
     }
   };
 
-  // Add to Bag handler
+  // Add to Bag handler (Single item)
   const handleAddToCart = (product, quantity = 1, size = null) => {
     const selectedSize = size || product.sizes?.[0] || 'Standard';
 
@@ -148,6 +150,34 @@ export default function App() {
 
     const pName = lang === 'th' ? product.name_th || product.name : product.name;
     showToast(lang === 'th' ? `เพิ่ม "${pName}" ลงในถุงสินค้าแล้ว` : `Added "${pName}" to your bag`);
+  };
+
+  // Add to Bag Batch handler (from Gear Finder)
+  const handleAddToCartBatch = (items = []) => {
+    setCartItems((prev) => {
+      let updated = [...prev];
+      items.forEach(({ product, quantity = 1, selectedSize = 'Standard' }) => {
+        const existingIndex = updated.findIndex(
+          (item) => item.product.id === product.id && item.selectedSize === selectedSize
+        );
+        if (existingIndex > -1) {
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            quantity: updated[existingIndex].quantity + quantity
+          };
+        } else {
+          updated.push({ product, quantity, selectedSize });
+        }
+      });
+      return updated;
+    });
+
+    showToast(
+      lang === 'th'
+        ? `เพิ่มชุดอุปกรณ์ที่แนะนำ ${items.length} ชิ้นลงในถุงสินค้าแล้ว!`
+        : `Added ${items.length} recommended kit items to your bag!`
+    );
+    setIsCartOpen(true);
   };
 
   // Update Cart Quantity
@@ -215,6 +245,7 @@ export default function App() {
               setQuickViewProduct(product);
               handleNavigate('shop');
             }}
+            onOpenGearFinder={() => setIsGearFinderOpen(true)}
             lang={lang}
           />
         )}
@@ -227,6 +258,7 @@ export default function App() {
             onToggleWishlist={handleToggleWishlist}
             quickViewProduct={quickViewProduct}
             setQuickViewProduct={setQuickViewProduct}
+            onOpenGearFinder={() => setIsGearFinderOpen(true)}
             lang={lang}
           />
         )}
@@ -278,7 +310,15 @@ export default function App() {
         onRegisterSuccess={handleRegisterSuccess}
       />
 
-      {/* 7. Toast Notification */}
+      {/* 7. Interactive Gear Finder & Product Recommender Modal */}
+      <GearFinderModal
+        isOpen={isGearFinderOpen}
+        onClose={() => setIsGearFinderOpen(false)}
+        onAddToCartBatch={handleAddToCartBatch}
+        lang={lang}
+      />
+
+      {/* 8. Toast Notification */}
       <Toast
         message={toastMessage}
         visible={toastVisible}

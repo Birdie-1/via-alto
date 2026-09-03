@@ -15,6 +15,7 @@ export default function ShopPage({
   onToggleWishlist,
   quickViewProduct,
   setQuickViewProduct,
+  onOpenGearFinder,
   lang = 'en'
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -137,7 +138,11 @@ export default function ShopPage({
   return (
     <div className="w-full bg-[#F7F5F0] min-h-screen relative pb-16">
       {/* 1. Shop Header */}
-      <ShopHeader totalProducts={PRODUCTS.length} lang={lang} />
+      <ShopHeader
+        totalProducts={PRODUCTS.length}
+        onOpenGearFinder={onOpenGearFinder}
+        lang={lang}
+      />
 
       {/* 2. Sticky Horizontal Category Navigation */}
       <CategoryNav
