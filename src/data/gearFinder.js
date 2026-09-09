@@ -184,21 +184,32 @@ export function getRecommendedKit(answers, lang = 'en') {
         th: 'ชุดอุปกรณ์พิชิตยอดเขาระยะสั้นในอากาศหนาว'
       };
       kitSubtitle = {
-        en: 'Thermal insulation and speed stability for freezing ridge ascents.',
-        th: 'รักษาความอบอุ่น คล่องตัวสูง สำหรับการเดินขึ้นยอดเขาที่หนาวเย็น'
+        en: 'Thermal insulation, wind defense, and blister-free movement for freezing summits.',
+        th: 'ฉนวนกันความหนาว กันลมแรง ป้องกันแผลพุพอง พร้อมอุปกรณ์พยุงข้อสำหรับยอดเขาหนาวจัด'
       };
-      matchedProductIds = [14, 4, 2, 11]; // Nordic Fleece, Shell Jacket, Trail 25L, Trekking Poles
+      matchedProductIds = [13, 4, 21, 28, 16, 23, 11, 30]; // 18L Pack, Shell, Down Jacket, Neck Gaiter, Gloves, Merino Socks, Poles, First Aid
       matchScore = 98;
+    } else if (duration === 'expedition') {
+      kitTitle = {
+        en: 'Sub-Zero Alpine Expedition Sanctuary Kit',
+        th: 'ชุดเดินป่าสำรวจระยะไกลในเขตหนาวจัด (Alpine Expedition Kit)'
+      };
+      kitSubtitle = {
+        en: 'Expedition hauler, storm-tested shelter, pure water filtration, and full thermal barrier down to sub-zero.',
+        th: 'เป้ใหญ่ 50L เต็นท์ต้านพายุ กรองน้ำสะอาดในป่าลึก และฉนวนความร้อนรอบด้านรับมืออากาศติดลบ'
+      };
+      matchedProductIds = [3, 9, 10, 18, 21, 14, 26, 29, 30]; // 50L Pack, Tent, 0°C Bag, Pad, Down Jacket, Fleece, Water Filter, Camp Lantern, First Aid
+      matchScore = 99;
     } else {
       kitTitle = {
         en: 'Sub-Zero Alpine Sanctuary Kit',
         th: 'ชุดเดินป่าค้างแรมป้องกันความหนาวจัด (Sub-Zero Kit)'
       };
       kitSubtitle = {
-        en: 'Tested down to 0°C with thermal ground barrier and weatherproof shell.',
-        th: 'ทนความหนาวได้ถึง 0°C ตัดความเย็นจากพื้นดิน พร้อมเต็นท์ต้านลมพายุ'
+        en: 'Tested down to 0°C with thermal ground barrier, 800-fill down insulation, and warm ambient camp lighting.',
+        th: 'ทนความหนาวได้ถึง 0°C ตัดความเย็นจากพื้นดิน แจ็กเก็ตดาวน์ 800-Fill และแสงสว่างอบอุ่นรอบแคมป์'
       };
-      matchedProductIds = [1, 9, 10, 18, 14]; // Alpine 35L, Tent, Sleeping Bag, Sleeping Pad, Fleece
+      matchedProductIds = [1, 9, 10, 18, 21, 14, 29]; // Alpine 35L, Tent, 0°C Bag, Pad, Down Jacket, Fleece, Camp Lantern
       matchScore = 99;
     }
   }
@@ -206,25 +217,26 @@ export function getRecommendedKit(answers, lang = 'en') {
   else if (destination === 'tropical_rain') {
     if (duration === 'day_hike') {
       kitTitle = {
-        en: 'Monsoon Trail Running & Fast Trek Kit',
-        th: 'ชุดเดินป่าฤดูฝน & ลุยน้ำข้ามห้วย'
+        en: 'Monsoon Trail Fast Trek & River Crossing Kit',
+        th: 'ชุดเดินป่าหน้าฝน & ลุยน้ำข้ามห้วยแบบคล่องตัว'
       };
       kitSubtitle = {
-        en: 'High-drainage traction, quick-dry pants, and waterproof lighting.',
-        th: 'ระบายน้ำเร็ว ไม่ลื่นบนหินเปียก พร้อมไฟฉายกันน้ำลุยฝนหนัก'
+        en: 'Bounce-free hydration vest, dry bag electronics seal, rain shell pants, and waterproof lighting.',
+        th: 'เป้น้ำกระชับตัว ถุงกันน้ำ 100% กางเกงกันฝนลุยพายุ และไฟฉายกันน้ำลึกสำหรับหน้าฝน'
       };
-      matchedProductIds = [17, 5, 20, 2]; // Veloce Runners, Trail Pants, Headlamp, Trail 25L
-      matchScore = 97;
+      matchedProductIds = [25, 17, 5, 22, 27, 20, 30]; // 8L Vest, Trail Runners, Utility Pants, Rain Pants, Dry Bags, Headlamp, First Aid
+      matchScore = 98;
     } else {
       kitTitle = {
-        en: 'Rainforest Expedition Weatherproof Kit',
-        th: 'ชุดเดินป่าหน้าฝนค้างแรมแบบกันน้ำเต็มพิกัด'
+        en: 'Rainforest Expedition All-Weather Defense Kit',
+        th: 'ชุดเดินป่าหน้าฝนค้างแรมแบบกันน้ำและพึ่งพาตนเองเต็มพิกัด'
       };
       kitSubtitle = {
-        en: 'Maximum moisture barrier with waterproof nubuck boots and 3-layer shell.',
-        th: 'ป้องกันความเปียกชื้น 100% ด้วยรองเท้าบูทหนัง Nubuck และเสื้อแจ็กเก็ตกันน้ำ 3 ชั้น'
+        en: 'Full moisture barrier with Italian nubuck boots, 3-layer shell, storm rain pants, dry bags, and gravity purifier.',
+        th: 'ป้องกันความเปียกชื้น 100% บูทหนังอิตาลี เสื้อ-กางเกงกันฝน ถุงกันน้ำ และเครื่องกรองน้ำสะอาดจากลำธาร'
       };
-      matchedProductIds = [4, 8, 1, 9, 20]; // Alpine Shell, Alto Boots, 35L Pack, Tent, Headlamp
+      const packId = duration === 'expedition' ? 3 : 1;
+      matchedProductIds = [packId, 4, 22, 8, 9, 27, 26, 20]; // 35L/50L, Shell, Rain Pants, Boots, Tent, Dry Bags, Water Filter, Headlamp
       matchScore = 98;
     }
   }
@@ -233,25 +245,25 @@ export function getRecommendedKit(answers, lang = 'en') {
     if (priority === 'ultralight') {
       kitTitle = {
         en: 'Ultralight Ridge Fastpacking Kit',
-        th: 'ชุดอุปกรณ์เบาพิเศษสำหรับสันเขา (Ultralight Kit)'
+        th: 'ชุดอุปกรณ์เบาพิเศษสำหรับสันเขา (Ultralight Fastpack Kit)'
       };
       kitSubtitle = {
-        en: 'Sub-3kg total base gear designed for speed, agility, and minimal bulk.',
-        th: 'น้ำหนักเบาพิเศษไม่เกิน 3 กก. คล่องแคล่ว ว่องไว บนทางหินแคบ'
+        en: 'Bounce-free hydration vest, sun defense, featherweight windbreaker, and blister-defense merino.',
+        th: 'เป้น้ำ 8L แนบลำตัว หมวกกันแดด UPF50+ เสื้อกันลมเบาหวิว และถุงเท้าเมอริโนซับแรงกระแทก'
       };
-      matchedProductIds = [13, 15, 17, 19, 11]; // 18L Pack, Windbreaker, Trail Runners, Titanium Stove, Poles
+      matchedProductIds = [25, 15, 17, 24, 19, 11, 23, 30]; // 8L Vest, Windbreaker, Trail Runners, Sun Cap, Titanium Stove, Poles, Merino Socks, First Aid
       matchScore = 99;
     } else {
       kitTitle = {
         en: 'Classic Alpine Ridge Traverse Kit',
-        th: 'ชุดเดินป่าข้ามสันเขาหินคลาสสิก'
+        th: 'ชุดเดินป่าข้ามสันเขาหินคลาสสิกครบเซต'
       };
       kitSubtitle = {
-        en: 'Unwavering Vibram traction, cork trekking poles, and reliable load transfer.',
-        th: 'ยึดเกาะหินมั่นคงด้วยพื้น Vibram ไม้เท้าคาร์บอนซับแรง และเป้กระชับหลัง'
+        en: 'Unwavering Vibram traction, carbon shock absorption, UPF 50+ sun protection, and essential trail first aid.',
+        th: 'ยึดเกาะหินมั่นคงด้วย Vibram ไม้เท้าคาร์บอนลดแรงกดเข่า หมวกกันแดด UV และชุดปฐมพยาบาลพกพา'
       };
-      matchedProductIds = [1, 7, 11, 6, 12]; // 35L, Terra Shoes, Poles, Merino Tee, Insulated Bottle
-      matchScore = 96;
+      matchedProductIds = [1, 7, 11, 6, 24, 12, 23, 30]; // 35L, Terra Shoes, Poles, Merino Tee, Sun Cap, Bottle, Merino Socks, First Aid
+      matchScore = 97;
     }
   }
 
