@@ -11,6 +11,7 @@ export default function CartDrawer({
   onUpdateQuantity,
   onRemoveItem,
   onNavigateToShop,
+  onCheckout,
   lang = 'en'
 }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -191,7 +192,8 @@ export default function CartDrawer({
                 icon={ArrowRight}
                 iconPosition="right"
                 onClick={() => {
-                  alert(lang === 'th' ? 'ขอบคุณสำหรับการทดสอบ! ระบบชำระเงินจะเปิดใน Stage 2' : 'Demo Mode: Checkout is ready for Stage 2 integration.');
+                  onClose();
+                  if (onCheckout) onCheckout();
                 }}
               >
                 {t.cart_checkout}

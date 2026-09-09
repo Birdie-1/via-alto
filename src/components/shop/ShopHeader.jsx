@@ -27,7 +27,6 @@ export default function ShopHeader({ totalProducts = 0, onOpenGearFinder, lang =
             >
               <Compass size={15} className="group-hover:rotate-45 transition-transform" />
               <span>{t.finder_nav_btn} (60s)</span>
-              <Sparkles size={13} className="text-amber-600 group-hover:text-beige" />
             </button>
           </div>
         )}

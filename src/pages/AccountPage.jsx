@@ -25,9 +25,16 @@ export default function AccountPage({
   onUpdateProfile,
   wishlist = [],
   onAddToCart,
-  onNavigate
+  onNavigate,
+  initialTab = 'overview'
 }) {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  React.useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
   const [copiedCode, setCopiedCode] = useState('');
   const [copiedReferral, setCopiedReferral] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -551,13 +558,35 @@ export default function AccountPage({
                           <img src={item.image} alt={item.name} className="w-12 h-12 object-cover bg-offwhite border border-stone-light/40" />
                           <div>
                             <h5 className="text-xs font-semibold text-charcoal">{item.name}</h5>
-                            <span className="text-[11px] text-stone">Qty: {item.qty}</span>
+                            <div className="text-[11px] text-stone flex items-center gap-1.5 mt-0.5">
+                              {item.color && (
+                                <span className="inline-flex items-center gap-1">
+                                  <span
+                                    className="w-2 h-2 rounded-full border border-black/20 shrink-0"
+                                    style={{ backgroundColor: item.color.hex }}
+                                  />
+                                  <span>{item.color.name}</span>
+                                </span>
+                              )}
+                              {item.color && <span>•</span>}
+                              {item.size && <span>{item.size} •</span>}
+                              <span className="font-mono">Qty: {item.qty}</span>
+                            </div>
                           </div>
                         </div>
                         <span className="text-xs font-bold text-charcoal">{formatPrice(item.price * item.qty)}</span>
                       </div>
                     ))}
                   </div>
+
+                  {order.shippingAddress && (
+                    <div className="pt-2 text-[11px] text-stone flex items-center gap-1.5 border-t border-stone-light/40">
+                      <MapPin size={12} className="text-forest shrink-0" />
+                      <span className="truncate">
+                        Destination: {order.shippingAddress.district}, {order.shippingAddress.province} {order.shippingAddress.postalCode}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="pt-3 border-t border-stone-light/60 flex justify-between items-center text-xs">
                     <span className="uppercase text-stone font-semibold">Total Paid</span>

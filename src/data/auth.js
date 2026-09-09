@@ -28,6 +28,15 @@ export const DEMO_USER = {
     marketingConsent: true,
     consentTimestamp: '2026-01-15T08:30:00Z'
   },
+  shippingAddress: {
+    fullName: 'Marco Silva',
+    telNo: '089-452-9182',
+    address1: '88/12 Alpine Ridge Condominium, Sukhumvit 55',
+    address2: 'Thonglor Soi 10',
+    district: 'Watthana',
+    province: 'Bangkok',
+    postalCode: '10110'
+  },
   vouchers: [
     {
       code: 'GOBEYOND10',
@@ -214,3 +223,55 @@ export const updateProfile = (userId, updatedFields) => {
 export const logoutUser = () => {
   saveCurrentUser(null);
 };
+
+// Create and place an expedition order
+export const createOrder = (userId, orderData) => {
+  const users = getRegisteredUsers();
+  const index = users.findIndex((u) => u.id === userId);
+  if (index === -1) throw new Error('User not found.');
+
+  const currentUser = users[index];
+  const orderId = orderData.orderId || `VA-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  const date = new Date().toISOString().split('T')[0];
+  const pointsEarned = Math.floor(orderData.total / 100);
+
+  const newOrder = {
+    orderId,
+    date,
+    status: 'Processing',
+    items: orderData.items || [],
+    shippingAddress: orderData.shippingAddress,
+    paymentMethod: orderData.paymentMethod,
+    subtotal: orderData.subtotal,
+    shippingFee: orderData.shippingFee,
+    discount: orderData.discount || 0,
+    codFee: orderData.codFee || 0,
+    total: orderData.total,
+    pointsEarned
+  };
+
+  const updatedOrders = [newOrder, ...(currentUser.mockOrders || [])];
+  const updatedPoints = (currentUser.points || 0) + pointsEarned;
+
+  // Mark applied voucher as used if applicable
+  let updatedVouchers = currentUser.vouchers || [];
+  if (orderData.appliedVoucherCode) {
+    updatedVouchers = updatedVouchers.map((v) =>
+      v.code === orderData.appliedVoucherCode ? { ...v, isValid: false, usedAt: date } : v
+    );
+  }
+
+  const updatedUser = {
+    ...currentUser,
+    points: updatedPoints,
+    vouchers: updatedVouchers,
+    mockOrders: updatedOrders,
+    shippingAddress: orderData.saveAddress ? orderData.shippingAddress : (currentUser.shippingAddress || null)
+  };
+
+  users[index] = updatedUser;
+  localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
+  saveCurrentUser(updatedUser);
+  return { updatedUser, order: newOrder };
+};
+

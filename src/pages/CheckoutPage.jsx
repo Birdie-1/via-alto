@@ -1,0 +1,804 @@
+import React, { useState, useEffect } from 'react';
+import {
+  ShieldCheck,
+  CreditCard,
+  QrCode,
+  Truck,
+  ArrowLeft,
+  Check,
+  Tag,
+  Lock,
+  Leaf,
+  RotateCcw,
+  AlertCircle
+} from 'lucide-react';
+import Button from '../components/ui/Button';
+import { formatPrice } from '../data/products';
+import { TRANSLATIONS } from '../data/translations';
+
+const THAI_PROVINCES = [
+  { en: 'Bangkok', th: 'กรุงเทพมหานคร' },
+  { en: 'Chiang Mai', th: 'เชียงใหม่' },
+  { en: 'Chiang Rai', th: 'เชียงราย' },
+  { en: 'Mae Hong Son', th: 'แม่ฮ่องสอน' },
+  { en: 'Nan', th: 'น่าน' },
+  { en: 'Phuket', th: 'ภูเก็ต' },
+  { en: 'Krabi', th: 'กระบี่' },
+  { en: 'Surat Thani', th: 'สุราษฎร์ธานี' },
+  { en: 'Chonburi', th: 'ชลบุรี' },
+  { en: 'Nakhon Ratchasima', th: 'นครราชสีมา' },
+  { en: 'Kanchanaburi', th: 'กาญจนบุรี' },
+  { en: 'Phetchabun', th: 'เพชรบูรณ์' },
+  { en: 'Other Provinces', th: 'จังหวัดอื่นๆ' }
+];
+
+export default function CheckoutPage({
+  user,
+  cartItems = [],
+  onPlaceOrder,
+  onNavigate,
+  lang = 'en'
+}) {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  // Form State
+  const [fullName, setFullName] = useState(user?.shippingAddress?.fullName || user?.fullName || '');
+  const [phone, setPhone] = useState(user?.shippingAddress?.telNo || user?.telNo || '');
+  const [address1, setAddress1] = useState(user?.shippingAddress?.address1 || '');
+  const [address2, setAddress2] = useState(user?.shippingAddress?.address2 || '');
+  const [district, setDistrict] = useState(user?.shippingAddress?.district || '');
+  const [province, setProvince] = useState(user?.shippingAddress?.province || 'Bangkok');
+  const [postalCode, setPostalCode] = useState(user?.shippingAddress?.postalCode || '');
+  const [saveAddress, setSaveAddress] = useState(true);
+
+  // Payment Method: 'card' | 'promptpay' | 'cod'
+  const [paymentMethod, setPaymentMethod] = useState('promptpay');
+
+  // Card Mock Inputs
+  const [cardNumber, setCardNumber] = useState('4532 •••• •••• 8912');
+  const [cardExpiry, setCardExpiry] = useState('11/28');
+  const [cardCvv, setCardCvv] = useState('789');
+
+  // Voucher / Discount State
+  const [voucherInput, setVoucherInput] = useState('');
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [voucherError, setVoucherError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  // Auto-fill from user object when it updates
+  useEffect(() => {
+    if (user?.shippingAddress) {
+      setFullName(user.shippingAddress.fullName || user.fullName || '');
+      setPhone(user.shippingAddress.telNo || user.telNo || '');
+      setAddress1(user.shippingAddress.address1 || '');
+      setAddress2(user.shippingAddress.address2 || '');
+      setDistrict(user.shippingAddress.district || '');
+      setProvince(user.shippingAddress.province || 'Bangkok');
+      setPostalCode(user.shippingAddress.postalCode || '');
+    } else if (user) {
+      if (!fullName) setFullName(user.fullName || '');
+      if (!phone) setPhone(user.telNo || '');
+    }
+  }, [user]);
+
+  // Calculations
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
+    0
+  );
+
+  // Free shipping over ฿2,000, otherwise ฿99
+  const shippingFee = subtotal >= 2000 ? 0 : 99;
+
+  // COD fee of ฿50
+  const codFee = paymentMethod === 'cod' ? 50 : 0;
+
+  // Calculate voucher discount
+  let discountAmount = 0;
+  if (appliedVoucher) {
+    if (appliedVoucher.discount.includes('%')) {
+      const pct = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(pct)) {
+        discountAmount = Math.round((subtotal * pct) / 100);
+      }
+    } else {
+      const flat = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(flat)) {
+        discountAmount = flat;
+      }
+    }
+  }
+
+  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee + codFee);
+
+  // Apply Voucher
+  const handleApplyVoucher = (codeToApply) => {
+    const targetCode = (codeToApply || voucherInput).trim().toUpperCase();
+    setVoucherError('');
+
+    if (!targetCode) return;
+
+    // Check available user vouchers or hardcoded valid vouchers
+    const userVouchers = user?.vouchers || [];
+    const matched = userVouchers.find((v) => v.code.toUpperCase() === targetCode && v.isValid);
+
+    if (matched) {
+      setAppliedVoucher(matched);
+      setVoucherInput(matched.code);
+    } else if (targetCode === 'GOBEYOND10') {
+      setAppliedVoucher({
+        code: 'GOBEYOND10',
+        discount: '10% OFF',
+        description: 'Welcome Explorer discount on any first purchase'
+      });
+      setVoucherInput('GOBEYOND10');
+    } else if (targetCode === 'SUMMIT15') {
+      setAppliedVoucher({
+        code: 'SUMMIT15',
+        discount: '15% OFF',
+        description: 'Annual VIP Alpine Birthday Reward Voucher'
+      });
+      setVoucherInput('SUMMIT15');
+    } else if (targetCode === 'FRIEND150') {
+      setAppliedVoucher({
+        code: 'FRIEND150',
+        discount: '฿150 OFF',
+        description: 'Explorer Referral Invitation Bonus'
+      });
+      setVoucherInput('FRIEND150');
+    } else {
+      setVoucherError(t.checkout_voucher_invalid);
+    }
+  };
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherInput('');
+    setVoucherError('');
+  };
+
+  // Submit Order
+  const handleSubmitOrder = (e) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!fullName.trim() || !phone.trim() || !address1.trim() || !district.trim() || !postalCode.trim()) {
+      setFormError(t.checkout_required_fields);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      setFormError(t.checkout_empty_cart);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const orderData = {
+      orderId: `VA-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      items: cartItems.map((item) => ({
+        id: item.product.id,
+        name: lang === 'th' ? item.product.name_th || item.product.name : item.product.name,
+        price: item.product.price,
+        qty: item.quantity,
+        size: item.selectedSize,
+        color: item.selectedColor,
+        image: item.selectedColor?.image || item.product.image
+      })),
+      shippingAddress: {
+        fullName,
+        telNo: phone,
+        address1,
+        address2,
+        district,
+        province,
+        postalCode
+      },
+      saveAddress,
+      paymentMethod,
+      subtotal,
+      shippingFee,
+      discount: discountAmount,
+      codFee,
+      total: grandTotal,
+      appliedVoucherCode: appliedVoucher?.code || null
+    };
+
+    // Simulate order placement delay for realistic UX
+    setTimeout(() => {
+      onPlaceOrder(orderData);
+      setIsSubmitting(false);
+    }, 900);
+  };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center pt-28 pb-16 px-4">
+        <div className="bg-white border border-stone-light p-8 max-w-md text-center space-y-4 shadow-sm">
+          <AlertCircle size={36} className="text-stone mx-auto" />
+          <h2 className="font-serif text-2xl text-charcoal">{t.checkout_empty_cart}</h2>
+          <Button variant="primary" onClick={() => onNavigate('shop')}>
+            {t.cart_explore}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Top Breadcrumb */}
+      <div className="mb-6">
+        <button
+          onClick={() => onNavigate('shop')}
+          className="inline-flex items-center text-xs font-mono uppercase tracking-wider text-stone hover:text-forest transition-colors cursor-pointer"
+        >
+          <ArrowLeft size={14} className="mr-1.5" />
+          {t.checkout_back_to_cart}
+        </button>
+      </div>
+
+      {/* Header */}
+      <div className="mb-10">
+        <span className="text-xs font-mono tracking-widest text-forest font-semibold uppercase">
+          VIA ALTO LOGISTICS
+        </span>
+        <h1 className="font-serif text-3xl sm:text-4xl text-charcoal font-bold tracking-tight mt-1">
+          {t.checkout_page_title}
+        </h1>
+        <p className="text-xs sm:text-sm text-stone mt-1 font-sans">
+          {t.checkout_page_subtitle}
+        </p>
+      </div>
+
+      {formError && (
+        <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-center gap-2">
+          <AlertCircle size={16} className="shrink-0" />
+          <span>{formError}</span>
+        </div>
+      )}
+
+      {/* Main 2-Column Grid */}
+      <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        {/* LEFT COLUMN: Shipping + Payment + Voucher */}
+        <div className="lg:col-span-7 space-y-8">
+          {/* 1. Shipping Address Section */}
+          <div className="bg-white border border-stone-light p-6 sm:p-8 space-y-6 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-stone-light/60 pb-3">
+              <h2 className="font-serif text-lg font-bold tracking-wide uppercase text-charcoal flex items-center gap-2">
+                <Truck size={18} className="text-forest" />
+                {t.checkout_step_shipping}
+              </h2>
+              {user && (
+                <span className="text-[11px] font-mono text-stone">
+                  {user.tier}
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_recipient_name} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="e.g. Marco Silva"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_recipient_phone} *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 089-452-9182"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal font-mono"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_address_line1} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={address1}
+                  onChange={(e) => setAddress1(e.target.value)}
+                  placeholder="e.g. 88/12 Alpine Ridge Condominium, Sukhumvit 55"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-stone uppercase tracking-wider mb-1.5">
+                  {t.checkout_address_line2}
+                </label>
+                <input
+                  type="text"
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                  placeholder="e.g. Thonglor Soi 10, Floor 14"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_district} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  placeholder="e.g. Watthana"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_province} *
+                </label>
+                <select
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal cursor-pointer"
+                >
+                  {THAI_PROVINCES.map((prov) => (
+                    <option key={prov.en} value={prov.en}>
+                      {lang === 'th' ? prov.th : prov.en}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  {t.checkout_postal_code} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder="e.g. 10110"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={saveAddress}
+                  onChange={(e) => setSaveAddress(e.target.checked)}
+                  className="accent-forest w-3.5 h-3.5"
+                />
+                <span className="text-xs text-stone font-sans">
+                  {t.checkout_save_default_addr}
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* 2. Payment Method Section */}
+          <div className="bg-white border border-stone-light p-6 sm:p-8 space-y-6 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-stone-light/60 pb-3">
+              <h2 className="font-serif text-lg font-bold tracking-wide uppercase text-charcoal flex items-center gap-2">
+                <CreditCard size={18} className="text-forest" />
+                {t.checkout_step_payment}
+              </h2>
+              <span className="text-[11px] font-mono text-stone flex items-center gap-1">
+                <Lock size={12} className="text-forest" />
+                256-Bit SSL
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Option 1: PromptPay QR */}
+              <div
+                onClick={() => setPaymentMethod('promptpay')}
+                className={`p-4 border cursor-pointer transition-all ${
+                  paymentMethod === 'promptpay'
+                    ? 'border-forest bg-forest/5'
+                    : 'border-stone-light hover:border-stone bg-[#F7F5F0]'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border border-forest flex items-center justify-center">
+                      {paymentMethod === 'promptpay' && (
+                        <div className="w-2.5 h-2.5 bg-forest rounded-full" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-charcoal flex items-center gap-2">
+                        <QrCode size={16} className="text-forest" />
+                        {t.checkout_pay_promptpay}
+                      </h4>
+                      <p className="text-[11px] text-stone mt-0.5">
+                        {t.checkout_pay_promptpay_desc}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">
+                    INSTANT
+                  </span>
+                </div>
+
+                {paymentMethod === 'promptpay' && (
+                  <div className="mt-4 pt-4 border-t border-forest/20 flex flex-col sm:flex-row items-center gap-4 bg-white p-4 border border-stone-light">
+                    {/* Simulated Alpine QR Code */}
+                    <div className="w-28 h-28 bg-[#183C32] p-2 flex flex-col items-center justify-between text-white shrink-0">
+                      <div className="w-full flex justify-between">
+                        <div className="w-5 h-5 border-2 border-white bg-transparent" />
+                        <div className="w-5 h-5 border-2 border-white bg-transparent" />
+                      </div>
+                      <div className="font-mono text-[9px] tracking-widest text-center">
+                        PROMPTPAY
+                      </div>
+                      <div className="w-full flex justify-between items-end">
+                        <div className="w-5 h-5 border-2 border-white bg-transparent" />
+                        <div className="w-3 h-3 bg-white" />
+                      </div>
+                    </div>
+                    <div className="space-y-1 text-center sm:text-left">
+                      <span className="text-[10px] font-mono text-stone uppercase tracking-wider">
+                        Biller ID: 0105562098412
+                      </span>
+                      <h5 className="text-xs font-bold text-charcoal">
+                        VIA ALTO (THAILAND) CO., LTD.
+                      </h5>
+                      <p className="text-[11px] text-stone">
+                        {lang === 'th'
+                          ? 'คำสั่งซื้อจะได้รับการยืนยันทันทีหลังกดสั่งซื้อ'
+                          : 'Scan QR with any Thai banking app. Auto-verifies upon placing order.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Option 2: Credit Card */}
+              <div
+                onClick={() => setPaymentMethod('card')}
+                className={`p-4 border cursor-pointer transition-all ${
+                  paymentMethod === 'card'
+                    ? 'border-forest bg-forest/5'
+                    : 'border-stone-light hover:border-stone bg-[#F7F5F0]'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border border-forest flex items-center justify-center">
+                      {paymentMethod === 'card' && (
+                        <div className="w-2.5 h-2.5 bg-forest rounded-full" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-charcoal flex items-center gap-2">
+                        <CreditCard size={16} className="text-forest" />
+                        {t.checkout_pay_card}
+                      </h4>
+                      <p className="text-[11px] text-stone mt-0.5">
+                        {t.checkout_pay_card_desc}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 bg-stone-100 text-stone-700 border border-stone-200">
+                      VISA
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 bg-stone-100 text-stone-700 border border-stone-200">
+                      MC
+                    </span>
+                  </div>
+                </div>
+
+                {paymentMethod === 'card' && (
+                  <div className="mt-4 pt-4 border-t border-forest/20 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-4 border border-stone-light">
+                    <div className="sm:col-span-3">
+                      <label className="block text-[10px] font-bold text-charcoal uppercase tracking-wider mb-1">
+                        {t.checkout_card_number}
+                      </label>
+                      <input
+                        type="text"
+                        value={cardNumber}
+                        onChange={(e) => setCardNumber(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#F7F5F0] border border-stone-light font-mono focus:outline-none focus:border-forest"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-[10px] font-bold text-charcoal uppercase tracking-wider mb-1">
+                        {t.checkout_card_expiry}
+                      </label>
+                      <input
+                        type="text"
+                        value={cardExpiry}
+                        onChange={(e) => setCardExpiry(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#F7F5F0] border border-stone-light font-mono focus:outline-none focus:border-forest"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-charcoal uppercase tracking-wider mb-1">
+                        {t.checkout_card_cvv}
+                      </label>
+                      <input
+                        type="password"
+                        maxLength={4}
+                        value={cardCvv}
+                        onChange={(e) => setCardCvv(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#F7F5F0] border border-stone-light font-mono focus:outline-none focus:border-forest"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Option 3: Cash on Delivery (COD) */}
+              <div
+                onClick={() => setPaymentMethod('cod')}
+                className={`p-4 border cursor-pointer transition-all ${
+                  paymentMethod === 'cod'
+                    ? 'border-forest bg-forest/5'
+                    : 'border-stone-light hover:border-stone bg-[#F7F5F0]'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border border-forest flex items-center justify-center">
+                      {paymentMethod === 'cod' && (
+                        <div className="w-2.5 h-2.5 bg-forest rounded-full" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-charcoal flex items-center gap-2">
+                        <Truck size={16} className="text-forest" />
+                        {t.checkout_pay_cod}
+                      </h4>
+                      <p className="text-[11px] text-stone mt-0.5">
+                        {t.checkout_pay_cod_desc}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono text-stone font-bold">
+                    +฿50
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Expedition Voucher Section */}
+          <div className="bg-white border border-stone-light p-6 sm:p-8 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-stone-light/60 pb-3">
+              <h2 className="font-serif text-sm font-bold tracking-wide uppercase text-charcoal flex items-center gap-2">
+                <Tag size={16} className="text-forest" />
+                {t.checkout_voucher_title}
+              </h2>
+            </div>
+
+            {appliedVoucher ? (
+              <div className="flex items-center justify-between p-3.5 bg-emerald-50 border border-emerald-200">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                    <Check size={14} />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono font-bold text-emerald-900">
+                      {appliedVoucher.code} ({appliedVoucher.discount})
+                    </span>
+                    <p className="text-[11px] text-emerald-700">
+                      {appliedVoucher.description}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveVoucher}
+                  className="text-xs font-semibold text-red-600 hover:text-red-800 cursor-pointer"
+                >
+                  {t.checkout_voucher_remove}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={voucherInput}
+                    onChange={(e) => setVoucherInput(e.target.value)}
+                    placeholder={t.checkout_voucher_placeholder}
+                    className="flex-1 px-3.5 py-2 text-xs bg-[#F7F5F0] border border-stone-light font-mono uppercase focus:outline-none focus:border-forest"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleApplyVoucher()}
+                  >
+                    {t.checkout_voucher_apply}
+                  </Button>
+                </div>
+
+                {voucherError && (
+                  <p className="text-xs text-red-600 font-sans">
+                    {voucherError}
+                  </p>
+                )}
+
+                {/* Quick select from user vouchers */}
+                {user?.vouchers?.filter((v) => v.isValid)?.length > 0 && (
+                  <div className="pt-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone block mb-2">
+                      {lang === 'th' ? 'คูปองของคุณที่พร้อมใช้งาน (คลิกเพื่อใส่):' : 'Available Explorer Vouchers (click to apply):'}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {user.vouchers
+                        .filter((v) => v.isValid)
+                        .map((v) => (
+                          <button
+                            key={v.code}
+                            type="button"
+                            onClick={() => handleApplyVoucher(v.code)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-beige/60 hover:bg-beige border border-stone-light text-[11px] font-mono font-bold text-forest transition-colors cursor-pointer"
+                          >
+                            <Tag size={12} />
+                            <span>{v.code}</span>
+                            <span className="text-charcoal font-normal">({v.discount})</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Sticky Order Summary */}
+        <div className="lg:col-span-5">
+          <div className="sticky top-28 bg-white border border-stone-light p-6 sm:p-8 space-y-6 shadow-md">
+            <div className="border-b border-stone-light/60 pb-3 flex justify-between items-center">
+              <h2 className="font-serif text-lg font-bold tracking-wide uppercase text-charcoal">
+                {t.checkout_step_summary}
+              </h2>
+              <span className="text-xs font-mono text-stone">
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)} {lang === 'th' ? 'รายการ' : 'ITEMS'}
+              </span>
+            </div>
+
+            {/* Scrollable Item List */}
+            <div className="max-h-64 overflow-y-auto divide-y divide-stone-light/40 pr-1 space-y-3">
+              {cartItems.map((item, index) => {
+                const pName = lang === 'th' ? item.product.name_th || item.product.name : item.product.name;
+                const itemImg = item.selectedColor?.image || item.product.image;
+                const colorName = item.selectedColor
+                  ? (lang === 'th' ? item.selectedColor.name_th || item.selectedColor.name : item.selectedColor.name)
+                  : null;
+
+                return (
+                  <div key={index} className="pt-3 first:pt-0 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 bg-[#F7F5F0] border border-stone-light/60 shrink-0 overflow-hidden">
+                        <img src={itemImg} alt={pName} className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-semibold text-charcoal line-clamp-1">
+                          {pName}
+                        </h4>
+                        <div className="flex items-center gap-1.5 text-[11px] text-stone mt-0.5">
+                          {colorName && (
+                            <span className="inline-flex items-center gap-1">
+                              <span
+                                className="w-2 h-2 rounded-full border border-black/20 shrink-0"
+                                style={{ backgroundColor: item.selectedColor.hex }}
+                              />
+                              <span>{colorName}</span>
+                            </span>
+                          )}
+                          {colorName && <span>•</span>}
+                          <span>{item.selectedSize}</span>
+                          <span>•</span>
+                          <span className="font-mono font-bold text-charcoal">x{item.quantity}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-charcoal font-mono shrink-0">
+                      {formatPrice(item.product.price * item.quantity)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Calculations Breakdown */}
+            <div className="space-y-2.5 pt-4 border-t border-stone-light/60 text-xs">
+              <div className="flex justify-between text-stone">
+                <span>{t.checkout_subtotal}</span>
+                <span className="font-mono text-charcoal">{formatPrice(subtotal)}</span>
+              </div>
+
+              <div className="flex justify-between text-stone">
+                <span>{t.checkout_shipping_fee}</span>
+                <span className="font-mono text-charcoal">
+                  {shippingFee === 0 ? (
+                    <span className="text-emerald-700 font-bold uppercase tracking-wider text-[11px]">
+                      {t.checkout_shipping_free}
+                    </span>
+                  ) : (
+                    formatPrice(shippingFee)
+                  )}
+                </span>
+              </div>
+
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-semibold">
+                  <span>{t.checkout_discount} ({appliedVoucher?.code})</span>
+                  <span className="font-mono">-{formatPrice(discountAmount)}</span>
+                </div>
+              )}
+
+              {codFee > 0 && (
+                <div className="flex justify-between text-stone">
+                  <span>{t.checkout_cod_fee}</span>
+                  <span className="font-mono text-charcoal">+{formatPrice(codFee)}</span>
+                </div>
+              )}
+
+              <div className="pt-3 border-t border-stone-light/60 flex justify-between items-baseline">
+                <span className="font-serif text-base font-bold text-charcoal uppercase">
+                  {t.checkout_grand_total}
+                </span>
+                <span className="font-sans text-2xl font-bold text-forest">
+                  {formatPrice(grandTotal)}
+                </span>
+              </div>
+            </div>
+
+            {/* Place Order CTA */}
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full justify-center"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? t.checkout_placing_order : `${t.checkout_place_order} • ${formatPrice(grandTotal)}`}
+            </Button>
+
+            {/* Alpine Assurance Badges */}
+            <div className="pt-4 border-t border-stone-light/40 space-y-2 text-[11px] text-stone font-sans">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={14} className="text-forest shrink-0" />
+                <span>30-Day Trail Satisfaction Guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Leaf size={14} className="text-forest shrink-0" />
+                <span>100% Carbon-Neutral Alpine Delivery</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <RotateCcw size={14} className="text-forest shrink-0" />
+                <span>Free Exchanges on Sizing & Fit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}

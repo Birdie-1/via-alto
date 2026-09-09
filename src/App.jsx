@@ -9,19 +9,25 @@ import Toast from './components/ui/Toast';
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import AccountPage from './pages/AccountPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import {
   initializeAuthStore,
   getCurrentUser,
   loginUser,
   registerUser,
   updateProfile,
-  logoutUser
+  logoutUser,
+  createOrder
 } from './data/auth';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [shopCategory, setShopCategory] = useState('all');
+  const [accountInitialTab, setAccountInitialTab] = useState('overview');
   const [cartItems, setCartItems] = useState([]);
+  const [lastOrder, setLastOrder] = useState(null);
+  const [redirectAfterAuth, setRedirectAfterAuth] = useState(null);
   const [wishlist, setWishlist] = useState([1, 4]); // default sample wishlist
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -68,12 +74,16 @@ export default function App() {
     if (params.category) {
       setShopCategory(params.category);
     }
+    if (params.tab) {
+      setAccountInitialTab(params.tab);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Auth Handlers
-  const handleOpenAuth = (tab = 'signin') => {
+  const handleOpenAuth = (tab = 'signin', redirect = null) => {
     setAuthModalTab(tab);
+    if (redirect) setRedirectAfterAuth(redirect);
     setIsAuthModalOpen(true);
   };
 
@@ -89,6 +99,11 @@ export default function App() {
       setCurrentUser(loggedUser);
       showToast(lang === 'th' ? `ยินดีต้อนรับกลับ, คุณ ${loggedUser.fullName}!` : `Welcome back, ${loggedUser.fullName}!`);
       setIsAuthModalOpen(false);
+
+      if (redirectAfterAuth) {
+        handleNavigate(redirectAfterAuth);
+        setRedirectAfterAuth(null);
+      }
     } catch (err) {
       throw err;
     }
@@ -104,9 +119,47 @@ export default function App() {
           : `Account created! Welcome to VIA ALTO Explorer Club, ${newUser.fullName}!`
       );
       setIsAuthModalOpen(false);
-      setCurrentPage('account');
+
+      if (redirectAfterAuth) {
+        handleNavigate(redirectAfterAuth);
+        setRedirectAfterAuth(null);
+      } else {
+        setCurrentPage('account');
+      }
     } catch (err) {
       throw err;
+    }
+  };
+
+  // Checkout Handlers
+  const handleCheckout = () => {
+    if (!currentUser) {
+      showToast(lang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดำเนินการชำระเงิน' : 'Please sign in to proceed to checkout.');
+      handleOpenAuth('signin', 'checkout');
+      return;
+    }
+    handleNavigate('checkout');
+  };
+
+  const handlePlaceOrder = (orderData) => {
+    try {
+      if (!currentUser) {
+        handleOpenAuth('signin', 'checkout');
+        return;
+      }
+
+      const { updatedUser, order } = createOrder(currentUser.id, orderData);
+      setCurrentUser(updatedUser);
+      setLastOrder(order);
+      setCartItems([]);
+      showToast(
+        lang === 'th'
+          ? `คำสั่งซื้อ #${order.orderId} สำเร็จแล้ว! ได้รับ +${order.pointsEarned} คะแนน`
+          : `Order #${order.orderId} confirmed! You earned +${order.pointsEarned} Alpine Points.`
+      );
+      handleNavigate('confirmation');
+    } catch (err) {
+      showToast(lang === 'th' ? 'เกิดข้อผิดพลาดในการบันทึกคำสั่งซื้อ' : 'Failed to place order.');
     }
   };
 
@@ -289,6 +342,31 @@ export default function App() {
             wishlist={wishlist}
             onAddToCart={handleAddToCart}
             onNavigate={handleNavigate}
+            initialTab={accountInitialTab}
+          />
+        )}
+
+        {currentPage === 'checkout' && (
+          <CheckoutPage
+            user={currentUser}
+            cartItems={cartItems}
+            onPlaceOrder={handlePlaceOrder}
+            onNavigate={handleNavigate}
+            lang={lang}
+          />
+        )}
+
+        {currentPage === 'confirmation' && (
+          <OrderConfirmationPage
+            order={lastOrder}
+            user={currentUser}
+            onNavigate={(page) => {
+              if (page === 'account') {
+                setAccountInitialTab('orders');
+              }
+              handleNavigate(page);
+            }}
+            lang={lang}
           />
         )}
       </main>
@@ -316,6 +394,7 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveFromCart}
         onNavigateToShop={() => handleNavigate('shop')}
+        onCheckout={handleCheckout}
         lang={lang}
       />
 
