@@ -1,0 +1,291 @@
+// VIA ALTO — Complete Prisma Schema (PostgreSQL)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -------------------------------------------------------------
+// 1. Catalog Layer
+// -------------------------------------------------------------
+
+model Category {
+  id        String    @id
+  name_en   String
+  name_th   String
+  image_url String
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Color {
+  id             String                 @id
+  name_en        String
+  name_th        String
+  hex            String
+  color_variants ProductColorVariant[]
+
+  @@map("colors")
+}
+
+model Product {
+  id                 Int      @id
+  category_id        String
+  category           Category @relation(fields: [category_id], references: [id])
+  name_en            String
+  name_th            String
+  price_thb          Int
+  rating             Decimal  @db.Decimal(3, 2)
+  review_count       Int      @default(0)
+  badge_en           String?
+  badge_th           String?
+  image_url          String
+  description_en     String   @db.Text
+  description_th     String?  @db.Text
+  specs_materials    String?
+  specs_waterproof   String?
+  specs_weight       String?
+  specs_dimensions   String?
+  specs_best_use_en  String?
+  specs_best_use_th  String?
+  is_featured        Boolean  @default(false)
+  in_stock           Boolean  @default(true)
+  created_at         DateTime @default(now())
+
+  sizes              ProductSize[]
+  color_variants     ProductColorVariant[]
+  order_items        OrderItem[]
+  wishlist_items     WishlistItem[]
+  cart_items         CartItem[]
+
+  @@index([category_id])
+  @@index([is_featured])
+  @@map("products")
+}
+
+model ProductSize {
+  id         Int     @id @default(autoincrement())
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  size       String
+  stock_qty  Int     @default(50)
+
+  @@unique([product_id, size])
+  @@map("product_sizes")
+}
+
+model ProductColorVariant {
+  id         Int     @id @default(autoincrement())
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  color_id   String
+  color      Color   @relation(fields: [color_id], references: [id])
+  image_url  String
+
+  @@unique([product_id, color_id])
+  @@map("product_color_variants")
+}
+
+// -------------------------------------------------------------
+// 2. Users & Auth Layer
+// -------------------------------------------------------------
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  full_name      String
+  password_hash  String
+  tel_no         String?
+  date_of_birth  String?
+  tier           String    @default("Alpine Explorer")
+  points         Int       @default(500)
+  email_verified Boolean   @default(false)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  marketing_profile  UserMarketingProfile?
+  shipping_addresses UserShippingAddress[]
+  vouchers           UserVoucher[]
+  orders             Order[]
+  wishlist_items     WishlistItem[]
+  cart_items         CartItem[]
+
+  @@map("users")
+}
+
+model UserMarketingProfile {
+  id               Int            @id @default(autoincrement())
+  user_id          String         @unique
+  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  experience_level String         @default("intermediate")
+  size_apparel     String         @default("M")
+  size_footwear    String         @default("42")
+  region           String         @default("northern")
+  discovery_source String         @default("instagram")
+  line_id          String?
+  referral_code    String?
+  activities       UserActivity[]
+
+  @@map("user_marketing_profiles")
+}
+
+model UserActivity {
+  id           Int                  @id @default(autoincrement())
+  profile_id   Int
+  profile      UserMarketingProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  activity_key String
+
+  @@unique([profile_id, activity_key])
+  @@map("user_activities")
+}
+
+model UserShippingAddress {
+  id             Int     @id @default(autoincrement())
+  user_id        String
+  user           User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  recipient_name String
+  phone          String
+  address_line   String
+  subdistrict    String
+  district       String
+  province       String
+  postal_code    String
+  is_default     Boolean @default(false)
+
+  @@map("user_shipping_addresses")
+}
+
+// -------------------------------------------------------------
+// 3. Vouchers & Loyalty Layer
+// -------------------------------------------------------------
+
+model Voucher {
+  code           String        @id
+  discount_type  String        // "percentage" | "fixed"
+  discount_val   Int
+  min_spend      Int           @default(0)
+  description_en String
+  description_th String
+  valid_days     Int           @default(30)
+  user_vouchers  UserVoucher[]
+
+  @@map("vouchers")
+}
+
+model UserVoucher {
+  id           Int       @id @default(autoincrement())
+  user_id      String
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  voucher_code String
+  voucher      Voucher   @relation(fields: [voucher_code], references: [code])
+  is_used      Boolean   @default(false)
+  used_at      DateTime?
+  assigned_at  DateTime  @default(now())
+
+  @@unique([user_id, voucher_code])
+  @@map("user_vouchers")
+}
+
+// -------------------------------------------------------------
+// 4. Orders & Checkout Layer
+// -------------------------------------------------------------
+
+model Order {
+  id               String                 @id // e.g. "VA-849201"
+  user_id          String
+  user             User                   @relation(fields: [user_id], references: [id])
+  status           String                 @default("confirmed") // "confirmed" | "processing" | "shipped" | "delivered"
+  payment_method   String                 // "promptpay" | "card" | "cod"
+  subtotal_thb     Int
+  shipping_fee_thb Int
+  discount_thb     Int                    @default(0)
+  total_thb        Int
+  points_earned    Int                    @default(0)
+  voucher_code     String?
+  created_at       DateTime               @default(now())
+
+  items            OrderItem[]
+  shipping_address OrderShippingAddress?
+
+  @@index([user_id])
+  @@map("orders")
+}
+
+model OrderItem {
+  id               Int      @id @default(autoincrement())
+  order_id         String
+  order            Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product_id       Int
+  product          Product  @relation(fields: [product_id], references: [id])
+  product_name     String
+  selected_size    String
+  selected_color   String?
+  unit_price_thb   Int
+  quantity         Int      @default(1)
+  total_price_thb  Int
+  image_url        String
+
+  @@map("order_items")
+}
+
+model OrderShippingAddress {
+  id             Int    @id @default(autoincrement())
+  order_id       String @unique
+  order          Order  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  recipient_name String
+  phone          String
+  address_line   String
+  subdistrict    String
+  district       String
+  province       String
+  postal_code    String
+
+  @@map("order_shipping_addresses")
+}
+
+// -------------------------------------------------------------
+// 5. Shopping Bag, Wishlist & Subscribers
+// -------------------------------------------------------------
+
+model CartItem {
+  id                Int      @id @default(autoincrement())
+  user_id           String
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  product_id        Int
+  product           Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  selected_size     String
+  selected_color_id String?
+  quantity          Int      @default(1)
+  created_at        DateTime @default(now())
+
+  @@unique([user_id, product_id, selected_size, selected_color_id])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  product_id Int
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+
+  @@unique([user_id, product_id])
+  @@map("wishlist_items")
+}
+
+model NewsletterSubscriber {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String?
+  source        String   @default("homepage_cta")
+  is_active     Boolean  @default(true)
+  subscribed_at DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}
