@@ -14,7 +14,9 @@ import {
   Save,
   Share2,
   MapPin,
-  HelpCircle
+  HelpCircle,
+  Mail,
+  Eye
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { PRODUCTS, formatPrice } from '../data/products';
@@ -26,6 +28,7 @@ export default function AccountPage({
   wishlist = [],
   onAddToCart,
   onNavigate,
+  onOpenEmailPreview,
   initialTab = 'overview'
 }) {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -311,6 +314,41 @@ export default function AccountPage({
                 EDIT PROFILE
               </Button>
             </div>
+
+            {/* Email Dispatch Previews Card */}
+            {onOpenEmailPreview && (
+              <div className="p-6 bg-white border border-stone-light/80 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 text-forest text-xs uppercase font-bold tracking-brand">
+                    <Mail size={14} />
+                    <span>AUTOMATED EMAIL DISPATCH PREVIEWS</span>
+                  </div>
+                  <h4 className="font-serif text-xl font-bold text-charcoal">
+                    Member Welcome & Personalized Product Recommendations
+                  </h4>
+                  <p className="text-xs text-stone max-w-xl">
+                    Preview the responsive email designs triggered automatically upon member registration and tailored gear suggestions matched to your trail profile.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => onOpenEmailPreview('welcome')}
+                    className="px-4 py-2.5 bg-forest text-beige hover:bg-forest-light text-xs uppercase tracking-brand font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Eye size={14} />
+                    <span>1. WELCOME EMAIL</span>
+                  </button>
+                  <button
+                    onClick={() => onOpenEmailPreview('recommendation')}
+                    className="px-4 py-2.5 bg-beige text-forest hover:bg-white border border-stone-light text-xs uppercase tracking-brand font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Sparkles size={14} />
+                    <span>2. GEAR RECOMMENDATION</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, ArrowRight, Compass, Globe, Share2, Check } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 
-export default function Footer({ onNavigate, lang = 'en' }) {
+export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const [footerEmail, setFooterEmail] = useState('');
   const [footerSubscribed, setFooterSubscribed] = useState(false);
@@ -124,6 +124,17 @@ export default function Footer({ onNavigate, lang = 'en' }) {
                   {t.hero_slogan}
                 </button>
               </li>
+              {onOpenEmailPreview && (
+                <li>
+                  <button
+                    onClick={() => onOpenEmailPreview('welcome')}
+                    className="text-beige/90 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1 pt-1"
+                  >
+                    <Mail size={12} />
+                    <span>{lang === 'th' ? 'ตัวอย่างอีเมล (Email Preview)' : 'Email Previews'}</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -137,11 +148,22 @@ export default function Footer({ onNavigate, lang = 'en' }) {
             </p>
 
             {footerSubscribed ? (
-              <div className="flex items-center gap-2 py-2 px-3 bg-white/10 border border-beige/30">
-                <Check size={14} className="text-emerald-400 shrink-0" />
-                <span className="text-xs font-sans text-beige">
-                  {lang === 'th' ? 'สมัครรับข่าวสารสำเร็จ!' : 'Subscribed successfully!'}
-                </span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 py-2 px-3 bg-white/10 border border-beige/30">
+                  <Check size={14} className="text-emerald-400 shrink-0" />
+                  <span className="text-xs font-sans text-beige">
+                    {lang === 'th' ? 'สมัครรับข่าวสารสำเร็จ!' : 'Subscribed successfully!'}
+                  </span>
+                </div>
+                {onOpenEmailPreview && (
+                  <button
+                    onClick={() => onOpenEmailPreview('welcome')}
+                    className="text-[11px] text-beige hover:text-white underline cursor-pointer inline-flex items-center gap-1 font-sans"
+                  >
+                    <Mail size={12} />
+                    <span>{lang === 'th' ? 'ดูตัวอย่างอีเมลต้อนรับ' : 'Preview Welcome Email'}</span>
+                  </button>
+                )}
               </div>
             ) : (
               <form onSubmit={handleFooterSubscribe} className="flex">
@@ -160,6 +182,19 @@ export default function Footer({ onNavigate, lang = 'en' }) {
                   {t.footer_join}
                 </button>
               </form>
+            )}
+
+            {onOpenEmailPreview && !footerSubscribed && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => onOpenEmailPreview('welcome')}
+                  className="text-[11px] text-beige/70 hover:text-white underline cursor-pointer inline-flex items-center gap-1 font-sans"
+                >
+                  <Mail size={12} />
+                  <span>{lang === 'th' ? 'ดูตัวอย่างอีเมลระบบ' : 'Preview Automated Emails'}</span>
+                </button>
+              </div>
             )}
           </div>
 

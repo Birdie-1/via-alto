@@ -11,6 +11,7 @@ export default function HomePage({
   onAddToCart,
   onSelectProduct,
   onOpenGearFinder,
+  onOpenEmailPreview,
   lang = 'en'
 }) {
   return (
@@ -54,6 +55,7 @@ export default function HomePage({
       {/* 6. Final CTA */}
       <FinalCTA
         onExploreClick={() => onNavigate('shop')}
+        onOpenEmailPreview={onOpenEmailPreview}
         lang={lang}
       />
     </div>

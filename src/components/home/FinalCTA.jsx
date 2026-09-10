@@ -3,7 +3,7 @@ import Button from '../ui/Button';
 import { Mail, Check, ArrowRight } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 
-export default function FinalCTA({ onExploreClick, lang = 'en' }) {
+export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -79,15 +79,28 @@ export default function FinalCTA({ onExploreClick, lang = 'en' }) {
           </p>
 
           {subscribed ? (
-            <div className="flex items-center justify-center gap-2 py-3 px-4 bg-white/10 border border-beige/30 animate-in fade-in duration-300">
-              <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                <Check size={14} />
+            <div className="space-y-3 animate-in fade-in duration-300">
+              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-white/10 border border-beige/30">
+                <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                  <Check size={14} />
+                </div>
+                <span className="text-sm font-sans text-beige">
+                  {lang === 'th'
+                    ? 'ขอบคุณสำหรับการสมัคร! เราจะส่งข่าวสารให้คุณเร็วๆ นี้'
+                    : 'You\'re in! Alpine stories & gear drops heading your way.'}
+                </span>
               </div>
-              <span className="text-sm font-sans text-beige">
-                {lang === 'th'
-                  ? 'ขอบคุณสำหรับการสมัคร! เราจะส่งข่าวสารให้คุณเร็วๆ นี้'
-                  : 'You\'re in! Alpine stories & gear drops heading your way.'}
-              </span>
+
+              {onOpenEmailPreview && (
+                <button
+                  type="button"
+                  onClick={() => onOpenEmailPreview('welcome')}
+                  className="inline-flex items-center gap-1.5 text-xs text-beige hover:text-white underline underline-offset-4 cursor-pointer font-sans"
+                >
+                  <Mail size={13} />
+                  <span>{lang === 'th' ? 'ดูตัวอย่างอีเมลที่คุณจะได้รับ (Email Preview)' : 'Preview the welcome email you\'ll receive'}</span>
+                </button>
+              )}
             </div>
           ) : (
             <form onSubmit={handleSubscribe} className="flex">
@@ -116,11 +129,22 @@ export default function FinalCTA({ onExploreClick, lang = 'en' }) {
             </form>
           )}
 
-          <p className="text-[10px] text-beige/40 mt-2 font-sans">
-            {lang === 'th'
-              ? 'เราจะไม่แชร์อีเมลของคุณ ยกเลิกได้ตลอดเวลา'
-              : 'We respect your privacy. Unsubscribe anytime.'}
-          </p>
+          <div className="flex items-center justify-between mt-2.5 text-[10px] text-beige/50 font-sans">
+            <span>
+              {lang === 'th'
+                ? 'เราจะไม่แชร์อีเมลของคุณ'
+                : 'We respect your privacy.'}
+            </span>
+            {onOpenEmailPreview && !subscribed && (
+              <button
+                type="button"
+                onClick={() => onOpenEmailPreview('welcome')}
+                className="hover:text-beige underline cursor-pointer"
+              >
+                {lang === 'th' ? 'ดูตัวอย่างอีเมล' : 'Preview Email'}
+              </button>
+            )}
+          </div>
         </div>
 
       </div>

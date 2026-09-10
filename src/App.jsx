@@ -11,6 +11,7 @@ import ShopPage from './pages/ShopPage';
 import AccountPage from './pages/AccountPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import EmailPreviewModal from './components/emails/EmailPreviewModal';
 import {
   initializeAuthStore,
   getCurrentUser,
@@ -33,6 +34,8 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isGearFinderOpen, setIsGearFinderOpen] = useState(false);
+  const [isEmailPreviewOpen, setIsEmailPreviewOpen] = useState(false);
+  const [emailPreviewTemplate, setEmailPreviewTemplate] = useState('welcome');
   const [authModalTab, setAuthModalTab] = useState('signin');
   const [currentUser, setCurrentUser] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -289,6 +292,11 @@ export default function App() {
     });
   };
 
+  const handleOpenEmailPreview = (template = 'welcome') => {
+    setEmailPreviewTemplate(template);
+    setIsEmailPreviewOpen(true);
+  };
+
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
@@ -317,6 +325,7 @@ export default function App() {
               handleNavigate('shop');
             }}
             onOpenGearFinder={() => setIsGearFinderOpen(true)}
+            onOpenEmailPreview={handleOpenEmailPreview}
             lang={lang}
           />
         )}
@@ -342,6 +351,7 @@ export default function App() {
             wishlist={wishlist}
             onAddToCart={handleAddToCart}
             onNavigate={handleNavigate}
+            onOpenEmailPreview={handleOpenEmailPreview}
             initialTab={accountInitialTab}
           />
         )}
@@ -372,7 +382,11 @@ export default function App() {
       </main>
 
       {/* 3. Footer */}
-      <Footer onNavigate={handleNavigate} lang={lang} />
+      <Footer
+        onNavigate={handleNavigate}
+        onOpenEmailPreview={handleOpenEmailPreview}
+        lang={lang}
+      />
 
       {/* 4. Global Search Modal */}
       <SearchModal
@@ -415,7 +429,17 @@ export default function App() {
         lang={lang}
       />
 
-      {/* 8. Toast Notification */}
+      {/* 8. Email Template Preview Modal */}
+      <EmailPreviewModal
+        isOpen={isEmailPreviewOpen}
+        onClose={() => setIsEmailPreviewOpen(false)}
+        initialTemplate={emailPreviewTemplate}
+        lang={lang}
+        user={currentUser}
+        onNavigate={handleNavigate}
+      />
+
+      {/* 9. Toast Notification */}
       <Toast
         message={toastMessage}
         visible={toastVisible}
