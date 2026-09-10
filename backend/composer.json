@@ -1,0 +1,14 @@
+{
+  "name": "via-alto/email-service",
+  "description": "VIA ALTO PHP Email Backend Service",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "phpmailer/phpmailer": "^6.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "ViaAlto\\": "src/"
+    }
+  }
+}

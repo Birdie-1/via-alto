@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from '../ui/Button';
 import { Mail, Check, ArrowRight } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
+import { sendSubscribeEmail } from '../../services/emailService';
 
 export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -9,17 +10,20 @@ export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'e
   const [subscribed, setSubscribed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email.trim()) return;
     setIsSubmitting(true);
 
-    // Simulate API call — will connect to real backend later
-    setTimeout(() => {
-      setSubscribed(true);
-      setIsSubmitting(false);
-      setEmail('');
-    }, 600);
+    try {
+      await sendSubscribeEmail(email.trim(), 'Explorer', 'homepage_cta');
+    } catch (err) {
+      console.warn('Subscribe email service dispatch error:', err);
+    }
+
+    setSubscribed(true);
+    setIsSubmitting(false);
+    setEmail('');
   };
 
   return (

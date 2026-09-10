@@ -12,6 +12,7 @@ import AccountPage from './pages/AccountPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import EmailPreviewModal from './components/emails/EmailPreviewModal';
+import { sendRegisterWelcomeEmail } from './services/emailService';
 import {
   initializeAuthStore,
   getCurrentUser,
@@ -116,6 +117,12 @@ export default function App() {
     try {
       const newUser = registerUser(formData);
       setCurrentUser(newUser);
+
+      // Trigger Step 4: register_welcome.php (Personalized Recommendation Email)
+      sendRegisterWelcomeEmail(newUser).catch((err) =>
+        console.warn('Register welcome email dispatch error:', err)
+      );
+
       showToast(
         lang === 'th'
           ? `สร้างบัญชีสำเร็จ! ยินดีต้อนรับสู่ Explorer Club, คุณ ${newUser.fullName}!`

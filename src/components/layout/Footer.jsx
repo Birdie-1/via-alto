@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { Mail, ArrowRight, Compass, Globe, Share2, Check } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
+import { sendSubscribeEmail } from '../../services/emailService';
 
 export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const [footerEmail, setFooterEmail] = useState('');
   const [footerSubscribed, setFooterSubscribed] = useState(false);
 
-  const handleFooterSubscribe = (e) => {
+  const handleFooterSubscribe = async (e) => {
     e.preventDefault();
     if (!footerEmail.trim()) return;
-    // Simulate API — will connect to backend later
+    try {
+      await sendSubscribeEmail(footerEmail.trim(), 'Explorer', 'footer');
+    } catch (err) {
+      console.warn('Footer subscribe error:', err);
+    }
     setFooterSubscribed(true);
     setFooterEmail('');
   };
