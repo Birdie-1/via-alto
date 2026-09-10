@@ -1,9 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '../ui/Button';
+import { Mail, Check, ArrowRight } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 
 export default function FinalCTA({ onExploreClick, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setIsSubmitting(true);
+
+    // Simulate API call — will connect to real backend later
+    setTimeout(() => {
+      setSubscribed(true);
+      setIsSubmitting(false);
+      setEmail('');
+    }, 600);
+  };
 
   return (
     <section className="relative py-24 sm:py-32 bg-[#183C32] text-offwhite overflow-hidden">
@@ -49,7 +66,65 @@ export default function FinalCTA({ onExploreClick, lang = 'en' }) {
           </Button>
         </div>
 
+        {/* Newsletter Subscription Form */}
+        <div className="pt-8 max-w-md mx-auto">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Mail size={16} className="text-beige/70" />
+            <span className="text-xs uppercase tracking-widest font-semibold text-beige/70">
+              {t.footer_journal_title}
+            </span>
+          </div>
+          <p className="text-xs text-beige/60 mb-4 font-sans">
+            {t.footer_journal_desc}
+          </p>
+
+          {subscribed ? (
+            <div className="flex items-center justify-center gap-2 py-3 px-4 bg-white/10 border border-beige/30 animate-in fade-in duration-300">
+              <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                <Check size={14} />
+              </div>
+              <span className="text-sm font-sans text-beige">
+                {lang === 'th'
+                  ? 'ขอบคุณสำหรับการสมัคร! เราจะส่งข่าวสารให้คุณเร็วๆ นี้'
+                  : 'You\'re in! Alpine stories & gear drops heading your way.'}
+              </span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubscribe} className="flex">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={lang === 'th' ? 'กรอกอีเมลของคุณ...' : 'Enter email address..'}
+                className="bg-white/10 border border-white/20 text-sm text-white px-4 py-3 w-full focus:outline-none focus:border-beige font-sans placeholder:text-white/40"
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-beige text-forest px-5 py-3 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0 disabled:opacity-60 flex items-center gap-1.5"
+              >
+                {isSubmitting ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  <>
+                    <span>{lang === 'th' ? 'สมัครรับข่าวสาร' : 'SUBSCRIBE'}</span>
+                    <ArrowRight size={14} />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          <p className="text-[10px] text-beige/40 mt-2 font-sans">
+            {lang === 'th'
+              ? 'เราจะไม่แชร์อีเมลของคุณ ยกเลิกได้ตลอดเวลา'
+              : 'We respect your privacy. Unsubscribe anytime.'}
+          </p>
+        </div>
+
       </div>
     </section>
   );
 }
+

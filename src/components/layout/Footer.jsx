@@ -1,9 +1,19 @@
-import React from 'react';
-import { Mail, ArrowRight, Compass, Globe, Share2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, ArrowRight, Compass, Globe, Share2, Check } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 
 export default function Footer({ onNavigate, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const [footerEmail, setFooterEmail] = useState('');
+  const [footerSubscribed, setFooterSubscribed] = useState(false);
+
+  const handleFooterSubscribe = (e) => {
+    e.preventDefault();
+    if (!footerEmail.trim()) return;
+    // Simulate API — will connect to backend later
+    setFooterSubscribed(true);
+    setFooterEmail('');
+  };
 
   return (
     <footer className="bg-charcoal text-offwhite pt-16 pb-12 border-t border-charcoal-light">
@@ -125,26 +135,32 @@ export default function Footer({ onNavigate, lang = 'en' }) {
             <p className="text-xs text-stone-light font-sans">
               {t.footer_journal_desc}
             </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert(lang === 'th' ? 'ขอบคุณสำหรับการสมัครรับข่าวสาร VIA ALTO!' : 'Thank you for subscribing to The VIA ALTO Journal.');
-              }}
-              className="flex"
-            >
-              <input
-                type="email"
-                required
-                placeholder="email@example.com"
-                className="bg-charcoal-light border border-white/20 text-xs text-white px-3 py-2 w-full focus:outline-none focus:border-beige font-sans"
-              />
-              <button
-                type="submit"
-                className="bg-beige text-forest px-3 py-2 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0"
-              >
-                {t.footer_join}
-              </button>
-            </form>
+
+            {footerSubscribed ? (
+              <div className="flex items-center gap-2 py-2 px-3 bg-white/10 border border-beige/30">
+                <Check size={14} className="text-emerald-400 shrink-0" />
+                <span className="text-xs font-sans text-beige">
+                  {lang === 'th' ? 'สมัครรับข่าวสารสำเร็จ!' : 'Subscribed successfully!'}
+                </span>
+              </div>
+            ) : (
+              <form onSubmit={handleFooterSubscribe} className="flex">
+                <input
+                  type="email"
+                  required
+                  value={footerEmail}
+                  onChange={(e) => setFooterEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  className="bg-charcoal-light border border-white/20 text-xs text-white px-3 py-2 w-full focus:outline-none focus:border-beige font-sans"
+                />
+                <button
+                  type="submit"
+                  className="bg-beige text-forest px-3 py-2 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0"
+                >
+                  {t.footer_join}
+                </button>
+              </form>
+            )}
           </div>
 
         </div>
@@ -162,3 +178,4 @@ export default function Footer({ onNavigate, lang = 'en' }) {
     </footer>
   );
 }
+
