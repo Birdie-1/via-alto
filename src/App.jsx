@@ -416,6 +416,7 @@ export default function App() {
         onRemoveItem={handleRemoveFromCart}
         onNavigateToShop={() => handleNavigate('shop')}
         onCheckout={handleCheckout}
+        onAddToCart={handleAddToCart}
         lang={lang}
       />
 

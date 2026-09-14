@@ -10,22 +10,27 @@ import {
   Droplets,
   Compass,
   Maximize2,
-  Check
+  Check,
+  Plus,
+  Sparkles
 } from 'lucide-react';
 import StarRating from '../ui/StarRating';
 import Button from '../ui/Button';
-import { formatPrice } from '../../data/products';
+import { formatPrice, PRODUCTS } from '../../data/products';
 import { TRANSLATIONS } from '../../data/translations';
+import { trackProductView, getFrequentlyPaired } from '../../services/behaviorService';
 
 export default function ProductDetailModal({ product, onClose, onAddToCart, lang = 'en' }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'specs' | 'sizeguide'
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'One Size');
   const [selectedColor, setSelectedColor] = useState(product?.selectedColor || product?.colors?.[0] || null);
   const [quantity, setQuantity] = useState(1);
+  const [addedPairedId, setAddedPairedId] = useState(null);
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   useEffect(() => {
     if (product) {
+      trackProductView(product.id);
       setSelectedSize(product.sizes?.[0] || 'One Size');
       setSelectedColor(product.selectedColor || product.colors?.[0] || null);
       setQuantity(1);
@@ -33,6 +38,16 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
   }, [product]);
 
   if (!product) return null;
+
+  const pairedProducts = getFrequentlyPaired(product, PRODUCTS, 3);
+
+  const handleQuickAddPaired = (pairedItem) => {
+    const size = pairedItem.sizes?.[0] || 'One Size';
+    const color = pairedItem.colors?.[0] || null;
+    onAddToCart(pairedItem, 1, size, color);
+    setAddedPairedId(pairedItem.id);
+    setTimeout(() => setAddedPairedId(null), 2000);
+  };
 
   const productName = lang === 'th' ? product.name_th || product.name : product.name;
   const productCategory = lang === 'th' ? product.category_th || product.category : product.category;
@@ -258,6 +273,76 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
                       </div>
                     </div>
                   </div>
+
+                  {/* Frequently Paired With (Step 5 Behavioral Recommendation) */}
+                  {pairedProducts && pairedProducts.length > 0 && (
+                    <div className="pt-4 mt-4 border-t border-stone-light/60 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest">
+                          <Sparkles size={13} className="text-forest" />
+                          <span>{lang === 'th' ? 'อุปกรณ์ที่แนะนำให้ใช้คู่กัน' : 'Frequently Paired With'}</span>
+                        </div>
+                        <span className="text-[10px] text-stone uppercase tracking-wider font-mono">
+                          {lang === 'th' ? 'จัดเซ็ตสมบูรณ์แบบ' : 'COMPLETE THE KIT'}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2">
+                        {pairedProducts.map((item) => {
+                          const pairedName = lang === 'th' ? item.name_th || item.name : item.name;
+                          const isJustAdded = addedPairedId === item.id;
+
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between p-2.5 bg-stone-light/20 hover:bg-stone-light/35 border border-stone-light/40 transition-colors rounded-sm"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-12 h-12 bg-white rounded border border-stone-light/40 flex items-center justify-center shrink-0 p-1">
+                                  <img
+                                    src={item.image}
+                                    alt={pairedName}
+                                    className="w-full h-full object-contain"
+                                    loading="lazy"
+                                  />
+                                </div>
+                                <div className="min-w-0 pr-2">
+                                  <h5 className="text-xs font-bold text-charcoal truncate">
+                                    {pairedName}
+                                  </h5>
+                                  <span className="text-xs font-mono font-bold text-forest">
+                                    {formatPrice(item.price)}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAddPaired(item)}
+                                className={`px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                                  isJustAdded
+                                    ? 'bg-emerald-700 text-white'
+                                    : 'bg-forest hover:bg-forest-light text-white'
+                                }`}
+                              >
+                                {isJustAdded ? (
+                                  <>
+                                    <Check size={12} />
+                                    <span>{lang === 'th' ? 'เพิ่มแล้ว' : 'Added'}</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus size={12} />
+                                    <span>{lang === 'th' ? 'เพิ่ม' : 'Add'}</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

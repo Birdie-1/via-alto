@@ -6,7 +6,9 @@ import ProductGrid from '../components/shop/ProductGrid';
 import ProductDetailModal from '../components/shop/ProductDetailModal';
 import CompareBar from '../components/shop/CompareBar';
 import CompareModal from '../components/shop/CompareModal';
+import RecentlyViewed from '../components/shop/RecentlyViewed';
 import { PRODUCTS } from '../data/products';
+import { getRecentlyViewed } from '../services/behaviorService';
 
 export default function ShopPage({
   initialCategory = 'all',
@@ -34,6 +36,13 @@ export default function ShopPage({
     size: 'all',
     minRating: 0
   });
+
+  // Recently Viewed State (Step 5 Behavioral Recommendation)
+  const [recentProducts, setRecentProducts] = useState([]);
+
+  useEffect(() => {
+    setRecentProducts(getRecentlyViewed(PRODUCTS, quickViewProduct?.id, 4));
+  }, [quickViewProduct]);
 
   useEffect(() => {
     if (initialCategory) {
@@ -190,6 +199,13 @@ export default function ShopPage({
           />
         </div>
       </div>
+
+      {/* 3.5 Recently Viewed Products (Step 5 Behavioral Recommendation) */}
+      <RecentlyViewed
+        products={recentProducts}
+        onSelectProduct={(p) => setQuickViewProduct(p)}
+        lang={lang}
+      />
 
       {/* 4. Quick View / Product Detail Modal */}
       {quickViewProduct && (

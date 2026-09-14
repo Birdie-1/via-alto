@@ -1,8 +1,9 @@
 import React from 'react';
-import { X, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, Trash2, ArrowRight, ShoppingBag, Sparkles, Plus } from 'lucide-react';
 import Button from '../ui/Button';
-import { formatPrice } from '../../data/products';
+import { formatPrice, PRODUCTS } from '../../data/products';
 import { TRANSLATIONS } from '../../data/translations';
+import { getCartCrossSells } from '../../services/behaviorService';
 
 export default function CartDrawer({
   isOpen,
@@ -12,6 +13,7 @@ export default function CartDrawer({
   onRemoveItem,
   onNavigateToShop,
   onCheckout,
+  onAddToCart,
   lang = 'en'
 }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -21,6 +23,8 @@ export default function CartDrawer({
     (acc, item) => acc + item.product.price * item.quantity,
     0
   );
+
+  const crossSellItems = getCartCrossSells(cartItems, PRODUCTS, 2);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
@@ -170,6 +174,49 @@ export default function CartDrawer({
                   </div>
                 );
               })
+            )}
+
+            {/* Cart Cross-sells (Step 5 Behavioral Recommendation) */}
+            {cartItems.length > 0 && crossSellItems && crossSellItems.length > 0 && (
+              <div className="pt-6 mt-6 border-t border-stone-light/60 space-y-3">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest">
+                  <Sparkles size={13} className="text-forest" />
+                  <span>{lang === 'th' ? 'อุปกรณ์เสริมแนะนำสำหรับทริปนี้' : 'Recommended Add-ons'}</span>
+                </div>
+
+                <div className="space-y-2">
+                  {crossSellItems.map((addon) => {
+                    const addonName = lang === 'th' && addon.name_th ? addon.name_th : addon.name;
+                    return (
+                      <div
+                        key={addon.id}
+                        className="flex items-center justify-between p-2.5 bg-white border border-stone-light/60 rounded-sm"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <img
+                            src={addon.image}
+                            alt={addonName}
+                            className="w-10 h-10 object-contain bg-[#F7F5F0] p-1 rounded border border-stone-light/30 shrink-0"
+                            loading="lazy"
+                          />
+                          <div className="min-w-0 pr-1">
+                            <p className="text-xs font-semibold text-charcoal truncate">{addonName}</p>
+                            <span className="text-xs font-mono font-bold text-forest">{formatPrice(addon.price)}</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => onAddToCart && onAddToCart(addon, 1, addon.sizes?.[0] || 'One Size', addon.colors?.[0] || null)}
+                          className="px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider bg-forest hover:bg-forest-light text-white rounded flex items-center gap-1 shrink-0 cursor-pointer transition-colors"
+                        >
+                          <Plus size={11} />
+                          <span>{lang === 'th' ? 'เพิ่ม' : 'Add'}</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
 

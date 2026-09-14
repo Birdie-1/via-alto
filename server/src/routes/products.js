@@ -129,3 +129,57 @@ productsRouter.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch product', details: err.message });
   }
 });
+
+// GET /api/products/:id/recommendations - Behavioral & Complementary Product Recommendations
+productsRouter.get('/:id/recommendations', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const limit = parseInt(req.query.limit, 10) || 4;
+
+    const currentProduct = await prisma.product.findUnique({
+      where: { id },
+      select: { id: true, category_id: true }
+    });
+
+    if (!currentProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const COMPLEMENTARY_MAP = {
+      backpacks: ['clothing', 'accessories', 'footwear'],
+      clothing: ['accessories', 'clothing', 'backpacks'],
+      footwear: ['accessories', 'clothing', 'backpacks'],
+      camping: ['camping', 'accessories', 'backpacks'],
+      accessories: ['backpacks', 'clothing', 'camping']
+    };
+
+    const targetCategories = COMPLEMENTARY_MAP[currentProduct.category_id] || ['accessories', 'clothing'];
+
+    const recommendations = await prisma.product.findMany({
+      where: {
+        id: { not: id },
+        category_id: { in: targetCategories },
+        in_stock: true
+      },
+      orderBy: [
+        { is_featured: 'desc' },
+        { rating: 'desc' }
+      ],
+      take: limit,
+      include: {
+        sizes: true,
+        color_variants: {
+          include: { color: true }
+        },
+        category: true
+      }
+    });
+
+    res.json({
+      productId: id,
+      recommendations
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch recommendations', details: err.message });
+  }
+});
