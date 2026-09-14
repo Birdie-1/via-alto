@@ -13,16 +13,25 @@ export async function sendSubscribeEmail(email, name = 'Explorer', source = 'hom
   const payload = { email, name, source };
 
   try {
-    // Try Vite proxy first
-    let response = await fetch(`${PHP_API_BASE}/subscribe.php`, {
+    // Try Vite proxy to sendMail.php first
+    let response = await fetch(`${PHP_API_BASE}/sendMail.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
     }).catch(() => null);
 
     // If proxy failed, try direct PHP server port
     if (!response || !response.ok) {
-      response = await fetch(`${DIRECT_PHP_URL}/subscribe.php`, {
+      response = await fetch(`${DIRECT_PHP_URL}/sendMail.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => null);
+    }
+
+    // Fallback to subscribe.php if sendMail.php is not reached
+    if (!response || !response.ok) {
+      response = await fetch(`${PHP_API_BASE}/subscribe.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -31,7 +40,7 @@ export async function sendSubscribeEmail(email, name = 'Explorer', source = 'hom
 
     if (response && response.ok) {
       const data = await response.json();
-      console.log('✅ PHP Email Service [subscribe.php]:', data);
+      console.log('✅ PHP Email Service [sendMail.php]:', data);
       return { success: true, data };
     }
   } catch (err) {
