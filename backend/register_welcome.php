@@ -138,8 +138,10 @@ $registrations[] = [
 ];
 file_put_contents($regFile, json_encode($registrations, JSON_PRETTY_PRINT));
 
-// 4. Render Personalized Email Template
+// 4. Extract Registered Username & Render Personalized Email Template
+$username = trim($input['username'] ?? $input['fullName'] ?? $input['name'] ?? 'Explorer');
 $emailData = [
+    'username' => $username,
     'name' => $name,
     'email' => $email,
     'site_url' => $siteUrl,
@@ -149,40 +151,16 @@ $emailData = [
         'level' => $level,
         'sizes' => $sizeText
     ],
-    'product' => $matchedProduct,
     'use_cid' => true
 ];
 $htmlBody = renderRecommendationEmail($emailData);
 $subject = "🏔️ Your Next Adventure Awaits — สินค้าแนะนำพิเศษสำหรับคุณ | VIA ALTO";
 
-// 5. Prepare CID Embedded Images
+// 5. Prepare CID Embedded Images (Clean mountain backdrop + 3 DB product images + brand logo)
 $imagesDir = __DIR__ . '/images';
-$heroPath = $imagesDir . '/recom_hero_banner.jpg';
-
-// Personalize hero banner greeting with GD if available
-if (!empty($name) && strcasecmp($name, 'John Wick') !== 0 && file_exists($imagesDir . '/recom_hero_clean.jpg') && extension_loaded('gd')) {
-    $customHeroFile = $imagesDir . '/recom_hero_' . md5(strtolower($name)) . '.jpg';
-    if (!file_exists($customHeroFile)) {
-        $im = @imagecreatefromjpeg($imagesDir . '/recom_hero_clean.jpg');
-        if ($im) {
-            $white = imagecolorallocate($im, 255, 255, 255);
-            $greeting = 'HEY ' . strtoupper($name) . ',';
-            $fontPath = '/System/Library/Fonts/Helvetica.ttc';
-            if (file_exists($fontPath)) {
-                @imagettftext($im, 10, 0, 65, 34, $white, $fontPath, $greeting);
-            }
-            @imagejpeg($im, $customHeroFile, 95);
-            @imagedestroy($im);
-        }
-    }
-    if (file_exists($customHeroFile)) {
-        $heroPath = $customHeroFile;
-    }
-}
-
 $embeddedImages = [
     ['path' => $imagesDir . '/circular_logo.png', 'cid' => 'brand_logo', 'name' => 'circular_logo.png'],
-    ['path' => $heroPath, 'cid' => 'recom_hero', 'name' => 'recom_hero_banner.jpg'],
+    ['path' => $imagesDir . '/recom_hero_backdrop.jpg', 'cid' => 'recom_hero_bg', 'name' => 'recom_hero_backdrop.jpg'],
     ['path' => $imagesDir . '/recom_card_img_1.jpg', 'cid' => 'recom_prod_1', 'name' => 'recom_prod_1.jpg'],
     ['path' => $imagesDir . '/recom_card_img_2.jpg', 'cid' => 'recom_prod_2', 'name' => 'recom_prod_2.jpg'],
     ['path' => $imagesDir . '/recom_card_img_3.jpg', 'cid' => 'recom_prod_3', 'name' => 'recom_prod_3.jpg'],

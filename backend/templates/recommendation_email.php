@@ -1,55 +1,33 @@
 <?php
 /**
  * VIA ALTO — Personalized Product Recommendation Email Template
- * ออกแบบตามต้นแบบแบรนด์ VIA ALTO (Personalized Recommendation 3 Curated Products)
+ * ออกแบบตามต้นแบบแบรนด์ VIA ALTO (ดึงข้อมูลสินค้าจาก Database + แสดง Username จริงเป็นข้อความ HTML)
  * Fulfills Step 3: Personalized marketing based on user interest
  */
 
+require_once __DIR__ . '/../db.php';
+
 function renderRecommendationEmail($data) {
-    $name = htmlspecialchars($data['name'] ?? 'John Wick');
+    // 1. ดึง Username / ชื่อที่ผู้ใช้สมัครไว้ (แทน John Wick ที่เป็นตัวอย่าง)
+    $username = $data['username'] ?? $data['name'] ?? $data['fullName'] ?? 'Explorer';
+    $displayUsername = strtoupper(htmlspecialchars(trim($username)));
+    
     $siteUrl = rtrim($data['site_url'] ?? 'http://localhost:5173', '/');
 
-    // Default to the 3 curated picks from the reference design
-    $products = $data['products'] ?? [
-        [
-            'name' => 'Alpine 35L Backpack',
-            'category' => 'BACKPACKS',
-            'badge' => 'BEST SELLER',
-            'desc' => 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน',
-            'rating' => '128',
-            'price' => '฿2,490',
-            'cid' => 'recom_prod_1',
-            'img_url' => "{$siteUrl}/images/recom_card_img_1.jpg"
-        ],
-        [
-            'name' => 'Alpine Shell Jacket',
-            'category' => 'CLOTHING',
-            'badge' => 'TRENDING',
-            'desc' => 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ',
-            'rating' => '74',
-            'price' => '฿2,890',
-            'cid' => 'recom_prod_2',
-            'img_url' => "{$siteUrl}/images/recom_card_img_2.jpg"
-        ],
-        [
-            'name' => 'Terra Hiking Shoes',
-            'category' => 'FOOTWEAR',
-            'badge' => 'NEW',
-            'desc' => 'รองเท้าเดินป่า น้ำหนักเบา ยึดเกาะดีเยี่ยมทุกเส้นทาง',
-            'rating' => '96',
-            'price' => '฿3,290',
-            'cid' => 'recom_prod_3',
-            'img_url' => "{$siteUrl}/images/recom_card_img_3.jpg"
-        ]
-    ];
+    // 2. ดึงข้อมูลสินค้าและรูปภาพจาก Database จริง (PostgreSQL)
+    $productIds = $data['product_ids'] ?? [1, 4, 7];
+    $products = $data['products'] ?? getRecommendedProductsFromDatabase($productIds);
 
     $useCid = $data['use_cid'] ?? true;
     $logoSrc = $useCid ? 'cid:brand_logo' : "{$siteUrl}/images/circular_logo.png";
-    $heroSrc = $useCid ? 'cid:recom_hero' : "{$siteUrl}/images/recom_hero_banner.jpg";
+    $heroBgSrc = $useCid ? 'cid:recom_hero_bg' : "{$siteUrl}/images/recom_hero_backdrop.jpg";
 
+    // 3. Render 3 Product Cards from Database
     $productCols = '';
     foreach ($products as $i => $p) {
-        $pImg = $useCid ? ('cid:' . ($p['cid'] ?? "recom_prod_" . ($i + 1))) : ($p['img_url'] ?? "{$siteUrl}/images/recom_card_img_1.jpg");
+        $cidName = $p['cid'] ?? ("recom_prod_" . ($i + 1));
+        $imgFile = $p['image_file'] ?? "recom_card_img_" . ($i + 1) . ".jpg";
+        $pImg = $useCid ? ('cid:' . $cidName) : "{$siteUrl}/images/{$imgFile}";
         $pad = ($i === 0) ? 'padding: 0 6px 0 0;' : (($i === 1) ? 'padding: 0 4px;' : 'padding: 0 0 0 6px;');
 
         $productCols .= '
@@ -59,27 +37,27 @@ function renderRecommendationEmail($data) {
             <img src="' . $pImg . '" alt="' . htmlspecialchars($p['name']) . '" style="width: 100%; max-width: 190px; height: auto; display: block; border: 0;" />
           </div>
 
-          <!-- Category -->
+          <!-- Category (From DB) -->
           <div style="font-size: 8.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7D8D84; margin-top: 10px;">
             ' . htmlspecialchars($p['category']) . '
           </div>
 
-          <!-- Title -->
+          <!-- Title (From DB) -->
           <div style="font-size: 13px; font-weight: 700; color: #183C32; line-height: 1.3; margin-top: 4px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', sans-serif;">
             ' . htmlspecialchars($p['name']) . '
           </div>
 
-          <!-- Thai Description -->
+          <!-- Description (From DB) -->
           <div style="font-size: 9.5px; color: #6E7D75; line-height: 1.4; margin-top: 4px; min-height: 28px;">
             ' . htmlspecialchars($p['desc']) . '
           </div>
 
-          <!-- Stars & Review Count -->
+          <!-- Stars & Review Count (From DB) -->
           <div style="font-size: 10px; color: #183C32; margin-top: 6px;">
             ★★★★★ <span style="color: #7D8D84; font-size: 9px; font-weight: 500;">(' . htmlspecialchars($p['rating']) . ')</span>
           </div>
 
-          <!-- Price -->
+          <!-- Price (From DB) -->
           <div style="font-size: 15px; font-weight: 800; color: #183C32; margin-top: 6px; letter-spacing: 0.2px;">
             ' . htmlspecialchars($p['price']) . '
           </div>
@@ -145,10 +123,75 @@ function renderRecommendationEmail($data) {
             </td>
           </tr>
 
-          <!-- 2. Hero Section & Voucher Banner -->
+          <!-- 2. Hero Section (ข้อความ HTML แท้แสดง Username จริง + พื้นหลังรูปวิวภูเขา) -->
           <tr>
-            <td style="padding: 0; line-height: 0; background-color: #141A16;">
-              <img src="' . $heroSrc . '" alt="Your Next Adventure Awaits — VIA ALTO" style="width: 100%; max-width: 600px; height: auto; display: block; border: 0;" />
+            <td background="' . $heroBgSrc . '" bgcolor="#141E17" style="background-image: url(\'' . $heroBgSrc . '\'); background-size: cover; background-position: center right; background-repeat: no-repeat; padding: 34px 28px 26px; border-bottom: 1px solid #E5DFD7;">
+              <!--[if gte mso 9]>
+              <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:340px;">
+              <v:fill type="tile" src="' . $heroBgSrc . '" color="#141E17" />
+              <v:textbox inset="0,0,0,0">
+              <![endif]-->
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="left" style="vertical-align: top;">
+                    
+                    <!-- Username Greeting (Dynamic HTML Text) -->
+                    <div style="font-size: 11px; font-weight: 800; letter-spacing: 2.2px; text-transform: uppercase; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; text-shadow: 0 1px 4px rgba(0,0,0,0.7);">
+                      HEY ' . $displayUsername . ',
+                    </div>
+
+                    <!-- White Accent Line -->
+                    <div style="width: 32px; height: 2px; background-color: #FFFFFF; margin: 8px 0 14px;"></div>
+
+                    <!-- Headline (Georgia Serif) -->
+                    <h1 style="font-family: Georgia, \'Times New Roman\', serif; font-size: 28px; font-weight: 700; color: #FFFFFF; line-height: 1.15; margin: 0 0 12px; letter-spacing: 0.2px; text-shadow: 0 2px 6px rgba(0,0,0,0.8);">
+                      Your Next<br>Adventure Awaits
+                    </h1>
+
+                    <!-- Thai Description (Dynamic HTML Text) -->
+                    <p style="font-size: 11px; color: #E8DDCC; line-height: 1.5; margin: 0 0 22px; max-width: 330px; font-family: -apple-system, BlinkMacSystemFont, \'Noto Sans Thai\', sans-serif; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+                      เราได้คัดสรรสินค้าสำหรับการเดินทางครั้งต่อไปของคุณ พร้อมส่วนลดพิเศษสำหรับลูกค้าคนพิเศษของเรา
+                    </p>
+
+                    <!-- 10% OFF Voucher Card (Styled HTML Table) -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="background-color: #183C32; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.35); max-width: 500px;">
+                      <tr>
+                        <td style="padding: 10px 16px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <!-- Tag Icon -->
+                              <td width="36" style="vertical-align: middle; padding-right: 12px;">
+                                <div style="width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.4); border-radius: 6px; text-align: center; line-height: 30px; font-size: 14px; color: #FFFFFF;">
+                                  🏷️
+                                </div>
+                              </td>
+                              <!-- Voucher Info -->
+                              <td style="vertical-align: middle;">
+                                <div style="font-size: 8px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #A3E6CD;">
+                                  SPECIAL FOR YOU
+                                </div>
+                                <div style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px; line-height: 1.1; margin-top: 2px;">
+                                  10% OFF <span style="font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px; color: #EDE8E2; text-transform: uppercase; margin-left: 4px;">YOUR FIRST ORDER</span>
+                                </div>
+                                <div style="font-size: 9.5px; color: #E8DDCC; margin-top: 3px;">
+                                  ใช้โค้ด: <span style="color: #FFFFFF; font-weight: 800; background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 3px; letter-spacing: 1px;">WELCOME10</span>
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+
+              <!--[if gte mso 9]>
+              </v:textbox>
+              </v:rect>
+              <![endif]-->
             </td>
           </tr>
 
@@ -164,7 +207,7 @@ function renderRecommendationEmail($data) {
             </td>
           </tr>
 
-          <!-- 4. 3 Product Recommendation Columns -->
+          <!-- 4. 3 Product Recommendation Columns (From Database) -->
           <tr>
             <td style="padding: 0 24px 28px; background-color: #FAF7F2;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">

@@ -403,13 +403,50 @@ export default function EmailPreviewModal({
                       </div>
                     </div>
 
-                    {/* 2. Hero Section & Contour Voucher Banner */}
-                    <div className="w-full bg-[#141A16] overflow-hidden">
-                      <img
-                        src="/images/recom_hero_banner.jpg"
-                        alt="Your Next Adventure Awaits"
-                        className="w-full h-auto object-cover block"
-                      />
+                    {/* 2. Hero Section (Real HTML Text over Alpine Mountain Backdrop) */}
+                    <div
+                      className="w-full bg-[#141E17] bg-cover bg-right bg-no-repeat p-5 relative border-b border-[#E5DFD7]"
+                      style={{ backgroundImage: "url('/images/recom_hero_backdrop.jpg')" }}
+                    >
+                      <div className="relative z-10 max-w-[280px]">
+                        {/* Dynamic Registered Username */}
+                        <div className="text-[10px] font-extrabold tracking-[2px] uppercase text-white font-sans drop-shadow-md">
+                          HEY {userName.toUpperCase()},
+                        </div>
+                        <div className="w-7 h-[2px] bg-white my-2.5" />
+
+                        {/* Title */}
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold text-white leading-tight drop-shadow-md mb-2">
+                          Your Next<br />Adventure Awaits
+                        </h2>
+
+                        {/* Description */}
+                        <p className="text-[9.5px] text-[#E8DDCC] leading-relaxed mb-4 drop-shadow">
+                          {currentLang === 'th'
+                            ? 'เราได้คัดสรรสินค้าสำหรับการเดินทางครั้งต่อไปของคุณ พร้อมส่วนลดพิเศษสำหรับลูกค้าคนพิเศษของเรา'
+                            : 'We have curated technical equipment tailored to your upcoming ascents with special private savings.'}
+                        </p>
+
+                        {/* 10% OFF Voucher Card */}
+                        <div className="bg-[#183C32]/95 border border-white/20 rounded-lg p-2.5 shadow-lg flex items-center gap-2.5 backdrop-blur-sm">
+                          <div className="w-7 h-7 rounded border border-white/30 flex items-center justify-center text-xs text-white">
+                            🏷️
+                          </div>
+                          <div>
+                            <span className="text-[7.5px] font-bold tracking-wider text-[#A3E6CD] uppercase block">
+                              SPECIAL FOR YOU
+                            </span>
+                            <div className="text-xs font-bold text-white tracking-wide leading-none my-0.5">
+                              10% OFF <span className="text-[8px] text-stone-200 font-medium">YOUR FIRST ORDER</span>
+                            </div>
+                            <span className="text-[8px] text-beige">
+                              {currentLang === 'th' ? 'ใช้โค้ด:' : 'Use Code:'}{' '}
+                              <strong className="text-white bg-black/30 px-1 py-0.5 rounded font-mono">WELCOME10</strong>
+                            </span>
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
 
                     {/* 3. Section Title: OUR TOP PICKS FOR YOU */}
