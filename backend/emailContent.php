@@ -1,8 +1,7 @@
 <?php
 /**
- * VIA ALTO — Email Content Template
- * กำหนดตัวแปร $bodyContent สำหรับใช้ใน sendMail.php (บรรทัดที่ 25)
- * ตามข้อกำหนดเพิ่มเติมในใบงาน
+ * VIA ALTO — Newsletter Welcome Email Template
+ * ออกแบบตามต้นแบบแบรนด์ VIA ALTO (พร้อมโลโก้ทรงกลมและ 4 จุดเด่น)
  */
 
 $bodyContent = '
@@ -11,80 +10,160 @@ $bodyContent = '
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ยินดีต้อนรับสู่ VIA ALTO</title>
+  <title>ขอบคุณที่สมัครรับข่าวสาร — VIA ALTO</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0E1411; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Noto Sans Thai\', sans-serif; color: #FFFFFF;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0E1411; padding: 24px 0;">
+<body style="margin: 0; padding: 0; background-color: #EDE8E2; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Noto Sans Thai\', sans-serif; -webkit-font-smoothing: antialiased;">
+  
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #EDE8E2; padding: 30px 10px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" style="max-width: 580px; background-color: #141A16; border: 1px solid #28362F; border-radius: 16px; overflow: hidden; margin: 0 16px;">
+        <!-- Main Email Container (600px Max Width) -->
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #FAF7F2; border-radius: 4px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.08);">
           
-          <!-- Header Banner -->
+          <!-- 1. Header (Off-white / Cream with Circular Logo + Slogan) -->
           <tr>
-            <td style="background-color: #183C32; padding: 28px 24px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h1 style="margin: 0; font-family: Georgia, serif; font-size: 26px; letter-spacing: 4px; color: #FFFFFF;">VIA ALTO</h1>
-              <p style="margin: 6px 0 0; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #E8DDCC;">The Path to Higher Ground • Alpine Outdoor Standard</p>
+            <td style="padding: 20px 28px; background-color: #FAF7F2; border-bottom: 1px solid #E5DFD7;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <!-- Left: Circular Logo & Brand Name -->
+                  <td align="left" style="vertical-align: middle;">
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="vertical-align: middle; padding-right: 12px;">
+                          <img src="cid:brand_logo" alt="VIA ALTO Logo" style="width: 44px; height: 44px; border-radius: 50%; display: block; object-fit: cover; border: 1px solid rgba(24,60,50,0.15);" />
+                        </td>
+                        <td style="vertical-align: middle;">
+                          <div style="font-family: Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; color: #183C32; line-height: 1.1;">VIA ALTO</div>
+                          <div style="font-size: 8.5px; letter-spacing: 2.2px; text-transform: uppercase; color: #5C6E63; font-weight: 600; margin-top: 3px;">OUTDOOR EQUIPMENT</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <!-- Right: Slogan GO BEYOND. -->
+                  <td align="right" style="vertical-align: middle;">
+                    <span style="font-size: 11px; font-weight: 800; letter-spacing: 2.5px; color: #183C32; text-transform: uppercase;">GO BEYOND.</span>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Welcome Message -->
+          <!-- 2. Hero Section (Mountain Landscape with Typography) -->
           <tr>
-            <td style="padding: 28px 24px 16px; text-align: center;">
-              <h2 style="margin: 0 0 10px; font-size: 22px; font-weight: 700; color: #FFFFFF;">ยินดีต้อนรับสู่ครอบครัว VIA ALTO 🏔️</h2>
-              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #CBD5E1;">
-                ขอบคุณที่ร่วมเป็นส่วนหนึ่งของคอมมูนิตี้นักสำรวจ เราขอมอบของขวัญต้อนรับสมาชิกใหม่เพื่อเป็นก้าวแรกสู่อิสรภาพบนยอดเขาสูง
+            <td style="padding: 0; line-height: 0; background-color: #141A16;">
+              <img src="cid:hero_banner" alt="ขอบคุณที่สมัครรับข่าวสาร — VIA ALTO" style="width: 100%; max-width: 600px; height: auto; display: block; border: 0;" />
+            </td>
+          </tr>
+
+          <!-- 3. What You Will Receive (สิ่งที่จะได้รับจากเรา) -->
+          <tr>
+            <td style="padding: 38px 24px 30px; background-color: #FAF7F2; text-align: center;">
+              <h2 style="margin: 0 0 28px; font-size: 22px; font-weight: 800; color: #183C32; letter-spacing: 0.5px;">สิ่งที่จะได้รับจากเรา</h2>
+              
+              <!-- 4 Feature Columns -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">
+                <tr>
+                  
+                  <!-- Feature 1: Member Promotion -->
+                  <td width="25%" align="center" style="vertical-align: top; padding: 0 6px 0 0; border-right: 1px solid #E5DFD7;">
+                    <div style="height: 48px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                      <img src="cid:icon_promo" alt="โปรโมชั่นพิเศษ" style="width: 36px; height: auto; display: block; margin: 0 auto;" />
+                    </div>
+                    <div style="font-size: 12px; font-weight: 700; color: #183C32; line-height: 1.35; margin-bottom: 6px;">โปรโมชั่นพิเศษ<br>เฉพาะสมาชิก</div>
+                    <div style="font-size: 10px; color: #6E7D75; line-height: 1.4;">รับส่วนลดและข้อเสนอ<br>สุดพิเศษก่อนใคร</div>
+                  </td>
+
+                  <!-- Feature 2: New Arrivals -->
+                  <td width="25%" align="center" style="vertical-align: top; padding: 0 6px; border-right: 1px solid #E5DFD7;">
+                    <div style="height: 48px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                      <img src="cid:icon_new" alt="สินค้าใหม่" style="width: 36px; height: auto; display: block; margin: 0 auto;" />
+                    </div>
+                    <div style="font-size: 12px; font-weight: 700; color: #183C32; line-height: 1.35; margin-bottom: 6px;">สินค้าใหม่<br>และคอลเลกชันล่าสุด</div>
+                    <div style="font-size: 10px; color: #6E7D75; line-height: 1.4;">อัปเดตคอลเลกชันใหม่<br>และสินค้าน่าสนใจก่อนใคร</div>
+                  </td>
+
+                  <!-- Feature 3: Inspiration & Stories -->
+                  <td width="25%" align="center" style="vertical-align: top; padding: 0 6px; border-right: 1px solid #E5DFD7;">
+                    <div style="height: 48px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                      <img src="cid:icon_mountain" alt="เรื่องราวและแรงบันดาลใจ" style="width: 36px; height: auto; display: block; margin: 0 auto;" />
+                    </div>
+                    <div style="font-size: 12px; font-weight: 700; color: #183C32; line-height: 1.35; margin-bottom: 6px;">เรื่องราวและแรงบันดาลใจ<br>จากการผจญภัย</div>
+                    <div style="font-size: 10px; color: #6E7D75; line-height: 1.4;">บทความ แนะนำเส้นทาง<br>และไลฟ์สไตล์สายเดินป่า</div>
+                  </td>
+
+                  <!-- Feature 4: Tips & Product Care -->
+                  <td width="25%" align="center" style="vertical-align: top; padding: 0 0 0 6px;">
+                    <div style="height: 48px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                      <img src="cid:icon_guide" alt="เคล็ดลับและคำแนะนำ" style="width: 36px; height: auto; display: block; margin: 0 auto;" />
+                    </div>
+                    <div style="font-size: 12px; font-weight: 700; color: #183C32; line-height: 1.35; margin-bottom: 6px;">เคล็ดลับและคำแนะนำ<br>การใช้งานสินค้า</div>
+                    <div style="font-size: 10px; color: #6E7D75; line-height: 1.4;">ดูแลอุปกรณ์ของคุณ<br>ให้ใช้งานได้ยาวนานยิ่งขึ้น</div>
+                  </td>
+
+                </tr>
+              </table>
+
+              <!-- Action Button: Start Exploring -->
+              <div style="text-align: center; margin-top: 10px;">
+                <a href="http://localhost:5173" style="display: inline-block; background-color: #183C32; color: #FFFFFF; text-decoration: none; padding: 13px 36px; border-radius: 24px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(24,60,50,0.3);">
+                  เริ่มต้นสำรวจสินค้า &rarr;
+                </a>
+              </div>
+
+              <!-- Trust Subtext -->
+              <p style="margin: 18px 0 0; font-size: 11px; color: #6E7D75; font-style: normal;">
+                ขอบคุณที่ไว้วางใจ VIA ALTO แล้วพบกันในอีเมลฉบับต่อไป
               </p>
             </td>
           </tr>
 
-          <!-- Gift Voucher Box -->
+          <!-- 4. Footer (Deep Forest Alpine Green with Circular Logo & Socials) -->
           <tr>
-            <td style="padding: 0 24px 20px;">
-              <div style="background: linear-gradient(180deg, rgba(24, 60, 50, 0.8) 0%, rgba(13, 26, 21, 0.95) 100%); border: 1.5px solid #2A6E58; border-radius: 12px; padding: 20px; text-align: center;">
-                <span style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #A3E6CD; font-weight: 700;">WELCOME EXPEDITION VOUCHER</span>
-                <div style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin: 6px 0 10px;">รับส่วนลด 10% สำหรับคำสั่งซื้อแรก</div>
-                <div style="display: inline-block; background-color: #183C32; border: 1.5px dashed #E8DDCC; border-radius: 8px; padding: 8px 20px; font-family: monospace; font-size: 16px; font-weight: 700; letter-spacing: 3px; color: #E8DDCC;">
-                  CODE: GOBEYOND10
-                </div>
-                <p style="margin: 8px 0 0; font-size: 11px; color: #8E9B93;">*ใช้ได้กับสินค้าทุกรายการ ไม่มีขั้นต่ำ</p>
-              </div>
-            </td>
-          </tr>
+            <td style="background-color: #11241D; padding: 24px 28px; border-top: 1px solid rgba(255,255,255,0.08);">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <!-- Left: Circular Logo & Text -->
+                  <td align="left" style="vertical-align: middle;">
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="vertical-align: middle; padding-right: 12px;">
+                          <img src="cid:brand_logo" alt="VIA ALTO" style="width: 38px; height: 38px; border-radius: 50%; display: block; border: 1px solid rgba(255,255,255,0.2);" />
+                        </td>
+                        <td style="vertical-align: middle;">
+                          <div style="font-family: Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; color: #FFFFFF; line-height: 1.1;">VIA ALTO</div>
+                          <div style="font-size: 7.5px; letter-spacing: 1.8px; text-transform: uppercase; color: #9FB3A6; margin-top: 2px;">OUTDOOR EQUIPMENT</div>
+                          <div style="font-size: 8px; letter-spacing: 1.5px; color: #E8DDCC; font-weight: 700; margin-top: 4px;">GO BEYOND.</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
 
-          <!-- Recommended Product Poster (ข้อกำหนดที่ 2: แนบรูปสินค้าผ่าน CID) -->
-          <tr>
-            <td style="padding: 0 24px 24px;">
-              <div style="background-color: #161D19; border: 1px solid #28362F; border-radius: 12px; padding: 20px; text-align: center;">
-                <span style="display: inline-block; background-color: #1E2822; color: #A3E6CD; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px;">
-                  🌟 สินค้าแนะนำสำหรับสมาชิกใหม่
-                </span>
-                
-                <!-- เรียกรูปภาพสินค้าแนะนำผ่าน CID (Embedded Image) ตามโจทย์ -->
-                <div style="background-color: #F7F5F0; border-radius: 8px; padding: 16px; margin-bottom: 14px; text-align: center;">
-                  <img src="cid:product_poster" alt="Alpine 35L Technical Backpack" style="width: 100%; max-width: 280px; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
-                </div>
+                  <!-- Middle Divider -->
+                  <td width="30" align="center" style="vertical-align: middle;">
+                    <div style="width: 1px; height: 34px; background-color: rgba(255,255,255,0.15); margin: 0 auto;"></div>
+                  </td>
 
-                <h3 style="margin: 0 0 6px; font-size: 18px; color: #FFFFFF; font-weight: 700;">Alpine 35L Technical Backpack</h3>
-                <p style="margin: 0 0 12px; font-size: 12.5px; color: #8E9B93; line-height: 1.5;">
-                  เป้เดินป่าทางไกลระดับโปร ผลิตจากผ้า 210D High-Tenacity Ripstop ทนต่อแรงเสียดสี พร้อมระบบระบายอากาศหลังและผ้าคลุมกันฝนในตัว น้ำหนักเบาเพียง 980 กรัม
-                </p>
-
-                <div style="font-size: 18px; font-weight: 700; color: #E8DDCC; margin-bottom: 16px;">
-                  ราคาพิเศษ ฿2,490 <span style="font-size: 13px; color: #6C7D73; text-decoration: line-through;">(ปกติ ฿3,200)</span>
-                </div>
-
-                <a href="http://localhost:5173" style="display: block; background-color: #E8DDCC; color: #183C32; text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 13px 0; border-radius: 8px;">
-                  ช้อปสินค้ารุ่นนี้เลย →
-                </a>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="border-top: 1px solid rgba(255,255,255,0.08); padding: 20px 24px; text-align: center; font-size: 11px; color: #6C7D73;">
-              <p style="margin: 0 0 8px;">คุณได้รับอีเมลนี้เนื่องจากได้สมัครรับข่าวสารที่ <a href="http://localhost:5173" style="color: #A3E6CD; text-decoration: none;">via-alto.com</a></p>
-              <p style="margin: 0; color: #4D5B53;">© 2026 VIA ALTO Co., Ltd. • Dolomites Elevation 3,842M</p>
+                  <!-- Right: Social Circle Badges -->
+                  <td align="right" style="vertical-align: middle;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="display: inline-block;">
+                      <tr>
+                        <td style="padding: 0 4px;">
+                          <a href="https://facebook.com" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none; font-weight: bold;">f</a>
+                        </td>
+                        <td style="padding: 0 4px;">
+                          <a href="https://instagram.com" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">📸</a>
+                        </td>
+                        <td style="padding: 0 4px;">
+                          <a href="https://youtube.com" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">▶</a>
+                        </td>
+                        <td style="padding: 0 4px;">
+                          <a href="http://localhost:5173" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">🔗</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -92,6 +171,7 @@ $bodyContent = '
       </td>
     </tr>
   </table>
+
 </body>
 </html>
 ';

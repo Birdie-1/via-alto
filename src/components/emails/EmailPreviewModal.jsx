@@ -212,118 +212,162 @@ export default function EmailPreviewModal({
               </div>
 
               {/* Email Body Scrollable Container */}
-              <div className="overflow-y-auto max-h-[620px] scrollbar-thin scrollbar-thumb-stone-700 bg-[#161a17] text-white">
+              <div className={`overflow-y-auto max-h-[620px] scrollbar-thin scrollbar-thumb-stone-700 ${activeTemplate === 'welcome' ? 'bg-[#EDE8E2]' : 'bg-[#161a17] text-white'}`}>
                 
                 {activeTemplate === 'welcome' ? (
                   /* ========================================================================= */
-                  /* TEMPLATE 1: WELCOME & NEWSLETTER SUBSCRIPTION EMAIL (Caffellina-style)     */
+                  /* TEMPLATE 1: WELCOME & NEWSLETTER SUBSCRIPTION EMAIL (VIA ALTO Standard)   */
                   /* ========================================================================= */
-                  <div className="p-4 space-y-5">
+                  <div className="bg-[#FAF7F2] text-[#183C32] font-sans antialiased shadow-md">
                     
-                    {/* Sage Green Brand Pill Banner */}
-                    <div className="bg-[#8EA690]/90 text-[#14231A] rounded-2xl p-5 text-center shadow-md">
-                      <div className="flex justify-center items-center gap-2 mb-1">
-                        <div className="w-6 h-6 rounded-full bg-[#183C32] flex items-center justify-center text-beige">
-                          <Compass size={14} />
-                        </div>
-                        <span className="font-serif text-2xl font-bold tracking-widest">
-                          VIA ALTO
-                        </span>
-                      </div>
-                      <p className="text-[11px] font-sans tracking-wide text-[#14231A]/80">
-                        {currentLang === 'th'
-                          ? 'อุปกรณ์เดินป่าอัลไพน์ · สู่จุดสูงสุดแห่งการสำรวจ'
-                          : 'Alpine Outdoor Standard · The Path to Higher Ground'}
-                      </p>
-                    </div>
-
-                    {/* Email Main Headline */}
-                    <div className="text-center pt-2 space-y-2">
-                      <h2 className="font-serif text-2xl font-bold text-white tracking-tight">
-                        {currentLang === 'th'
-                          ? 'ขอบคุณที่สมัครรับข่าวสาร'
-                          : 'Welcome to Explorer Club'}
-                      </h2>
-                      <p className="text-xs text-stone-300 font-sans leading-relaxed">
-                        {currentLang === 'th' ? (
-                          <>
-                            อีเมล <span className="text-beige underline">{userEmail}</span> ถูกเพิ่มในรายชื่อสมาชิก VIA ALTO เรียบร้อยแล้ว
-                          </>
-                        ) : (
-                          <>
-                            Your email <span className="text-beige underline">{userEmail}</span> has been successfully enrolled in the VIA ALTO Explorer Registry.
-                          </>
-                        )}
-                      </p>
-                    </div>
-
-                    {/* Explanation Text */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-stone-300 font-sans leading-relaxed">
-                      {currentLang === 'th' ? (
-                        <p>
-                          ต่อจากนี้คุณสามารถรับข่าวสารอุปกรณ์อัลไพน์รุ่นใหม่ล่าสุด เทคนิคการเดินทางในสภาพอากาศแปรปรวน และสิทธิพิเศษเฉพาะสมาชิกผ่านอีเมลนี้ได้
-                        </p>
-                      ) : (
-                        <p>
-                          You are now on the official dispatch for exclusive technical alpine drops, Dolomites expedition journals, and private member privileges.
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Alpine Points Welcome Credit Card */}
-                    <div className="bg-[#183C32] border border-beige/30 rounded-xl p-4 flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] uppercase tracking-brand font-bold text-beige block">
-                          {currentLang === 'th' ? 'สิทธิพิเศษสมาชิกใหม่' : 'NEW MEMBER CREDIT'}
-                        </span>
-                        <span className="text-xs text-stone-200 font-sans">
-                          {currentLang === 'th' ? 'รับแต้มสะสมทันที' : 'Alpine Points Credited'}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-serif text-2xl font-bold text-beige">
-                          +500 AP
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Tip / Recommendation Helper Card (Exact match to Caffellina's coffee tip card) */}
-                    <div className="bg-[#242925] border border-white/10 rounded-xl p-4 text-xs font-sans text-stone-200 space-y-2">
-                      <div className="flex items-start gap-2.5">
-                        <span className="text-base leading-none">🏔️</span>
+                    {/* 1. Header (Cream background with Circular Logo & GO BEYOND) */}
+                    <div className="px-5 py-4 border-b border-[#E5DFD7] flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src="/images/circular_logo.png"
+                          alt="VIA ALTO Logo"
+                          className="w-10 h-10 rounded-full object-cover border border-[#183C32]/20 shadow-sm"
+                          onError={(e) => { e.target.src = '/images/logo.png'; }}
+                        />
                         <div>
-                          <span className="font-semibold text-white">
-                            {currentLang === 'th' ? 'แนะนำ:' : 'Alpine Tip:'}
-                          </span>{' '}
-                          {currentLang === 'th'
-                            ? 'ใช้ตัวช่วยค้นหาอุปกรณ์ (Gear Finder) บนเว็บไซต์ เพื่อค้นหาชุดอุปกรณ์ที่เหมาะกับสภาพภูมิประเทศและสภาพอากาศของคุณ'
-                            : 'Use the interactive Gear Finder on our website to discover customized equipment engineered for your specific climate and route.'}
+                          <span className="font-serif text-lg font-bold tracking-wider text-[#183C32] block leading-none">
+                            VIA ALTO
+                          </span>
+                          <span className="text-[8px] tracking-[2px] font-semibold text-[#5C6E63] uppercase block mt-1">
+                            OUTDOOR EQUIPMENT
+                          </span>
                         </div>
                       </div>
+                      <span className="text-[10px] font-extrabold tracking-[2px] text-[#183C32] uppercase">
+                        GO BEYOND.
+                      </span>
                     </div>
 
-                    {/* Primary Button */}
-                    <div className="pt-2">
-                      <button
-                        onClick={() => {
-                          onClose();
-                          onNavigate?.('home');
-                        }}
-                        className="w-full py-3.5 bg-[#E8DDCC] hover:bg-white text-[#183C32] rounded-xl font-bold text-xs uppercase tracking-brand transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        <span>{currentLang === 'th' ? 'กลับไปที่หน้าร้าน' : 'RETURN TO STORE'}</span>
-                        <ArrowRight size={14} />
-                      </button>
+                    {/* 2. Hero Image Banner (Mountain + Typography) */}
+                    <div className="w-full bg-[#141A16] overflow-hidden">
+                      <img
+                        src="/images/email_hero_banner.jpg"
+                        alt="Welcome to VIA ALTO"
+                        className="w-full h-auto object-cover block"
+                      />
                     </div>
 
-                    {/* Footer */}
-                    <div className="pt-6 pb-2 text-center text-[10px] text-stone-400 font-sans space-y-1">
-                      <p>VIA ALTO · กาแฟและอุปกรณ์ที่ดี เติมวันให้สดใส</p>
-                      <p className="text-stone-500">
+                    {/* 3. สิ่งที่จะได้รับจากเรา (4 Columns with Extracted Icons) */}
+                    <div className="px-4 py-7 text-center">
+                      <h3 className="text-base font-bold text-[#183C32] mb-6 tracking-wide">
+                        {currentLang === 'th' ? 'สิ่งที่จะได้รับจากเรา' : 'What You Will Receive'}
+                      </h3>
+
+                      <div className="grid grid-cols-4 gap-1.5 mb-7">
+                        {/* Benefit 1 */}
+                        <div className="border-r border-[#E5DFD7] pr-1.5 flex flex-col items-center text-center">
+                          <div className="h-10 flex items-center justify-center mb-2">
+                            <img src="/images/icon_promo.png" alt="โปรโมชั่นพิเศษ" className="h-7 w-auto object-contain" />
+                          </div>
+                          <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
+                            {currentLang === 'th' ? 'โปรโมชั่นพิเศษ' : 'Special Offers'}<br />
+                            <span className="text-[9px] font-semibold text-[#183C32]">{currentLang === 'th' ? 'เฉพาะสมาชิก' : 'Members Only'}</span>
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight">
+                            {currentLang === 'th' ? 'รับส่วนลดและข้อเสนอสุดพิเศษก่อนใคร' : 'Exclusive discounts and member perks'}
+                          </p>
+                        </div>
+
+                        {/* Benefit 2 */}
+                        <div className="border-r border-[#E5DFD7] px-1 flex flex-col items-center text-center">
+                          <div className="h-10 flex items-center justify-center mb-2">
+                            <img src="/images/icon_new.png" alt="สินค้าใหม่" className="h-7 w-auto object-contain" />
+                          </div>
+                          <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
+                            {currentLang === 'th' ? 'สินค้าใหม่' : 'New Arrivals'}<br />
+                            <span className="text-[9px] font-semibold text-[#183C32]">{currentLang === 'th' ? 'และคอลเลกชันล่าสุด' : 'Latest Drops'}</span>
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight">
+                            {currentLang === 'th' ? 'อัปเดตคอลเลกชันใหม่และสินค้าน่าสนใจ' : 'Latest collections and alpine gear'}
+                          </p>
+                        </div>
+
+                        {/* Benefit 3 */}
+                        <div className="border-r border-[#E5DFD7] px-1 flex flex-col items-center text-center">
+                          <div className="h-10 flex items-center justify-center mb-2">
+                            <img src="/images/icon_mountain.png" alt="เรื่องราวและแรงบันดาลใจ" className="h-7 w-auto object-contain" />
+                          </div>
+                          <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
+                            {currentLang === 'th' ? 'แรงบันดาลใจ' : 'Adventures'}<br />
+                            <span className="text-[9px] font-semibold text-[#183C32]">{currentLang === 'th' ? 'จากการผจญภัย' : '& Stories'}</span>
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight">
+                            {currentLang === 'th' ? 'บทความ แนะนำเส้นทางและไลฟ์สไตล์' : 'Route guides and trail inspiration'}
+                          </p>
+                        </div>
+
+                        {/* Benefit 4 */}
+                        <div className="pl-1 flex flex-col items-center text-center">
+                          <div className="h-10 flex items-center justify-center mb-2">
+                            <img src="/images/icon_guide.png" alt="เคล็ดลับและคำแนะนำ" className="h-7 w-auto object-contain" />
+                          </div>
+                          <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
+                            {currentLang === 'th' ? 'เคล็ดลับและวิธีใช้' : 'Gear Care'}<br />
+                            <span className="text-[9px] font-semibold text-[#183C32]">{currentLang === 'th' ? 'การใช้งานสินค้า' : '& Tips'}</span>
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight">
+                            {currentLang === 'th' ? 'ดูแลอุปกรณ์ของคุณให้ใช้งานได้ยาวนาน' : 'Maintain equipment for longer life'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Action Button: Start Exploring */}
+                      <div className="pt-1">
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onNavigate?.('home');
+                          }}
+                          className="w-full max-w-xs mx-auto py-3 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full font-bold text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <span>{currentLang === 'th' ? 'เริ่มต้นสำรวจสินค้า →' : 'EXPLORE COLLECTION →'}</span>
+                        </button>
+                      </div>
+
+                      {/* Subtext */}
+                      <p className="mt-4 text-[10px] text-[#6E7D75]">
                         {currentLang === 'th'
-                          ? 'อีเมลนี้ส่งโดยระบบอัตโนมัติของ VIA ALTO'
-                          : 'This is an automated dispatch from VIA ALTO Explorer Registry.'}
+                          ? 'ขอบคุณที่ไว้วางใจ VIA ALTO แล้วพบกันในอีเมลฉบับต่อไป'
+                          : 'Thank you for trusting VIA ALTO. See you in the next dispatch.'}
                       </p>
+                    </div>
+
+                    {/* 4. Footer (Deep Forest Alpine Green with Circular Logo & Socials) */}
+                    <div className="bg-[#11241D] px-5 py-4 border-t border-white/10 flex items-center justify-between text-white">
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src="/images/circular_logo.png"
+                          alt="VIA ALTO"
+                          className="w-8 h-8 rounded-full object-cover border border-white/20"
+                          onError={(e) => { e.target.src = '/images/logo.png'; }}
+                        />
+                        <div>
+                          <span className="font-serif text-sm font-bold tracking-wider block leading-none">
+                            VIA ALTO
+                          </span>
+                          <span className="text-[7px] tracking-[1.5px] uppercase text-[#9FB3A6] block mt-0.5">
+                            OUTDOOR EQUIPMENT
+                          </span>
+                          <span className="text-[7.5px] tracking-[1.2px] text-[#E8DDCC] font-bold block mt-0.5">
+                            GO BEYOND.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="h-7 w-[1px] bg-white/20 mx-2" />
+
+                      {/* Social Badges */}
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px] font-bold">f</span>
+                        <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">📸</span>
+                        <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">▶</span>
+                        <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">🔗</span>
+                      </div>
                     </div>
 
                   </div>

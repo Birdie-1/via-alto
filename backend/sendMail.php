@@ -58,11 +58,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // อีเมลล์ผู้รับ (รับตัวแปรจากฟอร์ม subscribe)
             $mail->addAddress($email);
 
-            // ข้อกำหนดที่ 2: แนบรูปสินค้าแนะนำสำหรับลูกค้าใหม่ด้วย addEmbeddedImage
-            // โดยเรียกใช้ใน HTML ด้วยคำสั่ง <img src="cid:product_poster">
-            $posterPath = __DIR__ . '/images/product_poster.jpg';
-            if (file_exists($posterPath)) {
-                $mail->addEmbeddedImage($posterPath, 'product_poster');
+            // แนบรูปภาพประกอบและโลโก้ทรงกลมตามการออกแบบใหม่ผ่าน CID
+            if (file_exists(__DIR__ . '/images/circular_logo.png')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/circular_logo.png', 'brand_logo');
+            }
+            if (file_exists(__DIR__ . '/images/email_hero_banner.jpg')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/email_hero_banner.jpg', 'hero_banner');
+            }
+            if (file_exists(__DIR__ . '/images/icon_promo.png')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/icon_promo.png', 'icon_promo');
+            }
+            if (file_exists(__DIR__ . '/images/icon_new.png')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/icon_new.png', 'icon_new');
+            }
+            if (file_exists(__DIR__ . '/images/icon_mountain.png')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/icon_mountain.png', 'icon_mountain');
+            }
+            if (file_exists(__DIR__ . '/images/icon_guide.png')) {
+                $mail->addEmbeddedImage(__DIR__ . '/images/icon_guide.png', 'icon_guide');
             }
 
             // ข้อกำหนดที่ 1: ดึงเนื้อหาอีเมลจากไฟล์ emailContent.php ในบรรทัดที่ 25
@@ -71,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isHTML(true);
 
             // ข้อกำหนดที่ 4: กำหนดหัวข้อหลักแสดงใน inbox ผู้รับ
-            $mail->Subject = '🏔️ ยินดีต้อนรับสู่ VIA ALTO — รับส่วนลดพิเศษ 10% สำหรับคำสั่งซื้อแรก!';
+            $mail->Subject = '🏔️ ขอบคุณที่สมัครรับข่าวสาร — ยินดีต้อนรับสู่ VIA ALTO | GO BEYOND.';
             $mail->Body    = $bodyContent;
 
             $mail->send();
