@@ -4,6 +4,9 @@ header('Content-Type: text/html; charset=utf-8');
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// โหลดการตั้งค่า .env เพื่อความปลอดภัย (ไม่ให้รหัสผ่านหลุดขึ้น Git)
+require_once __DIR__ . '/env_loader.php';
+
 // โหลดไฟล์ class
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
@@ -15,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($email) {
         $mail = new PHPMailer(true);
         try {
-            // ตั้งค่า SMTP (สามารถแก้ไขหรือใส่รหัสผ่าน Gmail App Password ของคุณที่นี่)
+            // ดึงค่าบัญชีผู้ส่งและรหัสผ่านจาก .env (หรือแก้ไขที่นี่หากไม่ได้ใช้ .env)
             $gmailUser = getenv('SMTP_USER') ?: 'xxxx@gmail.com'; // ระบุอีเมลล์ผู้ส่ง
             $gmailPass = getenv('SMTP_PASS') ?: 'xxxx xxxx xxxx xxxx'; // ใช้ app password 16 หลัก
 

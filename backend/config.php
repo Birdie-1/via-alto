@@ -3,6 +3,8 @@
  * VIA ALTO — Email Backend Configuration
  */
 
+require_once __DIR__ . '/env_loader.php';
+
 // Allow cross-origin requests from frontend (localhost:5173, etc.)
 if (!function_exists('handleCors')) {
     function handleCors() {
