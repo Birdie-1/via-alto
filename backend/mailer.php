@@ -8,7 +8,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function sendViaAltoEmail($toEmail, $toName, $subject, $htmlBody, $altBody = '') {
+function sendViaAltoEmail($toEmail, $toName, $subject, $htmlBody, $altBody = '', $embeddedImages = []) {
     $config = require __DIR__ . '/config.php';
 
     // 1. If driver is 'log' or SMTP is unconfigured, record email into logs and generate preview HTML file
@@ -65,6 +65,15 @@ function sendViaAltoEmail($toEmail, $toName, $subject, $htmlBody, $altBody = '')
         $mail->Subject = $subject;
         $mail->Body    = $htmlBody;
         $mail->AltBody = $altBody ?: strip_tags($htmlBody);
+
+        // Embedded Images (CID)
+        if (!empty($embeddedImages)) {
+            foreach ($embeddedImages as $img) {
+                if (isset($img['path']) && file_exists($img['path']) && isset($img['cid'])) {
+                    $mail->addEmbeddedImage($img['path'], $img['cid'], $img['name'] ?? basename($img['path']));
+                }
+            }
+        }
 
         $mail->send();
 

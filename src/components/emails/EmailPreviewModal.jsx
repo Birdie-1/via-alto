@@ -373,198 +373,257 @@ export default function EmailPreviewModal({
                   </div>
                 ) : (
                   /* ========================================================================= */
-                  /* TEMPLATE 2: PERSONALIZED RECOMMENDATION EMAIL (Caffellina-style)           */
+                  /* TEMPLATE 2: PERSONALIZED RECOMMENDATION EMAIL (VIA ALTO Standard)         */
                   /* ========================================================================= */
-                  <div className="p-4 space-y-5">
+                  <div className="bg-[#FAF7F2] text-[#183C32] font-sans antialiased shadow-md">
                     
-                    {/* Top Hero Banner */}
-                    <div className="rounded-2xl overflow-hidden relative shadow-md">
-                      <img
-                        src="/images/hero.jpg"
-                        alt="Alpine Landscape"
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#161a17] via-[#161a17]/40 to-transparent" />
-                      <div className="absolute bottom-3 left-4 right-4 flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-white/90 p-0.5">
-                          <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain" />
-                        </div>
-                        <span className="font-serif text-sm font-bold tracking-widest text-white">
-                          VIA ALTO
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Welcome User Header */}
-                    <div className="text-center space-y-1.5 pt-1">
-                      <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
-                        {currentLang === 'th'
-                          ? `ยินดีต้อนรับคุณ ${userName}`
-                          : `Welcome, ${userName}`}
-                      </h2>
-                      <p className="text-xs text-stone-300 font-sans leading-relaxed">
-                        {currentLang === 'th'
-                          ? 'สมัครสมาชิกเรียบร้อยแล้ว และเราใช้ความสนใจที่คุณเลือกเพื่อค้นหาอุปกรณ์ที่น่าจะเหมาะกับคุณ'
-                          : 'Your membership is active. We analyzed your trail preferences to engineer the ideal setup for your next journey.'}
-                      </p>
-                    </div>
-
-                    {/* User Preference Summary Card (Exact match to Caffellina) */}
-                    <div className="bg-[#242925] border border-white/10 rounded-xl p-4 text-xs font-sans space-y-2">
-                      <span className="font-bold text-beige uppercase tracking-wider text-[11px] block">
-                        {currentLang === 'th' ? 'ความสนใจที่คุณเลือก' : 'YOUR SELECTED PREFERENCES'}
-                      </span>
-                      <div className="space-y-1.5 text-stone-300 text-[11px]">
-                        <div className="flex justify-between">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'กิจกรรมหลัก:' : 'Activity:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {currentLang === 'th' ? 'เดินป่า & แคมป์ปิ้ง (Trekking)' : 'Alpine Trekking & Camping'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'ภูมิภาคสำรวจ:' : 'Region:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {currentLang === 'th' ? 'ดอยสูง & ภาคเหนือ (Alpine)' : 'Northern Thailand (High Elevation)'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'ระดับประสบการณ์:' : 'Experience Level:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {currentLang === 'th' ? 'ระดับกลาง (Intermediate)' : 'Intermediate'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'ไซส์ที่สวมใส่:' : 'Sizes:'}
-                          </span>
-                          <span className="font-medium text-white">L (Apparel) / 42 (Footwear)</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Recommended Product Section */}
-                    <div className="space-y-3 pt-1">
-                      <div className="text-center">
-                        <span className="text-[10px] uppercase font-bold tracking-brand-wide text-beige block">
-                          {currentLang === 'th' ? 'สินค้าแนะนำจากความสนใจของคุณ' : 'RECOMMENDED FOR YOUR PROFILE'}
-                        </span>
-                        <h3 className="font-serif text-lg font-bold text-white">
-                          {currentLang === 'th' ? recommendedProduct.name_th : recommendedProduct.name}
-                        </h3>
-                      </div>
-
-                      {/* Product Photo Canvas */}
-                      <div className="bg-[#F7F5F0] rounded-xl p-3 flex items-center justify-center border border-white/20">
+                    {/* 1. Header (Cream with Circular Logo & GO BEYOND) */}
+                    <div className="px-5 py-4 border-b border-[#E5DFD7] flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
                         <img
-                          src={recommendedProduct.image}
-                          alt={recommendedProduct.name}
-                          className="w-48 h-48 object-contain"
+                          src="/images/circular_logo.png"
+                          alt="VIA ALTO Logo"
+                          className="w-10 h-10 rounded-full object-cover border border-[#183C32]/20 shadow-sm"
+                          onError={(e) => { e.target.src = '/images/logo.png'; }}
                         />
-                      </div>
-
-                      {/* Product Specs List Card (Exact match to Caffellina's coffee specs) */}
-                      <div className="bg-[#242925] border border-white/10 rounded-xl p-4 text-xs font-sans space-y-2 text-stone-300">
-                        <div className="flex justify-between border-b border-white/5 pb-1.5">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'วัสดุหลัก:' : 'Materials:'}
+                        <div>
+                          <span className="font-serif text-lg font-bold tracking-wider text-[#183C32] block leading-none">
+                            VIA ALTO
                           </span>
-                          <span className="font-medium text-white text-right max-w-[60%] truncate">
-                            {recommendedProduct.specs.materials}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-1.5">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'ระดับกันน้ำ:' : 'Weatherproofing:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {recommendedProduct.specs.waterproofRating}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-1.5">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'น้ำหนัก:' : 'Weight:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {recommendedProduct.specs.weight}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-1.5">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'ขนาดความจุ:' : 'Dimensions:'}
-                          </span>
-                          <span className="font-medium text-white">
-                            {recommendedProduct.specs.dimensions}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-1.5">
-                          <span className="text-stone-400">
-                            {currentLang === 'th' ? 'การใช้งานแนะนำ:' : 'Best Use:'}
-                          </span>
-                          <span className="font-medium text-white text-right max-w-[60%] truncate">
-                            {currentLang === 'th' ? recommendedProduct.specs.bestUse_th : recommendedProduct.specs.bestUse}
-                          </span>
-                        </div>
-                        <div className="flex justify-between pt-1 text-sm font-bold text-white items-center">
-                          <span>{currentLang === 'th' ? 'ราคาพิเศษ:' : 'Member Price:'}</span>
-                          <span className="font-serif text-lg text-beige">
-                            {formatPrice(recommendedProduct.price)}
+                          <span className="text-[8px] tracking-[2px] font-semibold text-[#5C6E63] uppercase block mt-1">
+                            OUTDOOR EQUIPMENT
                           </span>
                         </div>
                       </div>
-
-                      {/* 3 Action Buttons (Exact match to Caffellina) */}
-                      <div className="space-y-2 pt-2">
-                        {/* 1. View Recommended Item */}
-                        <button
-                          onClick={() => {
-                            onClose();
-                            onNavigate?.('shop');
-                          }}
-                          className="w-full py-3 bg-[#E8DDCC] hover:bg-white text-[#183C32] rounded-xl font-bold text-xs uppercase tracking-brand transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <span>{currentLang === 'th' ? 'ดูสินค้าที่แนะนำนี้' : 'VIEW THIS GEAR'}</span>
-                          <ArrowRight size={14} />
-                        </button>
-
-                        {/* 2. View All Products */}
-                        <button
-                          onClick={() => {
-                            onClose();
-                            onNavigate?.('shop');
-                          }}
-                          className="w-full py-3 bg-[#242925] hover:bg-[#2e3530] text-white border border-white/20 rounded-xl font-bold text-xs uppercase tracking-brand transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <span>{currentLang === 'th' ? 'ดูสินค้าทั้งหมด' : 'BROWSE ALL COLLECTIONS'}</span>
-                        </button>
-
-                        {/* 3. Return to Store */}
-                        <button
-                          onClick={() => {
-                            onClose();
-                            onNavigate?.('home');
-                          }}
-                          className="w-full py-3 bg-[#8EA690]/80 hover:bg-[#8EA690] text-[#14231A] rounded-xl font-bold text-xs uppercase tracking-brand transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <span>{currentLang === 'th' ? 'กลับไปที่หน้าร้าน VIA ALTO' : 'RETURN TO VIA ALTO'}</span>
-                        </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-[#183C32]/40 font-light">|</span>
+                        <span className="text-[10px] font-extrabold tracking-[2px] text-[#183C32] uppercase">
+                          GO BEYOND.
+                        </span>
                       </div>
-
                     </div>
 
-                    {/* Footer */}
-                    <div className="pt-6 pb-2 text-center text-[10px] text-stone-400 font-sans space-y-1">
-                      <p>VIA ALTO · Dolomites Alpine Standard</p>
-                      <p className="text-stone-500">
+                    {/* 2. Hero Section & Contour Voucher Banner */}
+                    <div className="w-full bg-[#141A16] overflow-hidden">
+                      <img
+                        src="/images/recom_hero_banner.jpg"
+                        alt="Your Next Adventure Awaits"
+                        className="w-full h-auto object-cover block"
+                      />
+                    </div>
+
+                    {/* 3. Section Title: OUR TOP PICKS FOR YOU */}
+                    <div className="px-4 pt-7 pb-4 text-center">
+                      <div className="text-[11px] font-extrabold tracking-[2px] text-[#183C32] uppercase">
+                        &mdash;&mdash;&nbsp; OUR TOP PICKS FOR YOU &nbsp;&mdash;&mdash;
+                      </div>
+                      <p className="text-[10px] text-[#6E7D75] mt-1.5">
                         {currentLang === 'th'
-                          ? 'อีเมลนี้ส่งจากระบบสมาชิกของร้าน VIA ALTO'
-                          : 'This email was generated from your VIA ALTO profile preferences.'}
+                          ? 'สินค้าของดีเยี่ยมที่เหมาะกับสไตล์การเดินทางและการผจญภัยของคุณ'
+                          : 'Curated premium equipment engineered for your next trail ascent'}
                       </p>
+                    </div>
+
+                    {/* 4. 3 Product Cards Side-by-Side */}
+                    <div className="px-3 pb-6">
+                      <div className="grid grid-cols-3 gap-2">
+                        
+                        {/* Card 1: Alpine 35L Backpack */}
+                        <div className="flex flex-col">
+                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                            <img
+                              src="/images/recom_card_img_1.jpg"
+                              alt="Alpine 35L Backpack"
+                              className="w-full h-auto object-cover block"
+                            />
+                          </div>
+                          <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
+                            BACKPACKS
+                          </span>
+                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                            Alpine 35L Backpack
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
+                            {currentLang === 'th'
+                              ? 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน'
+                              : 'Optimal size backpack for technical treks.'}
+                          </p>
+                          <div className="text-[9px] text-[#183C32] mt-1">
+                            ★★★★★ <span className="text-[8px] text-[#7D8D84]">(128)</span>
+                          </div>
+                          <div className="text-[12px] font-extrabold text-[#183C32] mt-1">
+                            ฿2,490
+                          </div>
+                          <div className="flex items-center gap-1 mt-2">
+                            <button
+                              onClick={() => {
+                                onClose();
+                                onNavigate?.('shop');
+                              }}
+                              className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
+                            >
+                              🛒 เพิ่มใส่ตะกร้า
+                            </button>
+                            <span className="w-5 h-5 rounded-full border border-[#D5CEBF] flex items-center justify-center text-[9px] text-[#183C32] cursor-pointer">
+                              ♡
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Card 2: Alpine Shell Jacket */}
+                        <div className="flex flex-col">
+                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                            <img
+                              src="/images/recom_card_img_2.jpg"
+                              alt="Alpine Shell Jacket"
+                              className="w-full h-auto object-cover block"
+                            />
+                          </div>
+                          <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
+                            CLOTHING
+                          </span>
+                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                            Alpine Shell Jacket
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
+                            {currentLang === 'th'
+                              ? 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ'
+                              : 'Weatherproof breathable 3-layer alpine shell.'}
+                          </p>
+                          <div className="text-[9px] text-[#183C32] mt-1">
+                            ★★★★★ <span className="text-[8px] text-[#7D8D84]">(74)</span>
+                          </div>
+                          <div className="text-[12px] font-extrabold text-[#183C32] mt-1">
+                            ฿2,890
+                          </div>
+                          <div className="flex items-center gap-1 mt-2">
+                            <button
+                              onClick={() => {
+                                onClose();
+                                onNavigate?.('shop');
+                              }}
+                              className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
+                            >
+                              🛒 เพิ่มใส่ตะกร้า
+                            </button>
+                            <span className="w-5 h-5 rounded-full border border-[#D5CEBF] flex items-center justify-center text-[9px] text-[#183C32] cursor-pointer">
+                              ♡
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Card 3: Terra Hiking Shoes */}
+                        <div className="flex flex-col">
+                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                            <img
+                              src="/images/recom_card_img_3.jpg"
+                              alt="Terra Hiking Shoes"
+                              className="w-full h-auto object-cover block"
+                            />
+                          </div>
+                          <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
+                            FOOTWEAR
+                          </span>
+                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                            Terra Hiking Shoes
+                          </h4>
+                          <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
+                            {currentLang === 'th'
+                              ? 'รองเท้าเดินป่า น้ำหนักเบา ยึดเกาะดีเยี่ยมทุกเส้นทาง'
+                              : 'High-traction lightweight alpine trail shoes.'}
+                          </p>
+                          <div className="text-[9px] text-[#183C32] mt-1">
+                            ★★★★★ <span className="text-[8px] text-[#7D8D84]">(96)</span>
+                          </div>
+                          <div className="text-[12px] font-extrabold text-[#183C32] mt-1">
+                            ฿3,290
+                          </div>
+                          <div className="flex items-center gap-1 mt-2">
+                            <button
+                              onClick={() => {
+                                onClose();
+                                onNavigate?.('shop');
+                              }}
+                              className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
+                            >
+                              🛒 เพิ่มใส่ตะกร้า
+                            </button>
+                            <span className="w-5 h-5 rounded-full border border-[#D5CEBF] flex items-center justify-center text-[9px] text-[#183C32] cursor-pointer">
+                              ♡
+                            </span>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* View All Products Button */}
+                      <div className="pt-6 text-center">
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onNavigate?.('shop');
+                          }}
+                          className="w-full max-w-xs mx-auto py-3 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full font-bold text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <span>{currentLang === 'th' ? 'ดูสินค้าทั้งหมด →' : 'VIEW ALL PRODUCTS →'}</span>
+                        </button>
+                      </div>
+
+                      {/* Subtext */}
+                      <p className="mt-4 text-[10px] text-[#6E7D75] text-center">
+                        {currentLang === 'th'
+                          ? 'ขอบคุณที่ไว้วางใจ VIA ALTO แล้วพบกันในเส้นทางถัดไป'
+                          : 'Thank you for choosing VIA ALTO. See you on the trail.'}
+                      </p>
+                    </div>
+
+                    {/* 5. Footer (Deep Forest Alpine Green with Circular Logo & Socials) */}
+                    <div className="bg-[#11241D] px-5 py-4 border-t border-white/10 text-white">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src="/images/circular_logo.png"
+                            alt="VIA ALTO"
+                            className="w-8 h-8 rounded-full object-cover border border-white/20"
+                            onError={(e) => { e.target.src = '/images/logo.png'; }}
+                          />
+                          <div>
+                            <span className="font-serif text-sm font-bold tracking-wider block leading-none">
+                              VIA ALTO
+                            </span>
+                            <span className="text-[7px] tracking-[1.5px] uppercase text-[#9FB3A6] block mt-0.5">
+                              OUTDOOR EQUIPMENT
+                            </span>
+                            <span className="text-[7.5px] tracking-[1.2px] text-[#E8DDCC] font-bold block mt-0.5">
+                              GO BEYOND.
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="h-7 w-[1px] bg-white/20 mx-2" />
+
+                        {/* Social Badges */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px] font-bold">f</span>
+                          <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">📸</span>
+                          <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">▶</span>
+                          <span className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center text-[10px]">🔗</span>
+                        </div>
+                      </div>
+
+                      {/* Sub-footer Links */}
+                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[9px]">
+                        <span className="text-[#7E9186]">&copy; 2024 VIA ALTO. All rights reserved.</span>
+                        <div className="flex items-center gap-2 text-[#9FB3A6]">
+                          <span>ร้านค้า</span>
+                          <span>|</span>
+                          <span>หมวดหมู่</span>
+                          <span>|</span>
+                          <span>เกี่ยวกับเรา</span>
+                          <span>|</span>
+                          <span>ติดต่อเรา</span>
+                        </div>
+                      </div>
                     </div>
 
                   </div>

@@ -32,13 +32,13 @@ if (!function_exists('handleCors')) {
 // Configuration options (can be overridden via environment variables)
 return [
     // Driver: 'smtp' | 'log' | 'mail'
-    // Default to 'log' if no SMTP credentials set, so it works out-of-the-box for grading/demo
-    'driver' => getenv('MAIL_DRIVER') ?: 'log',
+    // Default to 'smtp' if SMTP_USER is set
+    'driver' => getenv('MAIL_DRIVER') ?: (getenv('SMTP_USER') ? 'smtp' : 'log'),
 
     // SMTP Settings (e.g. Gmail, Mailtrap, Brevo)
     'smtp' => [
-        'host' => getenv('SMTP_HOST') ?: 'sandbox.smtp.mailtrap.io',
-        'port' => (int)(getenv('SMTP_PORT') ?: 2525),
+        'host' => getenv('SMTP_HOST') ?: (str_contains(getenv('SMTP_USER') ?: '', '@gmail.com') ? 'smtp.gmail.com' : 'sandbox.smtp.mailtrap.io'),
+        'port' => (int)(getenv('SMTP_PORT') ?: (str_contains(getenv('SMTP_USER') ?: '', '@gmail.com') ? 587 : 2525)),
         'secure' => getenv('SMTP_SECURE') ?: 'tls', // 'tls' | 'ssl' | ''
         'username' => getenv('SMTP_USER') ?: '',
         'password' => getenv('SMTP_PASS') ?: '',
