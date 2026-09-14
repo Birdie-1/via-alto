@@ -467,12 +467,15 @@ export default function EmailPreviewModal({
                         
                         {/* Card 1: Alpine 35L Backpack */}
                         <div className="flex flex-col">
-                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
                             <img
-                              src="/images/recom_card_img_1.jpg"
+                              src="/images/prod_alpine_35l.jpg"
                               alt="Alpine 35L Backpack"
-                              className="w-full h-auto object-cover block"
+                              className="w-full h-full object-cover block"
                             />
+                            <div className="absolute top-1.5 left-1.5 bg-[#183C32] text-white text-[7px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded shadow-xs z-10">
+                              BEST SELLER
+                            </div>
                           </div>
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             BACKPACKS
@@ -509,12 +512,15 @@ export default function EmailPreviewModal({
 
                         {/* Card 2: Alpine Shell Jacket */}
                         <div className="flex flex-col">
-                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
                             <img
-                              src="/images/recom_card_img_2.jpg"
+                              src="/images/prod_alpine_shell.jpg"
                               alt="Alpine Shell Jacket"
-                              className="w-full h-auto object-cover block"
+                              className="w-full h-full object-cover block"
                             />
+                            <div className="absolute top-1.5 left-1.5 bg-[#183C32] text-white text-[7px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded shadow-xs z-10">
+                              TRENDING
+                            </div>
                           </div>
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             CLOTHING
@@ -551,12 +557,15 @@ export default function EmailPreviewModal({
 
                         {/* Card 3: Terra Hiking Shoes */}
                         <div className="flex flex-col">
-                          <div className="rounded overflow-hidden bg-[#141A16] shadow-sm">
+                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
                             <img
-                              src="/images/recom_card_img_3.jpg"
+                              src="/images/prod_terra_shoes.jpg"
                               alt="Terra Hiking Shoes"
-                              className="w-full h-auto object-cover block"
+                              className="w-full h-full object-cover block"
                             />
+                            <div className="absolute top-1.5 left-1.5 bg-[#183C32] text-white text-[7px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded shadow-xs z-10">
+                              NEW
+                            </div>
                           </div>
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             FOOTWEAR
