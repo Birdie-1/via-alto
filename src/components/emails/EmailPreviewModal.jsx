@@ -23,7 +23,9 @@ export default function EmailPreviewModal({
   initialTemplate = 'welcome', // 'welcome' | 'recommendation'
   lang = 'th',
   user = null,
-  onNavigate
+  onNavigate,
+  onSelectProduct,
+  onApplyVoucher
 }) {
   const [activeTemplate, setActiveTemplate] = useState(initialTemplate);
   const [currentLang, setCurrentLang] = useState(lang);
@@ -428,13 +430,20 @@ export default function EmailPreviewModal({
                         </p>
 
                         {/* 10% OFF Voucher Card */}
-                        <div className="bg-[#183C32]/95 border border-white/20 rounded-lg p-2.5 shadow-lg flex items-center gap-2.5 backdrop-blur-sm">
+                        <div
+                          onClick={() => {
+                            onApplyVoucher?.('WELCOME10');
+                            onClose();
+                            onNavigate?.('shop');
+                          }}
+                          className="bg-[#183C32]/95 border border-white/20 rounded-lg p-2.5 shadow-lg flex items-center gap-2.5 backdrop-blur-sm cursor-pointer hover:bg-[#11241D] transition-colors"
+                        >
                           <div className="w-7 h-7 rounded border border-white/30 flex items-center justify-center text-xs text-white">
                             🏷️
                           </div>
                           <div>
                             <span className="text-[7.5px] font-bold tracking-wider text-[#A3E6CD] uppercase block">
-                              SPECIAL FOR YOU
+                              SPECIAL FOR YOU &bull; CLICK TO APPLY
                             </span>
                             <div className="text-xs font-bold text-white tracking-wide leading-none my-0.5">
                               10% OFF <span className="text-[8px] text-stone-200 font-medium">YOUR FIRST ORDER</span>
@@ -467,7 +476,15 @@ export default function EmailPreviewModal({
                         
                         {/* Card 1: Alpine 35L Backpack */}
                         <div className="flex flex-col">
-                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
+                          <div
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 1);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                          >
                             <img
                               src="/images/prod_alpine_35l.jpg"
                               alt="Alpine 35L Backpack"
@@ -480,7 +497,15 @@ export default function EmailPreviewModal({
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             BACKPACKS
                           </span>
-                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                          <h4
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 1);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate cursor-pointer hover:underline"
+                          >
                             Alpine 35L Backpack
                           </h4>
                           <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
@@ -497,8 +522,14 @@ export default function EmailPreviewModal({
                           <div className="flex items-center gap-1 mt-2">
                             <button
                               onClick={() => {
-                                onClose();
-                                onNavigate?.('shop');
+                                onApplyVoucher?.('WELCOME10');
+                                const prod = PRODUCTS.find((p) => p.id === 1);
+                                if (prod && onSelectProduct) {
+                                  onSelectProduct(prod);
+                                } else {
+                                  onClose();
+                                  onNavigate?.('shop');
+                                }
                               }}
                               className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
                             >
@@ -512,7 +543,15 @@ export default function EmailPreviewModal({
 
                         {/* Card 2: Alpine Shell Jacket */}
                         <div className="flex flex-col">
-                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
+                          <div
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 4);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                          >
                             <img
                               src="/images/prod_alpine_shell.jpg"
                               alt="Alpine Shell Jacket"
@@ -525,7 +564,15 @@ export default function EmailPreviewModal({
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             CLOTHING
                           </span>
-                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                          <h4
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 4);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate cursor-pointer hover:underline"
+                          >
                             Alpine Shell Jacket
                           </h4>
                           <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
@@ -542,8 +589,14 @@ export default function EmailPreviewModal({
                           <div className="flex items-center gap-1 mt-2">
                             <button
                               onClick={() => {
-                                onClose();
-                                onNavigate?.('shop');
+                                onApplyVoucher?.('WELCOME10');
+                                const prod = PRODUCTS.find((p) => p.id === 4);
+                                if (prod && onSelectProduct) {
+                                  onSelectProduct(prod);
+                                } else {
+                                  onClose();
+                                  onNavigate?.('shop');
+                                }
                               }}
                               className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
                             >
@@ -557,7 +610,15 @@ export default function EmailPreviewModal({
 
                         {/* Card 3: Terra Hiking Shoes */}
                         <div className="flex flex-col">
-                          <div className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm">
+                          <div
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 7);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                          >
                             <img
                               src="/images/prod_terra_shoes.jpg"
                               alt="Terra Hiking Shoes"
@@ -570,7 +631,15 @@ export default function EmailPreviewModal({
                           <span className="text-[7.5px] font-bold tracking-[1.5px] uppercase text-[#7D8D84] mt-2 block">
                             FOOTWEAR
                           </span>
-                          <h4 className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate">
+                          <h4
+                            onClick={() => {
+                              onApplyVoucher?.('WELCOME10');
+                              const prod = PRODUCTS.find((p) => p.id === 7);
+                              if (prod && onSelectProduct) onSelectProduct(prod);
+                              else { onClose(); onNavigate?.('shop'); }
+                            }}
+                            className="text-[10.5px] font-bold text-[#183C32] leading-tight mt-0.5 truncate cursor-pointer hover:underline"
+                          >
                             Terra Hiking Shoes
                           </h4>
                           <p className="text-[8px] text-[#6E7D75] leading-tight mt-1 line-clamp-2 min-h-[22px]">
@@ -587,8 +656,14 @@ export default function EmailPreviewModal({
                           <div className="flex items-center gap-1 mt-2">
                             <button
                               onClick={() => {
-                                onClose();
-                                onNavigate?.('shop');
+                                onApplyVoucher?.('WELCOME10');
+                                const prod = PRODUCTS.find((p) => p.id === 7);
+                                if (prod && onSelectProduct) {
+                                  onSelectProduct(prod);
+                                } else {
+                                  onClose();
+                                  onNavigate?.('shop');
+                                }
                               }}
                               className="flex-1 py-1.5 bg-[#183C32] hover:bg-[#11241D] text-white rounded-full text-[8.5px] font-bold text-center transition-all cursor-pointer"
                             >
@@ -606,6 +681,7 @@ export default function EmailPreviewModal({
                       <div className="pt-6 text-center">
                         <button
                           onClick={() => {
+                            onApplyVoucher?.('WELCOME10');
                             onClose();
                             onNavigate?.('shop');
                           }}

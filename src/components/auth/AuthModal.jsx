@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   X,
   Eye,
@@ -51,6 +51,15 @@ export default function AuthModal({
   const [region, setRegion] = useState('northern');
   const [discoverySource, setDiscoverySource] = useState('instagram');
   const [lineId, setLineId] = useState('');
+
+  // Maximum allowed birthdate (strictly prevents future dates, enforces age 13+)
+  const maxDobStr = useMemo(() => {
+    const now = new Date();
+    const y = now.getFullYear() - 13;
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }, []);
 
   if (!isOpen) return null;
 
@@ -136,6 +145,34 @@ export default function AuthModal({
       setError('Password must be at least 6 characters.');
       return;
     }
+
+    // Birthday validation (prevent future date and enforce minimum age 13+)
+    if (dateOfBirth) {
+      const selected = new Date(dateOfBirth);
+      const today = new Date();
+      if (isNaN(selected.getTime())) {
+        setError('Please enter a valid date of birth.');
+        return;
+      }
+      if (selected > today) {
+        setError('Date of birth cannot be in the future (ไม่อนุญาตให้เลือกวันเกิดในอนาคต).');
+        return;
+      }
+      let age = today.getFullYear() - selected.getFullYear();
+      const m = today.getMonth() - selected.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < selected.getDate())) {
+        age--;
+      }
+      if (age < 13) {
+        setError('Members must be at least 13 years old (สมาชิกต้องมีอายุอย่างน้อย 13 ปีขึ้นไป).');
+        return;
+      }
+      if (selected < new Date('1920-01-01')) {
+        setError('Please enter a realistic date of birth (after 1920).');
+        return;
+      }
+    }
+
     setRegisterStep(2);
   };
 
@@ -524,10 +561,15 @@ export default function AuthModal({
                     </div>
                     <input
                       type="date"
+                      max={maxDobStr}
+                      min="1920-01-01"
                       value={dateOfBirth}
                       onChange={(e) => setDateOfBirth(e.target.value)}
                       className="w-full px-2.5 py-1.5 bg-white border border-stone-light text-xs text-charcoal focus:outline-none focus:border-forest"
                     />
+                    <div className="text-[10px] text-stone-dark">
+                      อายุขั้นต่ำ 13 ปี (Min. age 13+)
+                    </div>
                   </div>
 
                   {/* Referral Code (Growth Loop) */}

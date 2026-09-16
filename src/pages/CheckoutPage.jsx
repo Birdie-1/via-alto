@@ -82,35 +82,37 @@ export default function CheckoutPage({
     }
   }, [user]);
 
+  // Auto-apply voucher from localStorage if user arrived via promo/email link
+  useEffect(() => {
+    const savedVoucher = localStorage.getItem('via_alto_active_voucher');
+    if (savedVoucher && !appliedVoucher) {
+      handleApplyVoucher(savedVoucher);
+    }
+  }, []);
+
   // Calculations
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.product.price * item.quantity,
     0
   );
 
-  // Free shipping over ฿2,000, otherwise ฿99
-  const shippingFee = subtotal >= 2000 ? 0 : 99;
-
-  // COD fee of ฿50
-  const codFee = paymentMethod === 'cod' ? 50 : 0;
+  // Free shipping threshold: 2,000 THB
+  const shippingFee = subtotal >= 2000 || subtotal === 0 ? 0 : 150;
 
   // Calculate voucher discount
-  let discountAmount = 0;
+  let voucherDiscount = 0;
   if (appliedVoucher) {
     if (appliedVoucher.discount.includes('%')) {
       const pct = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
-      if (!isNaN(pct)) {
-        discountAmount = Math.round((subtotal * pct) / 100);
-      }
+      voucherDiscount = Math.round((subtotal * pct) / 100);
     } else {
+      // Flat discount (e.g. ฿150 OFF)
       const flat = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
-      if (!isNaN(flat)) {
-        discountAmount = flat;
-      }
+      voucherDiscount = Math.min(subtotal, flat);
     }
   }
 
-  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee + codFee);
+  const grandTotal = Math.max(0, subtotal - voucherDiscount + shippingFee);
 
   // Apply Voucher
   const handleApplyVoucher = (codeToApply) => {
@@ -126,13 +128,15 @@ export default function CheckoutPage({
     if (matched) {
       setAppliedVoucher(matched);
       setVoucherInput(matched.code);
-    } else if (targetCode === 'GOBEYOND10') {
+      localStorage.setItem('via_alto_active_voucher', matched.code);
+    } else if (targetCode === 'WELCOME10' || targetCode === 'GOBEYOND10') {
       setAppliedVoucher({
-        code: 'GOBEYOND10',
+        code: targetCode,
         discount: '10% OFF',
-        description: 'Welcome Explorer discount on any first purchase'
+        description: 'Welcome Explorer 10% discount on your order'
       });
-      setVoucherInput('GOBEYOND10');
+      setVoucherInput(targetCode);
+      localStorage.setItem('via_alto_active_voucher', targetCode);
     } else if (targetCode === 'SUMMIT15') {
       setAppliedVoucher({
         code: 'SUMMIT15',
@@ -140,6 +144,7 @@ export default function CheckoutPage({
         description: 'Annual VIP Alpine Birthday Reward Voucher'
       });
       setVoucherInput('SUMMIT15');
+      localStorage.setItem('via_alto_active_voucher', 'SUMMIT15');
     } else if (targetCode === 'FRIEND150') {
       setAppliedVoucher({
         code: 'FRIEND150',
@@ -147,6 +152,7 @@ export default function CheckoutPage({
         description: 'Explorer Referral Invitation Bonus'
       });
       setVoucherInput('FRIEND150');
+      localStorage.setItem('via_alto_active_voucher', 'FRIEND150');
     } else {
       setVoucherError(t.checkout_voucher_invalid);
     }
@@ -156,6 +162,7 @@ export default function CheckoutPage({
     setAppliedVoucher(null);
     setVoucherInput('');
     setVoucherError('');
+    localStorage.removeItem('via_alto_active_voucher');
   };
 
   // Submit Order

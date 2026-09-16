@@ -13,6 +13,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import EmailPreviewModal from './components/emails/EmailPreviewModal';
 import { sendRegisterWelcomeEmail } from './services/emailService';
+import { PRODUCTS } from './data/products';
 import {
   initializeAuthStore,
   getCurrentUser,
@@ -59,13 +60,79 @@ export default function App() {
     showToast(newLang === 'th' ? 'เปลี่ยนภาษาเป็น ภาษาไทย เรียบร้อยแล้ว' : 'Language switched to English');
   };
 
-  // Initialize auth store on startup
+  // Initialize auth store and parse deep link parameters on startup
   useEffect(() => {
     initializeAuthStore();
     const stored = getCurrentUser();
     if (stored) {
       setCurrentUser(stored);
     }
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const prodId = params.get('product');
+      const pageParam = params.get('page');
+      const voucherParam = params.get('voucher');
+      const unsubParam = params.get('unsubscribe');
+      const catParam = params.get('category');
+      const tabParam = params.get('tab');
+
+      // 1. Auto-apply Voucher from Email or Marketing Links
+      if (voucherParam) {
+        const code = voucherParam.trim().toUpperCase();
+        localStorage.setItem('via_alto_active_voucher', code);
+        showToast(
+          lang === 'th'
+            ? `🎉 รหัสส่วนลด ${code} (10% OFF) ถูกเปิดใช้งานแล้ว!`
+            : `🎉 Discount code ${code} (10% OFF) auto-applied to your order!`
+        );
+      }
+
+      // 2. Unsubscribe Confirmation (PDPA compliance)
+      if (unsubParam === '1') {
+        showToast(
+          lang === 'th'
+            ? '✅ คุณได้ยกเลิกการรับข่าวสารทางอีเมลเรียบร้อยแล้ว (Unsubscribed)'
+            : '✅ You have successfully unsubscribed from newsletter communications.'
+        );
+      }
+
+      // 3. Product Deep Linking (Direct modal popup)
+      if (prodId) {
+        const targetProd = PRODUCTS.find((p) => p.id === parseInt(prodId, 10));
+        if (targetProd) {
+          setQuickViewProduct(targetProd);
+          setCurrentPage('shop');
+          if (catParam) setShopCategory(catParam);
+          return;
+        }
+      }
+
+      // 4. Direct Page Routing
+      if (pageParam) {
+        setCurrentPage(pageParam);
+        if (catParam) setShopCategory(catParam);
+        if (tabParam) setAccountInitialTab(tabParam);
+      }
+    }
+  }, []);
+
+  // Listen to browser Back / Forward popstate
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.page) {
+        setCurrentPage(event.state.page);
+        if (event.state.params?.category) setShopCategory(event.state.params.category);
+        if (event.state.params?.tab) setAccountInitialTab(event.state.params.tab);
+      } else if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get('page') || 'home';
+        setCurrentPage(p);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const showToast = (message) => {
@@ -73,7 +140,7 @@ export default function App() {
     setToastVisible(true);
   };
 
-  const handleNavigate = (page, params = {}) => {
+  const handleNavigate = (page, params = {}, pushToHistory = true) => {
     setCurrentPage(page);
     if (params.category) {
       setShopCategory(params.category);
@@ -82,6 +149,29 @@ export default function App() {
       setAccountInitialTab(params.tab);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Sync with browser history
+    if (pushToHistory && typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (page === 'home') {
+        url.searchParams.delete('page');
+      } else {
+        url.searchParams.set('page', page);
+      }
+      if (params.category) url.searchParams.set('category', params.category);
+      else url.searchParams.delete('category');
+
+      if (params.tab) url.searchParams.set('tab', params.tab);
+      else url.searchParams.delete('tab');
+
+      // Clear one-time action params
+      url.searchParams.delete('product');
+      url.searchParams.delete('voucher');
+      url.searchParams.delete('unsubscribe');
+
+      const newUrl = url.pathname + (url.search ? url.search : '');
+      window.history.pushState({ page, params }, '', newUrl);
+    }
   };
 
   // Auth Handlers
@@ -445,6 +535,15 @@ export default function App() {
         lang={lang}
         user={currentUser}
         onNavigate={handleNavigate}
+        onSelectProduct={(product) => {
+          setQuickViewProduct(product);
+          handleNavigate('shop');
+          setIsEmailPreviewOpen(false);
+        }}
+        onApplyVoucher={(code) => {
+          localStorage.setItem('via_alto_active_voucher', code);
+          showToast(`🎉 รหัสส่วนลด ${code} (10% OFF) ถูกนำมาใช้งานแล้ว!`);
+        }}
       />
 
       {/* 9. Toast Notification */}

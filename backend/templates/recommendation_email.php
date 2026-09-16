@@ -30,11 +30,17 @@ function renderRecommendationEmail($data) {
         $pImg = $useCid ? ('cid:' . $cidName) : "{$siteUrl}/images/{$imgFile}";
         $pad = ($i === 0) ? 'padding: 0 6px 0 0;' : (($i === 1) ? 'padding: 0 4px;' : 'padding: 0 0 0 6px;');
 
+        // Product Deep Links with Voucher Auto-Apply & UTM Tracking
+        $prodLink = htmlspecialchars("{$siteUrl}/?product={$p['id']}&voucher=WELCOME10&utm_source=email&utm_medium=recommendation&utm_campaign=welcome_personalized");
+        $wishlistLink = htmlspecialchars("{$siteUrl}/?product={$p['id']}&action=wishlist&voucher=WELCOME10&utm_source=email&utm_medium=recommendation");
+
         $productCols .= '
         <td width="33.33%" align="left" style="vertical-align: top; ' . $pad . '">
           <!-- Card Image & Badge -->
           <div style="border-radius: 4px; overflow: hidden; background-color: #141A16; line-height: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-            <img src="' . $pImg . '" alt="' . htmlspecialchars($p['name']) . '" style="width: 100%; max-width: 190px; height: auto; display: block; border: 0;" />
+            <a href="' . $prodLink . '" style="display: block; text-decoration: none;">
+              <img src="' . $pImg . '" alt="' . htmlspecialchars($p['name']) . '" style="width: 100%; max-width: 190px; height: auto; display: block; border: 0;" />
+            </a>
           </div>
 
           <!-- Category (From DB) -->
@@ -42,9 +48,11 @@ function renderRecommendationEmail($data) {
             ' . htmlspecialchars($p['category']) . '
           </div>
 
-          <!-- Title (From DB) -->
+          <!-- Title (From DB with Direct Link) -->
           <div style="font-size: 13px; font-weight: 700; color: #183C32; line-height: 1.3; margin-top: 4px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', sans-serif;">
-            ' . htmlspecialchars($p['name']) . '
+            <a href="' . $prodLink . '" style="color: #183C32; text-decoration: none;">
+              ' . htmlspecialchars($p['name']) . '
+            </a>
           </div>
 
           <!-- Description (From DB) -->
@@ -62,16 +70,16 @@ function renderRecommendationEmail($data) {
             ' . htmlspecialchars($p['price']) . '
           </div>
 
-          <!-- Action Buttons (Cart + Wishlist) -->
+          <!-- Action Buttons (Direct Deep Link Cart + Wishlist) -->
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 8px;">
             <tr>
               <td style="vertical-align: middle;">
-                <a href="' . $siteUrl . '" style="display: block; background-color: #183C32; color: #FFFFFF; font-size: 9.5px; font-weight: 700; text-decoration: none; padding: 7px 0; border-radius: 16px; text-align: center; letter-spacing: 0.3px;">
+                <a href="' . $prodLink . '" style="display: block; background-color: #183C32; color: #FFFFFF; font-size: 9.5px; font-weight: 700; text-decoration: none; padding: 7px 0; border-radius: 16px; text-align: center; letter-spacing: 0.3px;">
                   🛒 เพิ่มใส่ตะกร้า
                 </a>
               </td>
               <td width="28" align="right" style="vertical-align: middle; padding-left: 4px;">
-                <a href="' . $siteUrl . '" style="display: inline-block; width: 26px; height: 26px; line-height: 24px; border-radius: 50%; border: 1px solid #D5CEBF; text-align: center; color: #183C32; font-size: 11px; text-decoration: none;">
+                <a href="' . $wishlistLink . '" style="display: inline-block; width: 26px; height: 26px; line-height: 24px; border-radius: 50%; border: 1px solid #D5CEBF; text-align: center; color: #183C32; font-size: 11px; text-decoration: none;">
                   ♡
                 </a>
               </td>
@@ -154,35 +162,37 @@ function renderRecommendationEmail($data) {
                       เราได้คัดสรรสินค้าสำหรับการเดินทางครั้งต่อไปของคุณ พร้อมส่วนลดพิเศษสำหรับลูกค้าคนพิเศษของเรา
                     </p>
 
-                    <!-- 10% OFF Voucher Card (Styled HTML Table) -->
-                    <table role="presentation" cellspacing="0" cellpadding="0" style="background-color: #183C32; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.35); max-width: 500px;">
-                      <tr>
-                        <td style="padding: 10px 16px;">
-                          <table role="presentation" cellspacing="0" cellpadding="0">
-                            <tr>
-                              <!-- Tag Icon -->
-                              <td width="36" style="vertical-align: middle; padding-right: 12px;">
-                                <div style="width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.4); border-radius: 6px; text-align: center; line-height: 30px; font-size: 14px; color: #FFFFFF;">
-                                  🏷️
-                                </div>
-                              </td>
-                              <!-- Voucher Info -->
-                              <td style="vertical-align: middle;">
-                                <div style="font-size: 8px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #A3E6CD;">
-                                  SPECIAL FOR YOU
-                                </div>
-                                <div style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px; line-height: 1.1; margin-top: 2px;">
-                                  10% OFF <span style="font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px; color: #EDE8E2; text-transform: uppercase; margin-left: 4px;">YOUR FIRST ORDER</span>
-                                </div>
-                                <div style="font-size: 9.5px; color: #E8DDCC; margin-top: 3px;">
-                                  ใช้โค้ด: <span style="color: #FFFFFF; font-weight: 800; background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 3px; letter-spacing: 1px;">WELCOME10</span>
-                                </div>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
+                    <!-- 10% OFF Voucher Card (Clickable to Auto-Apply) -->
+                    <a href="' . htmlspecialchars("{$siteUrl}/?page=shop&voucher=WELCOME10&utm_source=email&utm_medium=voucher_card&utm_campaign=welcome_personalized") . '" style="text-decoration: none; display: inline-block; max-width: 500px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0" style="background-color: #183C32; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.35);">
+                        <tr>
+                          <td style="padding: 10px 16px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <!-- Tag Icon -->
+                                <td width="36" style="vertical-align: middle; padding-right: 12px;">
+                                  <div style="width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.4); border-radius: 6px; text-align: center; line-height: 30px; font-size: 14px; color: #FFFFFF;">
+                                    🏷️
+                                  </div>
+                                </td>
+                                <!-- Voucher Info -->
+                                <td style="vertical-align: middle;">
+                                  <div style="font-size: 8px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #A3E6CD;">
+                                    SPECIAL FOR YOU &bull; CLICK TO APPLY
+                                  </div>
+                                  <div style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px; line-height: 1.1; margin-top: 2px;">
+                                    10% OFF <span style="font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px; color: #EDE8E2; text-transform: uppercase; margin-left: 4px;">YOUR FIRST ORDER</span>
+                                  </div>
+                                  <div style="font-size: 9.5px; color: #E8DDCC; margin-top: 3px;">
+                                    ใช้โค้ด: <span style="color: #FFFFFF; font-weight: 800; background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 3px; letter-spacing: 1px;">WELCOME10</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </a>
 
                   </td>
                 </tr>
@@ -218,7 +228,7 @@ function renderRecommendationEmail($data) {
 
               <!-- Action Button: View All Products -->
               <div style="text-align: center; margin-top: 28px;">
-                <a href="' . $siteUrl . '" style="display: inline-block; background-color: #183C32; color: #FFFFFF; text-decoration: none; padding: 13px 38px; border-radius: 24px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(24,60,50,0.3);">
+                <a href="' . htmlspecialchars("{$siteUrl}/?page=shop&voucher=WELCOME10&utm_source=email&utm_medium=recommendation&utm_campaign=welcome_personalized") . '" style="display: inline-block; background-color: #183C32; color: #FFFFFF; text-decoration: none; padding: 13px 38px; border-radius: 24px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(24,60,50,0.3);">
                   ดูสินค้าทั้งหมด &rarr;
                 </a>
               </div>
@@ -240,7 +250,9 @@ function renderRecommendationEmail($data) {
                     <table role="presentation" cellspacing="0" cellpadding="0">
                       <tr>
                         <td style="vertical-align: middle; padding-right: 12px;">
-                          <img src="' . $logoSrc . '" alt="VIA ALTO" style="width: 38px; height: 38px; border-radius: 50%; display: block; border: 1px solid rgba(255,255,255,0.2);" />
+                          <a href="' . htmlspecialchars("{$siteUrl}/?utm_source=email&utm_medium=footer_logo") . '" style="text-decoration: none;">
+                            <img src="' . $logoSrc . '" alt="VIA ALTO" style="width: 38px; height: 38px; border-radius: 50%; display: block; border: 1px solid rgba(255,255,255,0.2);" />
+                          </a>
                         </td>
                         <td style="vertical-align: middle;">
                           <div style="font-family: Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; color: #FFFFFF; line-height: 1.1;">VIA ALTO</div>
@@ -270,7 +282,7 @@ function renderRecommendationEmail($data) {
                           <a href="https://youtube.com" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">▶</a>
                         </td>
                         <td style="padding: 0 4px;">
-                          <a href="' . $siteUrl . '" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">🔗</a>
+                          <a href="' . htmlspecialchars("{$siteUrl}/?utm_source=email&utm_medium=footer_link") . '" style="display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); text-align: center; color: #FFFFFF; font-size: 11px; text-decoration: none;">🔗</a>
                         </td>
                       </tr>
                     </table>
@@ -282,20 +294,30 @@ function renderRecommendationEmail($data) {
 
           <!-- Sub-footer (Copyright & Navigation Links) -->
           <tr>
-            <td style="background-color: #11241D; padding: 8px 28px 20px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <td style="background-color: #11241D; padding: 8px 28px 14px; border-top: 1px solid rgba(255,255,255,0.06);">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="left" style="font-size: 9.5px; color: #7E9186;">
-                    &copy; 2024 VIA ALTO. All rights reserved.
+                    &copy; 2024 VIA ALTO Alpine Equipment. All rights reserved.
                   </td>
                   <td align="right" style="font-size: 9.5px; color: #9FB3A6;">
-                    <a href="' . $siteUrl . '" style="color: #9FB3A6; text-decoration: none;">ร้านค้า</a> &nbsp;|&nbsp; 
-                    <a href="' . $siteUrl . '" style="color: #9FB3A6; text-decoration: none;">หมวดหมู่</a> &nbsp;|&nbsp; 
-                    <a href="' . $siteUrl . '" style="color: #9FB3A6; text-decoration: none;">เกี่ยวกับเรา</a> &nbsp;|&nbsp; 
-                    <a href="' . $siteUrl . '" style="color: #9FB3A6; text-decoration: none;">ติดต่อเรา</a>
+                    <a href="' . htmlspecialchars("{$siteUrl}/?page=shop") . '" style="color: #9FB3A6; text-decoration: none;">ร้านค้า</a> &nbsp;|&nbsp; 
+                    <a href="' . htmlspecialchars("{$siteUrl}/?page=shop") . '" style="color: #9FB3A6; text-decoration: none;">หมวดหมู่</a> &nbsp;|&nbsp; 
+                    <a href="' . htmlspecialchars("{$siteUrl}/?page=account") . '" style="color: #9FB3A6; text-decoration: none;">บัญชีของฉัน</a>
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
+
+          <!-- PDPA & CAN-SPAM Compliance Footer (Unsubscribe & Preferences) -->
+          <tr>
+            <td style="background-color: #0B1914; padding: 12px 28px 16px; border-top: 1px solid rgba(255,255,255,0.04); text-align: center; font-size: 9px; color: #6E7D75; line-height: 1.5;">
+              อีเมลนี้ส่งถึงคุณเนื่องจากคุณได้ลงทะเบียนเป็นสมาชิก VIA ALTO Club<br>
+              หากคุณไม่ต้องการรับอีเมลแนะนำสินค้าเฉพาะบุคคล สามารถ 
+              <a href="' . htmlspecialchars("{$siteUrl}/?unsubscribe=1") . '" style="color: #A3E6CD; text-decoration: underline;">ยกเลิกการรับข่าวสาร (Unsubscribe)</a>
+              หรือ 
+              <a href="' . htmlspecialchars("{$siteUrl}/?page=account&tab=preferences") . '" style="color: #A3E6CD; text-decoration: underline;">จัดการการตั้งค่าความเป็นส่วนตัว</a>
             </td>
           </tr>
 

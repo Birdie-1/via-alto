@@ -8,10 +8,14 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/mailer.php';
+require_once __DIR__ . '/rate_limiter.php';
 require_once __DIR__ . '/templates/recommendation_email.php';
 
 // Enable CORS
 handleCors();
+
+// Check IP Rate Limit (Max 5 registration emails per 5 minutes per IP)
+checkRateLimit('register_email', 5, 300);
 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -140,6 +144,10 @@ file_put_contents($regFile, json_encode($registrations, JSON_PRETTY_PRINT));
 
 // 4. Extract Registered Username & Render Personalized Email Template
 $username = trim($input['username'] ?? $input['fullName'] ?? $input['name'] ?? 'Explorer');
+
+// ดึงสินค้าแนะนำ 3 ชิ้นแบบ Personalized จาก Database ตาม Marketing Profile ของผู้ใช้
+$matchedProducts = getRecommendedProductsFromDatabase($profile);
+
 $emailData = [
     'username' => $username,
     'name' => $name,
@@ -151,6 +159,7 @@ $emailData = [
         'level' => $level,
         'sizes' => $sizeText
     ],
+    'products' => $matchedProducts,
     'use_cid' => true
 ];
 $htmlBody = renderRecommendationEmail($emailData);
@@ -161,10 +170,19 @@ $imagesDir = __DIR__ . '/images';
 $embeddedImages = [
     ['path' => $imagesDir . '/circular_logo.png', 'cid' => 'brand_logo', 'name' => 'circular_logo.png'],
     ['path' => $imagesDir . '/recom_hero_backdrop.jpg', 'cid' => 'recom_hero_bg', 'name' => 'recom_hero_backdrop.jpg'],
-    ['path' => $imagesDir . '/recom_card_img_1.jpg', 'cid' => 'recom_prod_1', 'name' => 'recom_prod_1.jpg'],
-    ['path' => $imagesDir . '/recom_card_img_2.jpg', 'cid' => 'recom_prod_2', 'name' => 'recom_prod_2.jpg'],
-    ['path' => $imagesDir . '/recom_card_img_3.jpg', 'cid' => 'recom_prod_3', 'name' => 'recom_prod_3.jpg'],
 ];
+
+foreach ($matchedProducts as $i => $p) {
+    $cidName = $p['cid'] ?? ("recom_prod_" . ($i + 1));
+    $imgFile = $p['image_file'] ?? "prod_alpine_35l.jpg";
+    $imgPath = $imagesDir . '/' . $imgFile;
+    if (!file_exists($imgPath)) {
+        $imgPath = __DIR__ . '/../public/images/' . $imgFile;
+    }
+    if (file_exists($imgPath)) {
+        $embeddedImages[] = ['path' => $imgPath, 'cid' => $cidName, 'name' => $imgFile];
+    }
+}
 
 // 6. Send Email via PHPMailer
 $result = sendViaAltoEmail($email, $name, $subject, $htmlBody, '', $embeddedImages);

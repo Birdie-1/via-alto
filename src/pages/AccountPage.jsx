@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   User,
   Compass,
@@ -16,7 +16,8 @@ import {
   MapPin,
   HelpCircle,
   Mail,
-  Eye
+  Eye,
+  AlertCircle
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { PRODUCTS, formatPrice } from '../data/products';
@@ -29,18 +30,26 @@ export default function AccountPage({
   onAddToCart,
   onNavigate,
   onOpenEmailPreview,
+  lang = 'en',
   initialTab = 'overview'
 }) {
   const [activeTab, setActiveTab] = useState(initialTab);
-
-  React.useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    }
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
   }, [initialTab]);
   const [copiedCode, setCopiedCode] = useState('');
   const [copiedReferral, setCopiedReferral] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [profileError, setProfileError] = useState('');
+
+  // Maximum allowed birthdate (must be at least 13 years old, no future date)
+  const maxDobStr = useMemo(() => {
+    const now = new Date();
+    const y = now.getFullYear() - 13;
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }, []);
 
   // Profile Form Edit State
   const [editFullName, setEditFullName] = useState(user?.fullName || '');
@@ -89,6 +98,35 @@ export default function AccountPage({
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
+    setProfileError('');
+
+    // Birthday validation (prevent future date and enforce minimum age 13+)
+    if (editDob) {
+      const selected = new Date(editDob);
+      const today = new Date();
+      if (isNaN(selected.getTime())) {
+        setProfileError('Please enter a valid date of birth.');
+        return;
+      }
+      if (selected > today) {
+        setProfileError('Date of birth cannot be in the future (ไม่อนุญาตให้เลือกวันเกิดในอนาคต).');
+        return;
+      }
+      let age = today.getFullYear() - selected.getFullYear();
+      const m = today.getMonth() - selected.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < selected.getDate())) {
+        age--;
+      }
+      if (age < 13) {
+        setProfileError('Members must be at least 13 years old (สมาชิกต้องมีอายุอย่างน้อย 13 ปีขึ้นไป).');
+        return;
+      }
+      if (selected < new Date('1920-01-01')) {
+        setProfileError('Please enter a realistic date of birth (after 1920).');
+        return;
+      }
+    }
+
     onUpdateProfile(user.id, {
       fullName: editFullName,
       telNo: editTelNo,
@@ -374,6 +412,13 @@ export default function AccountPage({
               </div>
             )}
 
+            {profileError && (
+              <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xs flex items-center gap-2">
+                <AlertCircle size={16} />
+                <span>{profileError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleSaveProfile} className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -412,10 +457,15 @@ export default function AccountPage({
                 </div>
                 <input
                   type="date"
+                  max={maxDobStr}
+                  min="1920-01-01"
                   value={editDob}
                   onChange={(e) => setEditDob(e.target.value)}
                   className="w-full px-3.5 py-2 bg-white border border-stone-light text-xs text-charcoal focus:outline-none focus:border-forest"
                 />
+                <div className="text-[10px] text-stone-dark">
+                  อายุขั้นต่ำ 13 ปี (Min. age 13+)
+                </div>
               </div>
 
               {/* Outdoor Activities */}

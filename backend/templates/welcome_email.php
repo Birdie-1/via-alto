@@ -88,7 +88,7 @@ function renderWelcomeEmail($data) {
           </div>
           <div class="prod-title">Alpine Shell Jacket</div>
           <div class="prod-specs">3-Layer • 20,000mm<br><strong>฿3,690</strong></div>
-          <a href="{$siteUrl}" class="prod-btn">View Gear</a>
+          <a href="{$siteUrl}/?product=4&voucher={$voucherCode}&utm_source=email&utm_medium=newsletter" class="prod-btn">View Gear</a>
         </td>
         <td class="prod-card">
           <span class="prod-pill">Footwear</span>
@@ -97,13 +97,13 @@ function renderWelcomeEmail($data) {
           </div>
           <div class="prod-title">Alto Mountain Boots</div>
           <div class="prod-specs">Vibram® Megagrip<br><strong>฿3,890</strong></div>
-          <a href="{$siteUrl}" class="prod-btn">View Gear</a>
+          <a href="{$siteUrl}/?product=8&voucher={$voucherCode}&utm_source=email&utm_medium=newsletter" class="prod-btn">View Gear</a>
         </td>
       </tr>
     </table>
 
     <div class="cta-wrap">
-      <a href="{$siteUrl}" class="cta-btn">Shop Now</a>
+      <a href="{$siteUrl}/?page=shop&voucher={$voucherCode}&utm_source=email&utm_medium=newsletter&utm_campaign=welcome_subscriber" class="cta-btn">Shop Now with 10% OFF</a>
     </div>
 
     <div class="terms">
@@ -111,7 +111,7 @@ function renderWelcomeEmail($data) {
     </div>
 
     <div class="footer">
-      <p><a href="{$siteUrl}">Unsubscribe</a> • <a href="{$siteUrl}">Privacy Policy</a> • <a href="{$siteUrl}">Explorer Club</a></p>
+      <p><a href="{$siteUrl}/?unsubscribe=1">Unsubscribe</a> • <a href="{$siteUrl}/?page=account&tab=preferences">Privacy Policy</a> • <a href="{$siteUrl}/?page=shop">Explorer Club</a></p>
       <p style="margin-top: 8px; color: #4D5B53;">VIA ALTO Alpine Co. • Elevation: 3,842M • Dolomites, Italy</p>
     </div>
   </div>

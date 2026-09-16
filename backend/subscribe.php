@@ -7,10 +7,14 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/mailer.php';
+require_once __DIR__ . '/rate_limiter.php';
 require_once __DIR__ . '/templates/welcome_email.php';
 
 // Enable CORS
 handleCors();
+
+// Check IP Rate Limit (Max 10 subscribe requests per 5 minutes per IP)
+checkRateLimit('subscribe', 10, 300);
 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -2,6 +2,7 @@
 /**
  * VIA ALTO — Database Service (PostgreSQL via PDO)
  * ดึงข้อมูลสินค้าและรูปภาพจาก Database จริงมาแสดงในอีเมลแบบไดนามิก
+ * รองรับทั้งโหมด Personalized ตามความสนใจ และโหมดระบุ Product IDs โดยตรง
  */
 
 function getDbConnection() {
@@ -55,52 +56,109 @@ function getDbConnection() {
 }
 
 /**
+ * คำนวณรหัสสินค้า 3 ชิ้นตาม Personalized Profile ของลูกค้า
+ */
+function getPersonalizedProductIds(array $profile = []): array {
+    $activities = $profile['primaryActivities'] ?? [];
+    if (empty($activities) && isset($profile['activity'])) {
+        $activities = is_array($profile['activity']) ? $profile['activity'] : [$profile['activity']];
+    }
+
+    // 1. ผู้ใช้สนใจวิ่งเทรล (Trail Running)
+    if (in_array('trail_running', $activities)) {
+        return [25, 17, 24]; // Hydration Vest 8L, Trail Runners, Sun Shield Cap
+    }
+
+    // 2. ผู้ใช้สนใจแคมป์ปิ้งพักแรม (Camping)
+    if (in_array('camping', $activities) && !in_array('trekking', $activities)) {
+        return [9, 10, 19]; // Alpine Shelter Tent, Trail Sleeping Bag, Titanium Stove
+    }
+
+    // 3. ผู้ใช้สนใจทริปภูเขาสูง / สภาพอากาศหนาวจัด (High Elevation / International)
+    $region = $profile['region'] ?? '';
+    if ($region === 'international' || in_array('mountaineering', $activities)) {
+        return [21, 4, 8]; // Down Jacket 800-Fill, Alpine Shell, Alto Trek Boots
+    }
+
+    // 4. ค่าเริ่มต้น: ทริปเดินป่าอัลไพน์ (Trekking / Day Hiking) ตรงตามแบบ Reference Mockup
+    return [1, 4, 7]; // Alpine 35L Backpack, Alpine Shell Jacket, Terra Hiking Shoes
+}
+
+/**
  * ดึงข้อมูลสินค้าแนะนำจาก Database สำหรับ Personalized Email
- * @param array $productIds รหัสสินค้าที่ต้องการดึง (ค่าเริ่มต้นคือ [1, 4, 7])
+ * @param array $productIds หรือ array $profile
  * @return array รายการสินค้าที่พร้อมใช้ในอีเมล
  */
-function getRecommendedProductsFromDatabase(array $productIds = [1, 4, 7]) {
+function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
+    // ถ้าส่งมาเป็น profile array ให้คำนวณ product IDs ตาม personalized
+    if (is_array($target) && isset($target['primaryActivities']) || isset($target['activity']) || isset($target['region'])) {
+        $productIds = getPersonalizedProductIds($target);
+    } elseif (is_array($target) && !empty($target) && is_numeric($target[0])) {
+        $productIds = $target;
+    } else {
+        $productIds = [1, 4, 7];
+    }
+
     $pdo = getDbConnection();
-    
-    // Fallback data if database is not reachable
-    $fallbackProducts = [
-        [
-            'id' => 1,
-            'name' => 'Alpine 35L Backpack',
-            'category' => 'BACKPACKS',
-            'badge' => 'BEST SELLER',
-            'desc' => 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน',
-            'rating' => '128',
-            'price' => '฿2,490',
-            'image_file' => 'recom_card_img_1.jpg',
-            'cid' => 'recom_prod_1'
-        ],
-        [
-            'id' => 4,
-            'name' => 'Alpine Shell Jacket',
-            'category' => 'CLOTHING',
-            'badge' => 'TRENDING',
-            'desc' => 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ',
-            'rating' => '74',
-            'price' => '฿2,890',
-            'image_file' => 'recom_card_img_2.jpg',
-            'cid' => 'recom_prod_2'
-        ],
-        [
-            'id' => 7,
-            'name' => 'Terra Hiking Shoes',
-            'category' => 'FOOTWEAR',
-            'badge' => 'NEW',
-            'desc' => 'รองเท้าเดินป่า น้ำหนักเบา ยึดเกาะดีเยี่ยมทุกเส้นทาง',
-            'rating' => '96',
-            'price' => '฿3,290',
-            'image_file' => 'recom_card_img_3.jpg',
-            'cid' => 'recom_prod_3'
-        ]
+
+    // Mapping ข้อมูลประกอบภาษาไทยสำหรับสินค้า
+    $thaiDescs = [
+        1 => 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน',
+        4 => 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ',
+        7 => 'รองเท้าเดินป่า น้ำหนักเบา ยึดเกาะดีเยี่ยมทุกเส้นทาง',
+        25 => 'เสื้อกั๊กวิ่งเทรลน้ำหนักเบาพิเศษ พร้อมช่องใส่ขวดน้ำคู่ 500ml',
+        17 => 'รองเท้าวิ่งเทรลยึดเกาะทุกสภาพพื้นผิว ตอบสนองทุกก้าววิ่ง',
+        24 => 'หมวกกันแดดสะท้อนรังสี UV แห้งไว ระบายอากาศรอบทิศทาง',
+        9 => 'เต็นท์อัลไพน์น้ำหนักเบา กันลมกันฝนระดับพายุ 3 ฤดู',
+        10 => 'ถุงนอนขนเป็ดกะทัดรัด ทนอุณหภูมิ 0°C พกพาสะดวก',
+        19 => 'เตาแก๊สไทเทเนียมพร้อมหม้อ น้ำหนักเบาพิเศษ ต้มน้ำเดือดไว',
+        21 => 'เสื้อขนเป็ดแท้ 800-Fill ให้ความอบอุ่นสูงสุดบนยอดดอย',
+        8 => 'รองเท้าบูตเดินป่าระดับโปร กันน้ำ 100% ซัพพอร์ตข้อเท้าเยี่ยม',
+    ];
+    $badges = [
+        1 => 'BEST SELLER',
+        4 => 'TRENDING',
+        7 => 'NEW',
+        25 => 'BEST SELLER',
+        17 => 'NEW',
+        24 => 'ESSENTIAL',
+        9 => 'FEATURED',
+        10 => 'RECOMMENDED',
+        19 => 'ULTRALIGHT',
+        21 => 'TOP RATED',
+        8 => 'ALPINE PRO',
+    ];
+    $reviews = [
+        1 => '128',
+        4 => '74',
+        7 => '96',
+        25 => '89',
+        17 => '62',
+        24 => '45',
+        9 => '115',
+        10 => '78',
+        19 => '54',
+        21 => '93',
+        8 => '67',
     ];
 
     if (!$pdo) {
-        return $fallbackProducts;
+        // Fallback static array if DB down
+        $fallback = [];
+        foreach ($productIds as $idx => $pid) {
+            $fallback[] = [
+                'id' => $pid,
+                'name' => ($pid === 1 ? 'Alpine 35L Backpack' : ($pid === 4 ? 'Alpine Shell Jacket' : 'Terra Hiking Shoes')),
+                'category' => ($pid === 1 ? 'BACKPACKS' : ($pid === 4 ? 'CLOTHING' : 'FOOTWEAR')),
+                'badge' => $badges[$pid] ?? 'FEATURED',
+                'desc' => $thaiDescs[$pid] ?? 'อุปกรณ์คุณภาพสูงสำหรับการผจญภัย',
+                'rating' => $reviews[$pid] ?? '100',
+                'price' => ($pid === 1 ? '฿2,490' : ($pid === 4 ? '฿2,890' : '฿3,290')),
+                'image_file' => ($pid === 1 ? 'prod_alpine_35l.jpg' : ($pid === 4 ? 'prod_alpine_shell.jpg' : 'prod_terra_shoes.jpg')),
+                'cid' => "recom_prod_" . ($idx + 1)
+            ];
+        }
+        return $fallback;
     }
 
     try {
@@ -123,39 +181,11 @@ function getRecommendedProductsFromDatabase(array $productIds = [1, 4, 7]) {
         ");
         $dbRows = $stmt->fetchAll();
 
-        if (empty($dbRows)) {
-            return $fallbackProducts;
-        }
-
         $formatted = [];
-        $thaiDescs = [
-            1 => 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน',
-            4 => 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ',
-            7 => 'รองเท้าเดินป่า น้ำหนักเบา ยึดเกาะดีเยี่ยมทุกเส้นทาง'
-        ];
-        $badges = [
-            1 => 'BEST SELLER',
-            4 => 'TRENDING',
-            7 => 'NEW'
-        ];
-        $reviews = [
-            1 => '128',
-            4 => '74',
-            7 => '96'
-        ];
-
         foreach ($dbRows as $i => $row) {
             $pid = (int)$row['id'];
             $cardIdx = $i + 1;
-            
-            // Map image path
-            $imgFile = "recom_card_img_{$cardIdx}.jpg";
             $dbImg = basename($row['image_url']);
-            if (file_exists(__DIR__ . '/images/' . $dbImg)) {
-                $imgFile = $dbImg;
-            } elseif (file_exists(__DIR__ . '/../public/images/' . $dbImg)) {
-                $imgFile = $dbImg;
-            }
 
             $formatted[] = [
                 'id' => $pid,
@@ -165,7 +195,7 @@ function getRecommendedProductsFromDatabase(array $productIds = [1, 4, 7]) {
                 'desc' => $thaiDescs[$pid] ?? ($row['name_th'] ?: 'อุปกรณ์คุณภาพสูงสำหรับการผจญภัย'),
                 'rating' => $reviews[$pid] ?? ($row['review_count'] ?: '99'),
                 'price' => '฿' . number_format($row['price_thb']),
-                'image_file' => $imgFile,
+                'image_file' => $dbImg,
                 'cid' => "recom_prod_{$cardIdx}"
             ];
         }
@@ -173,6 +203,6 @@ function getRecommendedProductsFromDatabase(array $productIds = [1, 4, 7]) {
         return $formatted;
     } catch (Exception $e) {
         error_log("Failed to query recommended products: " . $e->getMessage());
-        return $fallbackProducts;
+        return [];
     }
 }
