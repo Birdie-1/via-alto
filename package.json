@@ -10,7 +10,8 @@
     "php:serve": "php -S localhost:8000 -t backend",
     "server:dev": "npm run dev --prefix server",
     "server:start": "npm start --prefix server",
-    "server:seed": "npm run prisma:seed --prefix server"
+    "server:seed": "npm run prisma:seed --prefix server",
+    "clean:members": "echo '[]' > backend/data/registrations.json && echo '[]' > backend/data/subscribers.json && > backend/subscribers.txt && echo '{}' > backend/data/rate_limits.json && echo '✅ Cleared all members and subscribers successfully!'"
   },
   "dependencies": {
     "lucide-react": "^1.16.0",
