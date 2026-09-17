@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, User, ShoppingBag, Menu, X, Globe } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
+import { assetUrl } from '../../utils/assets';
 
 export default function Header({
   currentPage,
@@ -99,7 +100,7 @@ export default function Header({
           >
             <div className="w-10 h-10 rounded-full overflow-hidden bg-white/90 p-0.5 border border-forest/20 shadow-xs group-hover:scale-105 transition-transform duration-300">
               <img
-                src="/images/logo.png"
+                src={assetUrl('/images/logo.png')}
                 alt="VIA ALTO Logo"
                 className="w-full h-full object-contain rounded-full"
               />

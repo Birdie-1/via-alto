@@ -1,4 +1,6 @@
-export const CATEGORIES = [
+import { assetUrl } from '../utils/assets';
+
+const RAW_CATEGORIES = [
   {
     id: 'backpacks',
     name: 'Backpacks',
@@ -41,6 +43,11 @@ export const CATEGORIES = [
   }
 ];
 
+export const CATEGORIES = RAW_CATEGORIES.map((cat) => ({
+  ...cat,
+  image: assetUrl(cat.image)
+}));
+
 export const COLOR_PALETTE = [
   { id: 'pine_forest', name: 'Pine Forest', name_th: 'เขียวป่าสน', hex: '#183C32' },
   { id: 'alpine_charcoal', name: 'Alpine Charcoal', name_th: 'เทาดำอัลไพน์', hex: '#292B28' },
@@ -49,7 +56,7 @@ export const COLOR_PALETTE = [
   { id: 'glacier_slate', name: 'Glacier Slate', name_th: 'เทากลาเซียร์', hex: '#6B7A82' }
 ];
 
-export const PRODUCTS = [
+const RAW_PRODUCTS = [
   // --- BACKPACKS ---
   {
     id: 1,
@@ -1068,6 +1075,12 @@ export const PRODUCTS = [
     }
   }
 ];
+
+export const PRODUCTS = RAW_PRODUCTS.map((p) => ({
+  ...p,
+  image: assetUrl(p.image),
+  colors: p.colors ? p.colors.map((col) => ({ ...col, image: assetUrl(col.image) })) : []
+}));
 
 export const formatPrice = (price) => {
   return `฿${price.toLocaleString('en-US')}`;

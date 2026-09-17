@@ -3,6 +3,7 @@ import Button from '../ui/Button';
 import { Mail, Check, ArrowRight } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 import { sendSubscribeEmail } from '../../services/emailService';
+import { assetUrl } from '../../utils/assets';
 
 export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -31,7 +32,7 @@ export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'e
       {/* Background Texture with Mountain Silhouette Overlay */}
       <div className="absolute inset-0 opacity-15 mix-blend-overlay pointer-events-none">
         <img
-          src="/images/cta_bg.jpg"
+          src={assetUrl('/images/cta_bg.jpg')}
           alt="High mountain landscape texture"
           className="w-full h-full object-cover"
         />

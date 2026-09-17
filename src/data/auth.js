@@ -1,4 +1,5 @@
 // VIA ALTO Customer Authentication & Marketing Profile Data Helper
+import { assetUrl } from '../utils/assets';
 
 const AUTH_USER_KEY = 'via_alto_current_user';
 const USERS_DB_KEY = 'via_alto_registered_users';
@@ -66,8 +67,8 @@ export const DEMO_USER = {
       date: '2026-07-12',
       status: 'Delivered',
       items: [
-        { name: 'Alpine 35L Backpack', price: 2490, qty: 1, image: '/images/prod_alpine_35l.jpg' },
-        { name: 'Summit Trekking Poles', price: 1290, qty: 1, image: '/images/prod_trekking_poles.jpg' }
+        { name: 'Alpine 35L Backpack', price: 2490, qty: 1, image: assetUrl('/images/prod_alpine_35l.jpg') },
+        { name: 'Summit Trekking Poles', price: 1290, qty: 1, image: assetUrl('/images/prod_trekking_poles.jpg') }
       ],
       total: 3780
     }

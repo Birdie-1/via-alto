@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, ArrowRight, Compass, Globe, Share2, Check } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/translations';
 import { sendSubscribeEmail } from '../../services/emailService';
+import { assetUrl } from '../../utils/assets';
 
 export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -30,7 +31,7 @@ export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) 
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-white/90 p-0.5 border border-forest/20">
                 <img
-                  src="/images/logo.png"
+                  src={assetUrl('/images/logo.png')}
                   alt="VIA ALTO Logo"
                   className="w-full h-full object-contain rounded-full"
                 />

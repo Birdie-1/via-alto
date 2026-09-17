@@ -16,6 +16,7 @@ import {
   Eye
 } from 'lucide-react';
 import { PRODUCTS, formatPrice } from '../../data/products';
+import { assetUrl } from '../../utils/assets';
 
 export default function EmailPreviewModal({
   isOpen,
@@ -142,14 +143,14 @@ export default function EmailPreviewModal({
                 <img
                   src={
                     activeTemplate === 'welcome'
-                      ? '/images/welcome_email_mockup.jpg'
-                      : '/images/recommendation_email_mockup.jpg'
+                      ? assetUrl('/images/welcome_email_mockup.jpg')
+                      : assetUrl('/images/recommendation_email_mockup.jpg')
                   }
                   onError={(e) => {
                     e.target.src =
                       activeTemplate === 'welcome'
-                        ? 'welcome_email_design_1789012235946.jpg'
-                        : 'recommendation_email_design_1789012253664.jpg';
+                        ? assetUrl('/images/welcome_email_design_1789012235946.jpg')
+                        : assetUrl('/images/recommendation_email_design_1789012253664.jpg');
                   }}
                   alt="Email Studio Mockup"
                   className="w-full h-auto object-cover max-h-[750px]"
@@ -226,10 +227,10 @@ export default function EmailPreviewModal({
                     <div className="px-5 py-4 border-b border-[#E5DFD7] flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <img
-                          src="/images/circular_logo.png"
+                          src={assetUrl('/images/circular_logo.png')}
                           alt="VIA ALTO Logo"
                           className="w-10 h-10 rounded-full object-cover border border-[#183C32]/20 shadow-sm"
-                          onError={(e) => { e.target.src = '/images/logo.png'; }}
+                          onError={(e) => { e.target.src = assetUrl('/images/logo.png'); }}
                         />
                         <div>
                           <span className="font-serif text-lg font-bold tracking-wider text-[#183C32] block leading-none">
@@ -248,7 +249,7 @@ export default function EmailPreviewModal({
                     {/* 2. Hero Image Banner (Mountain + Typography) */}
                     <div className="w-full bg-[#141A16] overflow-hidden">
                       <img
-                        src="/images/email_hero_banner.jpg"
+                        src={assetUrl('/images/email_hero_banner.jpg')}
                         alt="Welcome to VIA ALTO"
                         className="w-full h-auto object-cover block"
                       />
@@ -264,7 +265,7 @@ export default function EmailPreviewModal({
                         {/* Benefit 1 */}
                         <div className="border-r border-[#E5DFD7] pr-1.5 flex flex-col items-center text-center">
                           <div className="h-10 flex items-center justify-center mb-2">
-                            <img src="/images/icon_promo.png" alt="โปรโมชั่นพิเศษ" className="h-7 w-auto object-contain" />
+                            <img src={assetUrl('/images/icon_promo.png')} alt="โปรโมชั่นพิเศษ" className="h-7 w-auto object-contain" />
                           </div>
                           <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
                             {currentLang === 'th' ? 'โปรโมชั่นพิเศษ' : 'Special Offers'}<br />
@@ -278,7 +279,7 @@ export default function EmailPreviewModal({
                         {/* Benefit 2 */}
                         <div className="border-r border-[#E5DFD7] px-1 flex flex-col items-center text-center">
                           <div className="h-10 flex items-center justify-center mb-2">
-                            <img src="/images/icon_new.png" alt="สินค้าใหม่" className="h-7 w-auto object-contain" />
+                            <img src={assetUrl('/images/icon_new.png')} alt="สินค้าใหม่" className="h-7 w-auto object-contain" />
                           </div>
                           <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
                             {currentLang === 'th' ? 'สินค้าใหม่' : 'New Arrivals'}<br />
@@ -292,7 +293,7 @@ export default function EmailPreviewModal({
                         {/* Benefit 3 */}
                         <div className="border-r border-[#E5DFD7] px-1 flex flex-col items-center text-center">
                           <div className="h-10 flex items-center justify-center mb-2">
-                            <img src="/images/icon_mountain.png" alt="เรื่องราวและแรงบันดาลใจ" className="h-7 w-auto object-contain" />
+                            <img src={assetUrl('/images/icon_mountain.png')} alt="เรื่องราวและแรงบันดาลใจ" className="h-7 w-auto object-contain" />
                           </div>
                           <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
                             {currentLang === 'th' ? 'แรงบันดาลใจ' : 'Adventures'}<br />
@@ -306,7 +307,7 @@ export default function EmailPreviewModal({
                         {/* Benefit 4 */}
                         <div className="pl-1 flex flex-col items-center text-center">
                           <div className="h-10 flex items-center justify-center mb-2">
-                            <img src="/images/icon_guide.png" alt="เคล็ดลับและคำแนะนำ" className="h-7 w-auto object-contain" />
+                            <img src={assetUrl('/images/icon_guide.png')} alt="เคล็ดลับและคำแนะนำ" className="h-7 w-auto object-contain" />
                           </div>
                           <h4 className="text-[10px] font-bold text-[#183C32] leading-tight mb-1">
                             {currentLang === 'th' ? 'เคล็ดลับและวิธีใช้' : 'Gear Care'}<br />
@@ -343,10 +344,10 @@ export default function EmailPreviewModal({
                     <div className="bg-[#11241D] px-5 py-4 border-t border-white/10 flex items-center justify-between text-white">
                       <div className="flex items-center gap-2.5">
                         <img
-                          src="/images/circular_logo.png"
+                          src={assetUrl('/images/circular_logo.png')}
                           alt="VIA ALTO"
                           className="w-8 h-8 rounded-full object-cover border border-white/20"
-                          onError={(e) => { e.target.src = '/images/logo.png'; }}
+                          onError={(e) => { e.target.src = assetUrl('/images/logo.png'); }}
                         />
                         <div>
                           <span className="font-serif text-sm font-bold tracking-wider block leading-none">
@@ -383,10 +384,10 @@ export default function EmailPreviewModal({
                     <div className="px-5 py-4 border-b border-[#E5DFD7] flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <img
-                          src="/images/circular_logo.png"
+                          src={assetUrl('/images/circular_logo.png')}
                           alt="VIA ALTO Logo"
                           className="w-10 h-10 rounded-full object-cover border border-[#183C32]/20 shadow-sm"
-                          onError={(e) => { e.target.src = '/images/logo.png'; }}
+                          onError={(e) => { e.target.src = assetUrl('/images/logo.png'); }}
                         />
                         <div>
                           <span className="font-serif text-lg font-bold tracking-wider text-[#183C32] block leading-none">
@@ -408,7 +409,7 @@ export default function EmailPreviewModal({
                     {/* 2. Hero Section (Real HTML Text over Alpine Mountain Backdrop) */}
                     <div
                       className="w-full bg-[#141E17] bg-cover bg-right bg-no-repeat p-5 relative border-b border-[#E5DFD7]"
-                      style={{ backgroundImage: "url('/images/recom_hero_backdrop.jpg')" }}
+                      style={{ backgroundImage: `url(${assetUrl('/images/recom_hero_backdrop.jpg')})` }}
                     >
                       <div className="relative z-10 max-w-[280px]">
                         {/* Dynamic Registered Username */}
@@ -486,7 +487,7 @@ export default function EmailPreviewModal({
                             className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
                           >
                             <img
-                              src="/images/prod_alpine_35l.jpg"
+                              src={assetUrl('/images/prod_alpine_35l.jpg')}
                               alt="Alpine 35L Backpack"
                               className="w-full h-full object-cover block"
                             />
@@ -553,7 +554,7 @@ export default function EmailPreviewModal({
                             className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
                           >
                             <img
-                              src="/images/prod_alpine_shell.jpg"
+                              src={assetUrl('/images/prod_alpine_shell.jpg')}
                               alt="Alpine Shell Jacket"
                               className="w-full h-full object-cover block"
                             />
@@ -620,7 +621,7 @@ export default function EmailPreviewModal({
                             className="relative aspect-[4/3] rounded overflow-hidden bg-[#F7F5F0] border border-[#E5DFD7] shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
                           >
                             <img
-                              src="/images/prod_terra_shoes.jpg"
+                              src={assetUrl('/images/prod_terra_shoes.jpg')}
                               alt="Terra Hiking Shoes"
                               className="w-full h-full object-cover block"
                             />
@@ -704,10 +705,10 @@ export default function EmailPreviewModal({
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <img
-                            src="/images/circular_logo.png"
+                            src={assetUrl('/images/circular_logo.png')}
                             alt="VIA ALTO"
                             className="w-8 h-8 rounded-full object-cover border border-white/20"
-                            onError={(e) => { e.target.src = '/images/logo.png'; }}
+                            onError={(e) => { e.target.src = assetUrl('/images/logo.png'); }}
                           />
                           <div>
                             <span className="font-serif text-sm font-bold tracking-wider block leading-none">

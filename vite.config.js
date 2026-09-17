@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  // กำหนด Base Path สำหรับ GitHub Pages (https://Birdie-1.github.io/via-alto/)
+  base: process.env.NODE_ENV === 'production' ? '/via-alto/' : '/',
   plugins: [
     react(),
     tailwindcss(),

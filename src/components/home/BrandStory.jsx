@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../ui/Button';
 import { TRANSLATIONS } from '../../data/translations';
+import { assetUrl } from '../../utils/assets';
 
 export default function BrandStory({ onStoryClick, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -14,7 +15,7 @@ export default function BrandStory({ onStoryClick, lang = 'en' }) {
           <div className="lg:col-span-6 order-2 lg:order-1">
             <div className="relative aspect-[4/3] sm:aspect-[16/11] overflow-hidden border border-stone-light shadow-md bg-stone-light group">
               <img
-                src="/images/philosophy.jpg"
+                src={assetUrl('/images/philosophy.jpg')}
                 alt="VIA ALTO Brand Story - Alpine peaks"
                 className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />

@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../ui/Button';
 import { TRANSLATIONS } from '../../data/translations';
+import { assetUrl } from '../../utils/assets';
 
 export default function Hero({ onExploreClick, onDiscoverClick, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -10,7 +11,7 @@ export default function Hero({ onExploreClick, onDiscoverClick, lang = 'en' }) {
       {/* Background Image with Cinematic Alpine Atmosphere */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/images/hero.jpg"
+          src={assetUrl('/images/hero.jpg')}
           alt="Alpine mountain ridge with explorer"
           className="w-full h-full object-cover object-center scale-[1.02] transform animate-in fade-in zoom-in-105 duration-1000"
         />
