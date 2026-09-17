@@ -15,8 +15,8 @@ function renderWelcomeEmail($data) {
     $code = htmlspecialchars($data['code'] ?? 'GOBEYOND10');
     // บรรทัดที่ 16: ข้อความสิทธิประโยชน์ส่วนลด
     $discount = htmlspecialchars($data['discount'] ?? '10% OFF YOUR FIRST ORDER!');
-    // บรรทัดที่ 18: กำหนด URL หน้าเว็บหลัก โดยตัดเครื่องหมาย slash ท้ายออก
-    $siteUrl = rtrim($data['site_url'] ?? 'http://localhost:5173', '/');
+    // บรรทัดที่ 18: กำหนด URL หน้าเว็บหลัก โดยตัดเครื่องหมาย slash ท้ายออก (ชี้ไปที่ GitHub Pages)
+    $siteUrl = rtrim($data['site_url'] ?? (getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto'), '/');
     // บรรทัดที่ 20: กำหนดตัวแปร $voucherCode สำหรับแนบ Query String ในปุ่มสินค้า
     $voucherCode = $code;
 

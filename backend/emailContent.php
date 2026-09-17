@@ -7,8 +7,8 @@
  * ==============================================================================================
  */
 
-// กำหนด URL ของเว็บไซต์สำหรับลิงก์ต่าง ๆ (อ่านจากค่า .env หรือใช้ค่าเริ่มต้น localhost:5173)
-$siteUrl = getenv('SITE_URL') ?: 'http://localhost:5173';
+// กำหนด URL ของเว็บไซต์สำหรับลิงก์ต่าง ๆ (อ่านจากค่า .env หรือใช้ค่าเริ่มต้น GitHub Pages)
+$siteUrl = rtrim(getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto', '/');
 
 // สร้างตัวแปร $bodyContent บรรจุโค้ด HTML เพื่อส่งต่อไปยัง $mail->Body ใน sendMail.php
 $bodyContent = '

@@ -16,8 +16,8 @@ function renderRecommendationEmail($data) {
     // บรรทัดที่ 16: ทำความสะอาดข้อความ ป้องกัน XSS และแปลงเป็นตัวพิมพ์ใหญ่เพื่อความสวยงามในส่วน Hero
     $displayUsername = strtoupper(htmlspecialchars(trim($username)));
     
-    // บรรทัดที่ 19: กำหนด URL หลักของเว็บไซต์สำหรับสร้างลิงก์ deep link
-    $siteUrl = rtrim($data['site_url'] ?? 'http://localhost:5173', '/');
+    // บรรทัดที่ 19: กำหนด URL หลักของเว็บไซต์สำหรับสร้างลิงก์ CTA และ Deep Link (ชี้ไปที่ GitHub Pages)
+    $siteUrl = rtrim($data['site_url'] ?? (getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto'), '/');
 
     // บรรทัดที่ 22: กำหนดรายการ ID สินค้าแนะนำตาม Personalized Preference ของผู้ใช้
     $productIds = $data['product_ids'] ?? [1, 4, 7];

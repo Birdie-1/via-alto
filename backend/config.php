@@ -12,10 +12,11 @@ if (!function_exists('handleCors')) {
     function handleCors() {
         // บรรทัดที่ 14: รายการโดเมนหรือพอร์ตต้นทาง (Origins) ที่อนุญาตให้เรียกใช้งาน
         $allowedOrigins = [
-            'http://localhost:5173',  // พอร์ตทดสอบ Vite Dev Server
-            'http://127.0.0.1:5173',  // Loopback IP สำหรับ Vite
-            'http://localhost:3000',  // พอร์ต React มาตรฐาน
-            'http://localhost:8000'   // พอร์ต PHP Built-in Server
+            'https://birdie-1.github.io', // โดเมนหลักบน GitHub Pages
+            'http://localhost:5173',      // พอร์ตทดสอบ Vite Dev Server
+            'http://127.0.0.1:5173',      // Loopback IP สำหรับ Vite
+            'http://localhost:3000',      // พอร์ต React มาตรฐาน
+            'http://localhost:8000'       // พอร์ต PHP Built-in Server
         ];
         // บรรทัดที่ 21: อ่านค่า Origin ของ Client หากไม่มีให้เป็น wildcard '*'
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
@@ -66,9 +67,9 @@ return [
     // บรรทัดที่ 67: ชื่อผู้ส่งที่จะปรากฏในกล่องจดหมายผู้รับ
     'from_name' => getenv('MAIL_FROM_NAME') ?: 'VIA ALTO Alpine Club',
 
-    // บรรทัดที่ 70: Base URL ของเว็บไซต์ สำหรับสร้างลิงก์และรูปภาพในอีเมล
-    'site_url' => getenv('SITE_URL') ?: 'http://localhost:5173',
+    // บรรทัดที่ 71: Base URL ของเว็บไซต์ สำหรับสร้างลิงก์ CTA และรูปภาพในอีเมล
+    'site_url' => getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto',
 
-    // บรรทัดที่ 73: โฟลเดอร์จัดเก็บ Log ของการส่งอีเมล
+    // บรรทัดที่ 74: โฟลเดอร์จัดเก็บ Log ของการส่งอีเมล
     'log_dir' => __DIR__ . '/logs'
 ];
