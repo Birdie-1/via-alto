@@ -1,76 +1,92 @@
 <?php
 /**
  * VIA ALTO — Personalized Product Recommendation Email Template
- * ออกแบบตามต้นแบบแบรนด์ VIA ALTO (ดึงข้อมูลสินค้าจาก Database + แสดง Username จริงเป็นข้อความ HTML)
- * Fulfills Step 3: Personalized marketing based on user interest
+ * เทมเพลตอีเมลแนะนำสินค้าเฉพาะบุคคล (Personalized Marketing) ตามความสนใจของผู้ใช้
+ * ดึงข้อมูลสินค้าจริงจากฐานข้อมูล PostgreSQL และแสดงชื่อ Username จริงของผู้ใช้ในรูปแบบ HTML
+ * ตรงตามข้อกำหนด Step 3 & Step 4 ของใบงานอาจารย์
  */
 
+// บรรทัดที่ 9: โหลดฟังก์ชันเชื่อมต่อฐานข้อมูลและการดึงสินค้าจาก db.php
 require_once __DIR__ . '/../db.php';
 
+// บรรทัดที่ 12: ประกาศฟังก์ชัน renderRecommendationEmail รับพารามิเตอร์ $data ข้อมูลผู้ใช้และสินค้า
 function renderRecommendationEmail($data) {
-    // 1. ดึง Username / ชื่อที่ผู้ใช้สมัครไว้ (แทน John Wick ที่เป็นตัวอย่าง)
+    // บรรทัดที่ 14: ดึง Username หรือชื่อเต็มของผู้ใช้ที่ส่งมาจากการลงทะเบียน (ค่าเริ่มต้น Explorer)
     $username = $data['username'] ?? $data['name'] ?? $data['fullName'] ?? 'Explorer';
+    // บรรทัดที่ 16: ทำความสะอาดข้อความ ป้องกัน XSS และแปลงเป็นตัวพิมพ์ใหญ่เพื่อความสวยงามในส่วน Hero
     $displayUsername = strtoupper(htmlspecialchars(trim($username)));
     
+    // บรรทัดที่ 19: กำหนด URL หลักของเว็บไซต์สำหรับสร้างลิงก์ deep link
     $siteUrl = rtrim($data['site_url'] ?? 'http://localhost:5173', '/');
 
-    // 2. ดึงข้อมูลสินค้าและรูปภาพจาก Database จริง (PostgreSQL)
+    // บรรทัดที่ 22: กำหนดรายการ ID สินค้าแนะนำตาม Personalized Preference ของผู้ใช้
     $productIds = $data['product_ids'] ?? [1, 4, 7];
+    // บรรทัดที่ 24: ดึงข้อมูลสินค้า (ชื่อ, ราคา, หมวดหมู่, สเปก) จากฐานข้อมูลจริง PostgreSQL
     $products = $data['products'] ?? getRecommendedProductsFromDatabase($productIds);
 
+    // บรรทัดที่ 27: ตรวจสอบการใช้งานรูปภาพแบบ CID (Content-ID inline attachment) หรือ URL ปกติ
     $useCid = $data['use_cid'] ?? true;
+    // บรรทัดที่ 29: กำหนด Source ของโลโก้แบรนด์ทรงกลม
     $logoSrc = $useCid ? 'cid:brand_logo' : "{$siteUrl}/images/circular_logo.png";
+    // บรรทัดที่ 31: กำหนด Source ของภาพพื้นหลัง Hero วิวภูเขา Dolomites
     $heroBgSrc = $useCid ? 'cid:recom_hero_bg' : "{$siteUrl}/images/recom_hero_backdrop.jpg";
 
-    // 3. Render 3 Product Cards from Database
+    // บรรทัดที่ 34: ตัวแปรสะสมโค้ด HTML ของคอลัมน์สินค้าทั้ง 3 ชิ้น
     $productCols = '';
+    // บรรทัดที่ 36: วนลูปสินค้าแต่ละชิ้นเพื่อสร้างคอลัมน์แสดงผล
     foreach ($products as $i => $p) {
+        // บรรทัดที่ 38: กำหนดชื่อ CID สำหรับรูปสินค้าชิ้นนี้
         $cidName = $p['cid'] ?? ("recom_prod_" . ($i + 1));
+        // บรรทัดที่ 40: กำหนดชื่อไฟล์รูปภาพสำรอง
         $imgFile = $p['image_file'] ?? "recom_card_img_" . ($i + 1) . ".jpg";
+        // บรรทัดที่ 42: กำหนด URI แสดงภาพ (CID หรือ URL)
         $pImg = $useCid ? ('cid:' . $cidName) : "{$siteUrl}/images/{$imgFile}";
+        // บรรทัดที่ 44: จัดระยะ Padding ซ้ายขวาของแต่ละคอลัมน์ให้สมดุล
         $pad = ($i === 0) ? 'padding: 0 6px 0 0;' : (($i === 1) ? 'padding: 0 4px;' : 'padding: 0 0 0 6px;');
 
-        // Product Deep Links with Voucher Auto-Apply & UTM Tracking
+        // บรรทัดที่ 47: สร้าง Product Deep Link ไปยังหน้ารายละเอียดสินค้า พร้อม Auto-Apply Voucher และ UTM Tracking
         $prodLink = htmlspecialchars("{$siteUrl}/?product={$p['id']}&voucher=WELCOME10&utm_source=email&utm_medium=recommendation&utm_campaign=welcome_personalized");
+        // บรรทัดที่ 49: สร้างปุ่มบันทึกลง Wishlist พร้อมแนบโค้ดคูปอง
         $wishlistLink = htmlspecialchars("{$siteUrl}/?product={$p['id']}&action=wishlist&voucher=WELCOME10&utm_source=email&utm_medium=recommendation");
 
+        // บรรทัดที่ 52: ประกอบโครงสร้าง Table Cell (td) ของสินค้าแต่ละรายการ
         $productCols .= '
         <td width="33.33%" align="left" style="vertical-align: top; ' . $pad . '">
-          <!-- Card Image & Badge -->
+          <!-- การ์ดรูปภาพสินค้า และลิงก์คลิกไปยังหน้ารายละเอียดสินค้าโดยตรง -->
           <div style="border-radius: 4px; overflow: hidden; background-color: #141A16; line-height: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
             <a href="' . $prodLink . '" style="display: block; text-decoration: none;">
               <img src="' . $pImg . '" alt="' . htmlspecialchars($p['name']) . '" style="width: 100%; max-width: 190px; height: auto; display: block; border: 0;" />
             </a>
           </div>
 
-          <!-- Category (From DB) -->
+          <!-- แสดงหมวดหมู่สินค้าจากฐานข้อมูล -->
           <div style="font-size: 8.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7D8D84; margin-top: 10px;">
             ' . htmlspecialchars($p['category']) . '
           </div>
 
-          <!-- Title (From DB with Direct Link) -->
+          <!-- แสดงชื่อสินค้าจากฐานข้อมูล พร้อมลิงก์คลิกตรง -->
           <div style="font-size: 13px; font-weight: 700; color: #183C32; line-height: 1.3; margin-top: 4px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', sans-serif;">
             <a href="' . $prodLink . '" style="color: #183C32; text-decoration: none;">
               ' . htmlspecialchars($p['name']) . '
             </a>
           </div>
 
-          <!-- Description (From DB) -->
+          <!-- แสดงคำอธิบายสั้นของสินค้าจากฐานข้อมูล -->
           <div style="font-size: 9.5px; color: #6E7D75; line-height: 1.4; margin-top: 4px; min-height: 28px;">
             ' . htmlspecialchars($p['desc']) . '
           </div>
 
-          <!-- Stars & Review Count (From DB) -->
+          <!-- แสดงคะแนนรีวิวและดาวสินค้าจากฐานข้อมูล -->
           <div style="font-size: 10px; color: #183C32; margin-top: 6px;">
             ★★★★★ <span style="color: #7D8D84; font-size: 9px; font-weight: 500;">(' . htmlspecialchars($p['rating']) . ')</span>
           </div>
 
-          <!-- Price (From DB) -->
+          <!-- แสดงราคาสินค้าจากฐานข้อมูล -->
           <div style="font-size: 15px; font-weight: 800; color: #183C32; margin-top: 6px; letter-spacing: 0.2px;">
             ' . htmlspecialchars($p['price']) . '
           </div>
 
-          <!-- Action Buttons (Direct Deep Link Cart + Wishlist) -->
+          <!-- ปุ่ม Action Call to Action: เพิ่มใส่ตะกร้า (Deep Link) และปุ่ม Wishlist -->
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 8px;">
             <tr>
               <td style="vertical-align: middle;">
@@ -88,6 +104,7 @@ function renderRecommendationEmail($data) {
         </td>';
     }
 
+    // บรรทัดที่ 95: ส่งคืนโครงสร้าง HTML อีเมลฉบับเต็ม
     return '<!DOCTYPE html>
 <html lang="th">
 <head>

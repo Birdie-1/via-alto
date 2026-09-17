@@ -1,28 +1,39 @@
 <?php
 /**
- * VIA ALTO — Database Service (PostgreSQL via PDO)
- * ดึงข้อมูลสินค้าและรูปภาพจาก Database จริงมาแสดงในอีเมลแบบไดนามิก
- * รองรับทั้งโหมด Personalized ตามความสนใจ และโหมดระบุ Product IDs โดยตรง
+ * ==============================================================================================
+ * ไฟล์: db.php
+ * คำอธิบาย: คลาสเชื่อมต่อฐานข้อมูล PostgreSQL ผ่าน PDO และอัลกอริทึมคำนวณสินค้าแนะนำเฉพาะบุคคล (Personalized)
+ * สอดคล้องกับ: โจทย์การบ้านขั้นตอนที่ 3 (Personalized Marketing แนะนำสินค้า 3 ชิ้นตามความสนใจ)
+ * ==============================================================================================
  */
 
+/**
+ * ฟังก์ชันสร้างและส่งคืนการเชื่อมต่อฐานข้อมูล PostgreSQL แบบ Singleton (PDO)
+ * @return PDO|null ออบเจกต์การเชื่อมต่อ PDO หรือ null หากเชื่อมต่อไม่สำเร็จ
+ */
 function getDbConnection() {
+    // ใช้ตัวแปร static เพื่อป้องกันการสร้างการเชื่อมต่อซ้ำซ้อนใน Request เดียวกัน
     static $pdo = null;
+    // หากเคยเชื่อมต่อแล้ว ให้ส่งคืนออบเจกต์เดิมได้ทันที
     if ($pdo !== null) {
         return $pdo;
     }
 
+    // กำหนดค่าพื้นฐานของ PostgreSQL จาก Environment หรือใช้ค่าเริ่มต้น
     $host = getenv('DB_HOST') ?: 'localhost';
     $port = getenv('DB_PORT') ?: '5432';
     $dbname = getenv('DB_NAME') ?: 'via_alto';
     $user = getenv('DB_USER') ?: 'get_wrecked';
     $pass = getenv('DB_PASS') ?: '';
 
-    // Check if DATABASE_URL is set in server/.env or environment
+    // ตรวจสอบว่ามีการกำหนด DATABASE_URL ใน server/.env หรือไม่
     $dbUrl = getenv('DATABASE_URL');
     if (!$dbUrl && file_exists(__DIR__ . '/../server/.env')) {
+        // อ่านไฟล์ server/.env ทีละบรรทัด
         $envLines = file(__DIR__ . '/../server/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($envLines as $line) {
             $trimmed = trim($line);
+            // ค้นหาบรรทัดที่ขึ้นต้นด้วย DATABASE_URL=
             if (str_starts_with($trimmed, 'DATABASE_URL=')) {
                 $dbUrl = trim(substr($trimmed, strlen('DATABASE_URL=')), "\"'");
                 break;
@@ -30,6 +41,7 @@ function getDbConnection() {
         }
     }
 
+    // หากพบ DATABASE_URL ให้ถอดรหัส URL เพื่อแยก Host, Port, User, Password, DB Name
     if ($dbUrl) {
         $parsed = parse_url($dbUrl);
         if ($parsed) {
@@ -42,66 +54,91 @@ function getDbConnection() {
     }
 
     try {
+        // กำหนด DSN สำหรับไดรเวอร์ pgsql ของ PDO
         $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
+        // สร้างการเชื่อมต่อ PDO
         $pdo = new PDO($dsn, $user, $pass, [
+            // กำหนดให้โยน Exception เมื่อเกิดข้อผิดพลาดในการคิวรี
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            // ดึงผลลัพธ์ในรูปแบบ Associative Array เสมอ
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            // กำหนด Timeout ในการเชื่อมต่อที่ 3 วินาที
             PDO::ATTR_TIMEOUT => 3
         ]);
         return $pdo;
     } catch (Exception $e) {
+        // บันทึกข้อผิดพลาดลง System Log หากเชื่อมต่อฐานข้อมูลไม่สำเร็จ
         error_log("Database connection failed: " . $e->getMessage());
         return null;
     }
 }
 
 /**
- * คำนวณรหัสสินค้า 3 ชิ้นตาม Personalized Profile ของลูกค้า
+ * ฟังก์ชันคำนวณรหัสสินค้า 3 ชิ้นให้ตรงกับโปรไฟล์ความสนใจของลูกค้า (Personalized Logic - Step 3)
+ * @param array $profile ข้อมูลโปรไฟล์ของผู้ใช้ที่ได้จากแบบสอบถามลงทะเบียน
+ * @return array รายการรหัสสินค้า 3 ตัว เช่น [1, 4, 7]
  */
 function getPersonalizedProductIds(array $profile = []): array {
+    // ดึงกิจกรรมที่สนใจจาก primaryActivities หรือ activity
     $activities = $profile['primaryActivities'] ?? [];
     if (empty($activities) && isset($profile['activity'])) {
         $activities = is_array($profile['activity']) ? $profile['activity'] : [$profile['activity']];
     }
 
-    // 1. ผู้ใช้สนใจวิ่งเทรล (Trail Running)
+    // ------------------------------------------------------------------------------------------
+    // กฎข้อที่ 1: กลุ่มลูกค้าที่สนใจการวิ่งเทรล (Trail Running)
+    // ------------------------------------------------------------------------------------------
     if (in_array('trail_running', $activities)) {
-        return [25, 17, 24]; // Hydration Vest 8L, Trail Runners, Sun Shield Cap
+        // #25: Hydration Vest 8L (เสื้อกั๊กวิ่งเทรล), #17: Trail Runners (รองเท้าวิ่งเทรล), #24: Sun Shield Cap (หมวกกันแดด)
+        return [25, 17, 24];
     }
 
-    // 2. ผู้ใช้สนใจแคมป์ปิ้งพักแรม (Camping)
+    // ------------------------------------------------------------------------------------------
+    // กฎข้อที่ 2: กลุ่มลูกค้าที่สนใจการตั้งแคมป์พักแรม (Camping)
+    // ------------------------------------------------------------------------------------------
     if (in_array('camping', $activities) && !in_array('trekking', $activities)) {
-        return [9, 10, 19]; // Alpine Shelter Tent, Trail Sleeping Bag, Titanium Stove
+        // #9: Alpine Shelter Tent (เต็นท์อัลไพน์), #10: Trail Sleeping Bag (ถุงนอนขนเป็ด), #19: Titanium Stove (เตาไทเทเนียม)
+        return [9, 10, 19];
     }
 
-    // 3. ผู้ใช้สนใจทริปภูเขาสูง / สภาพอากาศหนาวจัด (High Elevation / International)
+    // ------------------------------------------------------------------------------------------
+    // กฎข้อที่ 3: กลุ่มลูกค้าทริปยอดเขาสูง / สภาพอากาศหนาวจัด / ทริปต่างประเทศ (High Elevation)
+    // ------------------------------------------------------------------------------------------
     $region = $profile['region'] ?? '';
     if ($region === 'international' || in_array('mountaineering', $activities)) {
-        return [21, 4, 8]; // Down Jacket 800-Fill, Alpine Shell, Alto Trek Boots
+        // #21: Down Jacket 800-Fill (เสื้อขนเป็ดกันหนาวจัด), #4: Alpine Shell (เสื้อแจ็คเก็ตกันลมฝน), #8: Alto Trek Boots (รองเท้าบูตลุยหิมะ)
+        return [21, 4, 8];
     }
 
-    // 4. ค่าเริ่มต้น: ทริปเดินป่าอัลไพน์ (Trekking / Day Hiking) ตรงตามแบบ Reference Mockup
-    return [1, 4, 7]; // Alpine 35L Backpack, Alpine Shell Jacket, Terra Hiking Shoes
+    // ------------------------------------------------------------------------------------------
+    // กฎข้อที่ 4: ค่าเริ่มต้น หรือกลุ่มเดินป่าอัลไพน์ (Trekking / Day Hiking) ตรงตามแบบ Reference Mockup
+    // ------------------------------------------------------------------------------------------
+    // #1: Alpine 35L Backpack (กระเป๋าเป้ 35 ลิตร), #4: Alpine Shell Jacket (แจ็คเก็ตกันลมฝน), #7: Terra Hiking Shoes (รองเท้าเดินป่า)
+    return [1, 4, 7];
 }
 
 /**
- * ดึงข้อมูลสินค้าแนะนำจาก Database สำหรับ Personalized Email
- * @param array $productIds หรือ array $profile
- * @return array รายการสินค้าที่พร้อมใช้ในอีเมล
+ * ฟังก์ชันดึงข้อมูลสินค้าแนะนำจากตาราง products ใน PostgreSQL และจัดรูปแบบสำหรับอีเมล
+ * @param array $target รับเป็น array ของ profile หรือ array ของ product IDs
+ * @return array รายการข้อมูลสินค้าที่พร้อมเรนเดอร์ในอีเมล
  */
 function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
-    // ถ้าส่งมาเป็น profile array ให้คำนวณ product IDs ตาม personalized
-    if (is_array($target) && isset($target['primaryActivities']) || isset($target['activity']) || isset($target['region'])) {
+    // ตรวจสอบว่าส่งเข้ามาเป็น Profile หรือ Array ของ ID
+    if (is_array($target) && (isset($target['primaryActivities']) || isset($target['activity']) || isset($target['region']))) {
+        // คำนวณหา Product IDs 3 ชิ้นตาม Personalized Logic
         $productIds = getPersonalizedProductIds($target);
     } elseif (is_array($target) && !empty($target) && is_numeric($target[0])) {
+        // หากส่ง Product IDs มาโดยตรง ให้ใช้ค่านั้น
         $productIds = $target;
     } else {
+        // ค่าเริ่มต้น
         $productIds = [1, 4, 7];
     }
 
+    // สร้างการเชื่อมต่อฐานข้อมูล
     $pdo = getDbConnection();
 
-    // Mapping ข้อมูลประกอบภาษาไทยสำหรับสินค้า
+    // ข้อความอธิบายภาษาไทยสำหรับแสดงใต้ชื่อสินค้าในอีเมล
     $thaiDescs = [
         1 => 'กระเป๋าเป้ขนาดพอดี เหมาะสำหรับทั้งทริปสั้นและทริปหลายวัน',
         4 => 'แจ็คเก็ตกันลม กันน้ำ ระบายอากาศได้ดี เหมาะกับทุกสภาพอากาศ',
@@ -115,6 +152,8 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
         21 => 'เสื้อขนเป็ดแท้ 800-Fill ให้ความอบอุ่นสูงสุดบนยอดดอย',
         8 => 'รองเท้าบูตเดินป่าระดับโปร กันน้ำ 100% ซัพพอร์ตข้อเท้าเยี่ยม',
     ];
+
+    // ป้ายสถานะสินค้า (Badges)
     $badges = [
         1 => 'BEST SELLER',
         4 => 'TRENDING',
@@ -128,6 +167,8 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
         21 => 'TOP RATED',
         8 => 'ALPINE PRO',
     ];
+
+    // จำนวนรีวิวสินค้าสำหรับแสดงความน่าเชื่อถือ
     $reviews = [
         1 => '128',
         4 => '74',
@@ -142,8 +183,8 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
         8 => '67',
     ];
 
+    // กรณีที่เชื่อมต่อฐานข้อมูลไม่ได้ (Fallback Offline Mode)
     if (!$pdo) {
-        // Fallback static array if DB down
         $fallback = [];
         foreach ($productIds as $idx => $pid) {
             $fallback[] = [
@@ -162,7 +203,10 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
     }
 
     try {
+        // แปลง Array ของ ID ให้เป็นตัวเลขจำนวนเต็มเพื่อความปลอดภัย
         $inQuery = implode(',', array_map('intval', $productIds));
+        
+        // คิวรีดึงข้อมูลจากตาราง products โดยเรียงลำดับผลลัพธ์ตามลำดับ ID ที่ส่งเข้าไป
         $stmt = $pdo->query("
             SELECT 
                 p.id, 
@@ -182,9 +226,11 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
         $dbRows = $stmt->fetchAll();
 
         $formatted = [];
+        // วนลูปแปลงข้อมูลจากฐานข้อมูลให้เป็นรูปแบบที่พร้อมใช้ในอีเมล
         foreach ($dbRows as $i => $row) {
             $pid = (int)$row['id'];
             $cardIdx = $i + 1;
+            // ดึงชื่อไฟล์รูปภาพจาก image_url ในฐานข้อมูล (เช่น prod_alpine_35l.jpg)
             $dbImg = basename($row['image_url']);
 
             $formatted[] = [
@@ -194,9 +240,9 @@ function getRecommendedProductsFromDatabase($target = [1, 4, 7]) {
                 'badge' => $badges[$pid] ?? ($row['badge_en'] ?: 'RECOMMENDED'),
                 'desc' => $thaiDescs[$pid] ?? ($row['name_th'] ?: 'อุปกรณ์คุณภาพสูงสำหรับการผจญภัย'),
                 'rating' => $reviews[$pid] ?? ($row['review_count'] ?: '99'),
-                'price' => '฿' . number_format($row['price_thb']),
+                'price' => '฿' . number_format($row['price_thb']), // จัดรูปแบบราคา เช่น ฿2,490
                 'image_file' => $dbImg,
-                'cid' => "recom_prod_{$cardIdx}"
+                'cid' => "recom_prod_{$cardIdx}" // กำหนดชื่อตัวแทนรูปสำหรับ CID
             ];
         }
 
