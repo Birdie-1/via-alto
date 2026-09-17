@@ -59,6 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ดึงค่า email จาก JSON หรือถ้าไม่มีให้ดึงจาก $_POST (กรณีส่งจากฟอร์ม subscribe_form.php)
     $emailInput = $jsonInput['email'] ?? $_POST['email'] ?? '';
 
+    // ดึงค่า URL หน้าเว็บหลัก หรือใช้ GitHub Pages (ป้องกันการชี้ไปที่ localhost ในอีเมลจริง)
+    $siteUrlInput = $jsonInput['site_url'] ?? $_POST['site_url'] ?? getenv('SITE_URL') ?? '';
+    $siteUrl = (!empty($siteUrlInput) && !str_contains($siteUrlInput, 'localhost') && !str_contains($siteUrlInput, '127.0.0.1'))
+        ? rtrim($siteUrlInput, '/')
+        : 'https://birdie-1.github.io/via-alto';
+
     // ตรวจสอบว่าคำขอส่งมาในรูปแบบ JSON หรือไม่
     $isJsonRequest = !empty($jsonInput) || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
 

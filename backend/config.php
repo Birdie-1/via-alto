@@ -67,8 +67,10 @@ return [
     // บรรทัดที่ 67: ชื่อผู้ส่งที่จะปรากฏในกล่องจดหมายผู้รับ
     'from_name' => getenv('MAIL_FROM_NAME') ?: 'VIA ALTO Alpine Club',
 
-    // บรรทัดที่ 71: Base URL ของเว็บไซต์ สำหรับสร้างลิงก์ CTA และรูปภาพในอีเมล
-    'site_url' => getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto',
+    // บรรทัดที่ 71: Base URL ของเว็บไซต์ สำหรับสร้างลิงก์ CTA และรูปภาพในอีเมล (บังคับชี้ไปที่ GitHub Pages เสมอ ห้ามเป็น localhost)
+    'site_url' => (!empty(getenv('SITE_URL')) && !str_contains(getenv('SITE_URL'), 'localhost') && !str_contains(getenv('SITE_URL'), '127.0.0.1'))
+        ? rtrim(getenv('SITE_URL'), '/')
+        : 'https://birdie-1.github.io/via-alto',
 
     // บรรทัดที่ 74: โฟลเดอร์จัดเก็บ Log ของการส่งอีเมล
     'log_dir' => __DIR__ . '/logs'

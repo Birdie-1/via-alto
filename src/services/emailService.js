@@ -16,8 +16,8 @@ const DIRECT_PHP_URL = 'http://localhost:8000';
  * @param {string} source - แหล่งที่มา เช่น 'homepage_cta' หรือ 'footer'
  */
 export async function sendSubscribeEmail(email, name = 'Explorer', source = 'homepage_cta') {
-  // บรรทัดที่ 20: จัดเตรียมข้อมูล Payload ที่จะส่งไปยัง Backend ในรูปแบบ Object
-  const payload = { email, name, source };
+  // บรรทัดที่ 20: จัดเตรียมข้อมูล Payload ที่จะส่งไปยัง Backend ในรูปแบบ Object (บังคับใช้ site_url ชี้ไปที่ GitHub Pages)
+  const payload = { email, name, source, site_url: 'https://birdie-1.github.io/via-alto' };
 
   try {
     // บรรทัดที่ 24: พยายามยิงคำขอ POST ผ่าน Vite Proxy ไปที่ sendMail.php เป็นลำดับแรก
@@ -75,11 +75,12 @@ export async function sendRegisterWelcomeEmail(user) {
   // บรรทัดที่ 75: ตรวจสอบความถูกต้อง หากไม่มีข้อมูลผู้ใช้หรือไม่มีอีเมลให้ข้ามการทำงานทันที
   if (!user || !user.email) return;
 
-  // บรรทัดที่ 78: จัดเตรียม Payload ส่งข้อมูลอีเมล ชื่อ และโปรไฟล์ความสนใจ (marketingProfile)
+  // บรรทัดที่ 78: จัดเตรียม Payload ส่งข้อมูลอีเมล ชื่อ โปรไฟล์ความสนใจ และ site_url ชี้ไปที่ GitHub Pages
   const payload = {
     email: user.email,
     fullName: user.fullName || 'Explorer',
-    marketingProfile: user.marketingProfile || {}
+    marketingProfile: user.marketingProfile || {},
+    site_url: 'https://birdie-1.github.io/via-alto'
   };
 
   try {

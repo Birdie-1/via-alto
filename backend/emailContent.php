@@ -7,8 +7,15 @@
  * ==============================================================================================
  */
 
-// กำหนด URL ของเว็บไซต์สำหรับลิงก์ต่าง ๆ (อ่านจากค่า .env หรือใช้ค่าเริ่มต้น GitHub Pages)
-$siteUrl = rtrim(getenv('SITE_URL') ?: 'https://birdie-1.github.io/via-alto', '/');
+// กำหนด URL ของเว็บไซต์สำหรับลิงก์ต่าง ๆ (หากส่ง $siteUrl มาให้ใช้ค่านั้น หรือดึงจาก .env โดยบังคับชี้ไปที่ GitHub Pages และห้ามเป็น localhost เด็ดขาด)
+if (empty($siteUrl) || str_contains($siteUrl, 'localhost') || str_contains($siteUrl, '127.0.0.1')) {
+    $rawEnvUrl = getenv('SITE_URL');
+    $siteUrl = (!empty($rawEnvUrl) && !str_contains($rawEnvUrl, 'localhost') && !str_contains($rawEnvUrl, '127.0.0.1'))
+        ? rtrim($rawEnvUrl, '/')
+        : 'https://birdie-1.github.io/via-alto';
+} else {
+    $siteUrl = rtrim($siteUrl, '/');
+}
 
 // สร้างตัวแปร $bodyContent บรรจุโค้ด HTML เพื่อส่งต่อไปยัง $mail->Body ใน sendMail.php
 $bodyContent = '

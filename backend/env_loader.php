@@ -33,15 +33,12 @@ if (!function_exists('loadEnv')) {
                 // บรรทัดที่ 34: ตัดช่องว่างและเครื่องหมายคำพูดเดี่ยว/คู่ (Quotes) ออกจาก Value
                 $value = trim($value, " \t\n\r\0\x0B\"'");
 
-                // บรรทัดที่ 37: ตรวจสอบว่าตัวแปรนี้ยังไม่มีการตั้งค่าไว้ในระดับ System Environment
-                if (!getenv($key)) {
-                    // บรรทัดที่ 39: บันทึกค่าลงใน System Environment ด้วย putenv()
-                    putenv("{$key}={$value}");
-                    // บรรทัดที่ 41: บันทึกค่าลงในตัวแปร Superglobal $_ENV
-                    $_ENV[$key] = $value;
-                    // บรรทัดที่ 43: บันทึกค่าลงในตัวแปร Superglobal $_SERVER เพื่อความสะดวกในการเรียกใช้
-                    $_SERVER[$key] = $value;
-                }
+                // บรรทัดที่ 37: บันทึกค่าลงใน System Environment ด้วย putenv() เสมอเพื่อให้ค่าอัปเดตทันที
+                putenv("{$key}={$value}");
+                // บรรทัดที่ 39: บันทึกค่าลงในตัวแปร Superglobal $_ENV
+                $_ENV[$key] = $value;
+                // บรรทัดที่ 41: บันทึกค่าลงในตัวแปร Superglobal $_SERVER เพื่อความสะดวกในการเรียกใช้
+                $_SERVER[$key] = $value;
             }
         }
     }

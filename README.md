@@ -168,7 +168,7 @@ FRONTEND_URL="http://localhost:5173"
 MAIL_DRIVER=smtp              # 'smtp' (ส่งจริง) หรือ 'log' (จำลองบันทึกไฟล์)
 MAIL_FROM_ADDRESS=club@via-alto.com
 MAIL_FROM_NAME="🏔️ VIA ALTO"
-SITE_URL=http://localhost:5173
+SITE_URL=https://birdie-1.github.io/via-alto
 
 # การตั้งค่า Gmail SMTP (ใช้ App Password 16 หลัก)
 SMTP_USER=your_email@gmail.com
@@ -405,7 +405,7 @@ FRONTEND_URL="http://localhost:5173"
 MAIL_DRIVER=smtp              # 'smtp' for real delivery or 'log' for offline file simulation
 MAIL_FROM_ADDRESS=club@via-alto.com
 MAIL_FROM_NAME="🏔️ VIA ALTO"
-SITE_URL=http://localhost:5173
+SITE_URL=https://birdie-1.github.io/via-alto
 
 # Gmail SMTP Settings (Requires 16-character App Password)
 SMTP_USER=your_email@gmail.com

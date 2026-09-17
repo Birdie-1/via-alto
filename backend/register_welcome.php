@@ -62,8 +62,11 @@ if (!$email) {
 
 // โหลดค่าคอนฟิกูเรชันของระบบ
 $config = require __DIR__ . '/config.php';
-// กำหนด URL ของเว็บไซต์และตัดเครื่องหมาย slash ท้ายสุดออก
-$siteUrl = rtrim($config['site_url'], '/');
+// กำหนด URL ของเว็บไซต์ โดยให้ความสำคัญกับค่าจาก input ก่อน และคัดกรองไม่ให้มี localhost เพื่อชี้ไปที่ GitHub Pages เสมอ
+$rawSiteUrl = $input['site_url'] ?? $config['site_url'] ?? '';
+$siteUrl = (!empty($rawSiteUrl) && !str_contains($rawSiteUrl, 'localhost') && !str_contains($rawSiteUrl, '127.0.0.1'))
+    ? rtrim($rawSiteUrl, '/')
+    : 'https://birdie-1.github.io/via-alto';
 
 // ----------------------------------------------------------------------------------------------
 // ขั้นตอนที่ 1: ดึงและแปลงข้อมูลความสนใจของลูกค้า (Step 3: Preference Extraction)

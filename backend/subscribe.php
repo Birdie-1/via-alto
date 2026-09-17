@@ -90,13 +90,19 @@ file_put_contents($subscribersFile, json_encode($subscribers, JSON_PRETTY_PRINT)
 // ----------------------------------------------------------------------------------------------
 // ขั้นตอนที่ 2: สร้างเนื้อหาอีเมล HTML จากเทมเพลต (Template Rendering)
 // ----------------------------------------------------------------------------------------------
+// คัดกรอง URL เว็บไซต์เพื่อป้องกัน localhost และบังคับชี้ไปที่ GitHub Pages เสมอ
+$rawSiteUrl = $input['site_url'] ?? $config['site_url'] ?? '';
+$siteUrl = (!empty($rawSiteUrl) && !str_contains($rawSiteUrl, 'localhost') && !str_contains($rawSiteUrl, '127.0.0.1'))
+    ? rtrim($rawSiteUrl, '/')
+    : 'https://birdie-1.github.io/via-alto';
+
 // เตรียมข้อมูลสำหรับส่งเข้าเทมเพลตอีเมล
 $emailData = [
     'name' => $name,
     'email' => $email,
     'code' => 'GOBEYOND10', // รหัสคูปองต้อนรับลด 10%
     'discount' => '10% OFF YOUR FIRST ORDER!',
-    'site_url' => $config['site_url']
+    'site_url' => $siteUrl
 ];
 // เรียกใช้ฟังก์ชัน renderWelcomeEmail เพื่อเรนเดอร์โครงสร้าง HTML ของอีเมล
 $htmlBody = renderWelcomeEmail($emailData);
