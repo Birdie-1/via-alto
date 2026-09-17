@@ -9,9 +9,9 @@ export const TRANSLATIONS = {
     nav_about: 'ABOUT',
     nav_account: 'ACCOUNT',
     nav_signin: 'SIGN IN / REGISTER',
-    nav_elevation: 'ELEVATION: 3,842 M',
     nav_lat: 'LAT: 45.8326° N',
     nav_series: 'ALPINE SERIES',
+    header_edu_notice: '🎓 Educational Project Only — For Academic Study (No commercial sales)',
 
     // Hero Section
     hero_slogan: 'GO BEYOND.',
@@ -286,6 +286,7 @@ export const TRANSLATIONS = {
     nav_elevation: 'ความสูง: 3,842 ม.',
     nav_lat: 'พิกัด: 45.8326° N',
     nav_series: 'อัลไพน์ ซีรีส์',
+    header_edu_notice: '🎓 เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น (ไม่มีการจำหน่ายสินค้าจริง)',
 
     // Hero Section
     hero_slogan: 'ก้าวข้ามทุกขีดจำกัด • GO BEYOND.',

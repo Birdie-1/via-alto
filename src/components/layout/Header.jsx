@@ -16,6 +16,7 @@ export default function Header({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNotice, setShowNotice] = useState(true);
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   useEffect(() => {
@@ -92,6 +93,27 @@ export default function Header({
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${headerBgClass}`}
       >
+        {/* Top Educational Disclaimer Notification Bar */}
+        {showNotice && (
+          <div className="bg-[#11241D] text-[#E8DDCC] border-b border-white/10 text-[10.5px] sm:text-[11.5px] font-sans py-1.5 px-3 sm:px-6 flex items-center justify-between transition-all duration-200 shadow-xs">
+            <div className="flex-1 flex items-center justify-center gap-2 text-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="font-medium tracking-wide">
+                {t.header_edu_notice}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowNotice(false)}
+              className="text-[#E8DDCC]/60 hover:text-white transition-colors cursor-pointer p-0.5 ml-2 shrink-0"
+              title={lang === 'th' ? 'ปิดการแจ้งเตือน' : 'Dismiss notice'}
+              aria-label="Dismiss notice"
+            >
+              <X size={13} />
+            </button>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Left: Brand Logo & Wordmark */}
           <div
@@ -262,7 +284,7 @@ export default function Header({
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-30 md:hidden bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div
-            className="fixed top-20 left-0 right-0 bg-[#F7F5F0] border-b border-stone-light p-6 shadow-xl space-y-4 animate-in slide-in-from-top-4 duration-300"
+            className={`fixed ${showNotice ? 'top-[112px]' : 'top-20'} left-0 right-0 bg-[#F7F5F0] border-b border-stone-light p-6 shadow-xl space-y-4 animate-in slide-in-from-top-4 duration-300`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col space-y-4">
