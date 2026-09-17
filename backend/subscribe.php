@@ -78,10 +78,15 @@ $subscribersFile = $dataDir . '/subscribers.json';
 // โหลดข้อมูลผู้สมัครเดิมจากไฟล์ ถ้ายังไม่มีไฟล์ให้เริ่มจาก Array ว่าง
 $subscribers = file_exists($subscribersFile) ? json_decode(file_get_contents($subscribersFile), true) : [];
 // เพิ่มข้อมูลผู้สมัครใหม่ลงใน Array
+// ดึงสถานะความยินยอม PDPA (Consent)
+$consent = isset($input['consent']) ? (bool)$input['consent'] : true;
+
 $subscribers[] = [
     'email' => $email,
     'name' => $name,
     'source' => $source,
+    'consent' => $consent,
+    'consent_at' => date('c'),
     'subscribed_at' => date('c') // บันทึกวันเวลาตามมาตรฐาน ISO 8601
 ];
 // เขียนข้อมูลกลับลงไฟล์ subscribers.json ในรูปแบบ Pretty Print ให้อ่านง่าย

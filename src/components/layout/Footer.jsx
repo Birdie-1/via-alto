@@ -7,13 +7,20 @@ import { assetUrl } from '../../utils/assets';
 export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const [footerEmail, setFooterEmail] = useState('');
+  const [footerConsent, setFooterConsent] = useState(false);
+  const [footerConsentError, setFooterConsentError] = useState(false);
   const [footerSubscribed, setFooterSubscribed] = useState(false);
 
   const handleFooterSubscribe = async (e) => {
     e.preventDefault();
     if (!footerEmail.trim()) return;
+    if (!footerConsent) {
+      setFooterConsentError(true);
+      return;
+    }
+    setFooterConsentError(false);
     try {
-      await sendSubscribeEmail(footerEmail.trim(), 'Explorer', 'footer');
+      await sendSubscribeEmail(footerEmail.trim(), 'Explorer', 'footer', { consent: true });
     } catch (err) {
       console.warn('Footer subscribe error:', err);
     }
@@ -172,21 +179,45 @@ export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) 
                 )}
               </div>
             ) : (
-              <form onSubmit={handleFooterSubscribe} className="flex">
-                <input
-                  type="email"
-                  required
-                  value={footerEmail}
-                  onChange={(e) => setFooterEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  className="bg-charcoal-light border border-white/20 text-xs text-white px-3 py-2 w-full focus:outline-none focus:border-beige font-sans"
-                />
-                <button
-                  type="submit"
-                  className="bg-beige text-forest px-3 py-2 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0"
-                >
-                  {t.footer_join}
-                </button>
+              <form onSubmit={handleFooterSubscribe} className="space-y-2 text-left">
+                <div className="flex">
+                  <input
+                    type="email"
+                    required
+                    value={footerEmail}
+                    onChange={(e) => setFooterEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="bg-charcoal-light border border-white/20 text-xs text-white px-3 py-2 w-full focus:outline-none focus:border-beige font-sans"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-beige text-forest px-3 py-2 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0"
+                  >
+                    {t.footer_join}
+                  </button>
+                </div>
+                {/* PDPA Consent Checkbox */}
+                <div className="pt-0.5">
+                  <label className="flex items-start gap-2 cursor-pointer select-none font-sans group">
+                    <input
+                      type="checkbox"
+                      checked={footerConsent}
+                      onChange={(e) => {
+                        setFooterConsent(e.target.checked);
+                        if (e.target.checked) setFooterConsentError(false);
+                      }}
+                      className="mt-0.5 w-3.5 h-3.5 rounded border-white/20 bg-charcoal-light accent-[#183C32] text-forest shrink-0 cursor-pointer"
+                    />
+                    <span className="text-[10px] text-stone-light leading-tight group-hover:text-white transition-colors">
+                      {t.newsletter_consent}
+                    </span>
+                  </label>
+                  {footerConsentError && (
+                    <p className="text-[10px] text-red-400 mt-1 pl-5 font-sans">
+                      ⚠️ {t.newsletter_consent_error}
+                    </p>
+                  )}
+                </div>
               </form>
             )}
 

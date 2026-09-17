@@ -213,6 +213,8 @@ export const TRANSLATIONS = {
     footer_journal_title: 'THE VIA ALTO JOURNAL',
     footer_journal_desc: 'Subscribe for new expedition gear drops, technical guides, and alpine stories.',
     footer_join: 'JOIN',
+    newsletter_consent: 'I agree to receive the VIA ALTO Journal, gear updates, and exclusive member offers in accordance with the Privacy Policy (PDPA).',
+    newsletter_consent_error: 'Please agree to the privacy consent before subscribing.',
     footer_rights: 'VIA ALTO OUTDOOR EQUIPMENT. ALL RIGHTS RESERVED.',
 
     // Checkout & Confirmation
@@ -485,6 +487,8 @@ export const TRANSLATIONS = {
     footer_journal_title: 'จดหมายข่าว THE VIA ALTO JOURNAL',
     footer_journal_desc: 'สมัครเพื่อรับข่าวสารการเปิดตัวอุปกรณ์ใหม่ คู่มือการเดินป่า และเรื่องราวบนยอดเขา',
     footer_join: 'สมัครรับข่าวสาร',
+    newsletter_consent: 'ฉันยินยอมรับข่าวสาร อัปเดตอุปกรณ์เดินป่า และข้อเสนอพิเศษจาก VIA ALTO ตามนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)',
+    newsletter_consent_error: 'กรุณาทำเครื่องหมายยินยอมรับข่าวสารตามนโยบาย PDPA ก่อนสมัคร',
     footer_rights: 'VIA ALTO OUTDOOR EQUIPMENT. สงวนลิขสิทธิ์ทั้งหมด',
 
     // Checkout & Confirmation

@@ -172,6 +172,25 @@
         />
       </div>
 
+      <!-- 
+        ช่องยินยอมรับข้อมูลข่าวสารตามกฎหมาย PDPA (Consent Checkbox):
+        - name="consent" : ส่งค่าความยินยอมไปยัง sendMail.php
+        - required : บังคับให้ต้องติ๊กยินยอมก่อนกดปุ่ม Submit เพื่อความสอดคล้องตามมาตรฐานคุ้มครองข้อมูลส่วนบุคคล
+      -->
+      <div style="margin: 14px 0 18px; text-align: left;">
+        <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; color: #5C6E63; cursor: pointer; line-height: 1.4; user-select: none;">
+          <input 
+            type="checkbox" 
+            name="consent" 
+            value="1" 
+            required 
+            checked 
+            style="margin-top: 2px; accent-color: #183C32; width: 16px; height: 16px; shrink-0: 0; cursor: pointer;" 
+          />
+          <span>ฉันยินยอมรับข้อมูลข่าวสาร โปรโมชั่น และสิทธิพิเศษจาก VIA ALTO ตามนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)</span>
+        </label>
+      </div>
+
       <!-- ปุ่ม Submit สำหรับกดส่งข้อมูลไปยัง sendMail.php -->
       <button type="submit" class="submit-btn">สมัครเลย</button>
     </form>

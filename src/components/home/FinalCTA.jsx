@@ -8,16 +8,23 @@ import { assetUrl } from '../../utils/assets';
 export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'en' }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const [email, setEmail] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email.trim()) return;
+    if (!consent) {
+      setConsentError(true);
+      return;
+    }
+    setConsentError(false);
     setIsSubmitting(true);
 
     try {
-      await sendSubscribeEmail(email.trim(), 'Explorer', 'homepage_cta');
+      await sendSubscribeEmail(email.trim(), 'Explorer', 'homepage_cta', { consent: true });
     } catch (err) {
       console.warn('Subscribe email service dispatch error:', err);
     }
@@ -108,29 +115,54 @@ export default function FinalCTA({ onExploreClick, onOpenEmailPreview, lang = 'e
               )}
             </div>
           ) : (
-            <form onSubmit={handleSubscribe} className="flex">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={lang === 'th' ? 'กรอกอีเมลของคุณ...' : 'Enter email address..'}
-                className="bg-white/10 border border-white/20 text-sm text-white px-4 py-3 w-full focus:outline-none focus:border-beige font-sans placeholder:text-white/40"
-              />
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-beige text-forest px-5 py-3 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0 disabled:opacity-60 flex items-center gap-1.5"
-              >
-                {isSubmitting ? (
-                  <span className="animate-pulse">...</span>
-                ) : (
-                  <>
-                    <span>{lang === 'th' ? 'สมัครรับข่าวสาร' : 'SUBSCRIBE'}</span>
-                    <ArrowRight size={14} />
-                  </>
+            <form onSubmit={handleSubscribe} className="space-y-2.5 text-left">
+              <div className="flex">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={lang === 'th' ? 'กรอกอีเมลของคุณ...' : 'Enter email address..'}
+                  className="bg-white/10 border border-white/20 text-sm text-white px-4 py-3 w-full focus:outline-none focus:border-beige font-sans placeholder:text-white/40"
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-beige text-forest px-5 py-3 text-xs font-bold uppercase tracking-brand hover:bg-white transition-colors cursor-pointer shrink-0 disabled:opacity-60 flex items-center gap-1.5"
+                >
+                  {isSubmitting ? (
+                    <span className="animate-pulse">...</span>
+                  ) : (
+                    <>
+                      <span>{lang === 'th' ? 'สมัครรับข่าวสาร' : 'SUBSCRIBE'}</span>
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* PDPA Consent Checkbox */}
+              <div className="pt-0.5">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none font-sans group">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => {
+                      setConsent(e.target.checked);
+                      if (e.target.checked) setConsentError(false);
+                    }}
+                    className="mt-0.5 w-4 h-4 rounded border-beige/40 bg-white/10 accent-[#183C32] text-forest shrink-0 cursor-pointer"
+                  />
+                  <span className="text-[11px] text-beige/80 leading-tight group-hover:text-beige transition-colors">
+                    {t.newsletter_consent}
+                  </span>
+                </label>
+                {consentError && (
+                  <p className="text-[11px] text-red-300 mt-1 pl-6 font-sans">
+                    ⚠️ {t.newsletter_consent_error}
+                  </p>
                 )}
-              </button>
+              </div>
             </form>
           )}
 

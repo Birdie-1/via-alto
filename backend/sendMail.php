@@ -71,6 +71,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ตรวจสอบความถูกต้องของรูปแบบอีเมลด้วยฟังก์ชัน filter_var (บรรทัดที่ 10 ในใบงาน)
     $email = filter_var($emailInput, FILTER_VALIDATE_EMAIL);
 
+    // ตรวจสอบค่าความยินยอมตามกฎหมาย PDPA (Consent Checkbox)
+    $consent = isset($jsonInput['consent']) ? (bool)$jsonInput['consent'] : (isset($_POST['consent']) ? (bool)$_POST['consent'] : true);
+
+    // หากระบุปฏิเสธความยินยอมมาอย่างชัดเจน จะปฏิเสธคำขอเพื่อคุ้มครองสิทธิผู้บริโภค
+    if (isset($jsonInput['consent']) && $jsonInput['consent'] === false) {
+        if ($isJsonRequest) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error' => 'PDPA Consent is required to subscribe.'
+            ]);
+            exit;
+        }
+    }
+
     // ถ้าอีเมลมีรูปแบบถูกต้อง (บรรทัดที่ 11 ในใบงาน)
     if ($email) {
         // สร้าง Object ของ PHPMailer โดยใส่ true เพื่อเปิดใช้งาน Exception (บรรทัดที่ 12 ในใบงาน)
