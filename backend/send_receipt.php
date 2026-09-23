@@ -106,7 +106,29 @@ if (file_exists($logoPath)) {
     $useCid = true;
 }
 
-// บรรทัดที่ 108: สร้างเนื้อหา HTML ของใบเสร็จรับเงินผ่านเทมเพลต Dolomite Classic
+// บรรทัดที่ 107: ตรวจสอบและแนบรูปภาพสินค้าแบบ CID เพื่อให้แสดงผลในกล่องจดหมายอีเมลทันที 100% ไม่ถูกบล็อก
+if (!empty($order['items']) && is_array($order['items'])) {
+    foreach ($order['items'] as $idx => &$item) {
+        $rawImg = $item['image'] ?? '';
+        // ดึงชื่อไฟล์รูปภาพ เช่น prod_alpine_35l.jpg
+        $cleanPath = preg_replace('#^(/via-alto)?/images/#', '', $rawImg);
+        $localFile = __DIR__ . '/images/' . $cleanPath;
+        if (!empty($cleanPath) && file_exists($localFile)) {
+            $cid = 'prod_item_' . $idx;
+            $item['cid'] = $cid;
+            $embeddedImages[] = [
+                'path' => $localFile,
+                'cid' => $cid,
+                'name' => basename($localFile),
+                'mime' => (str_ends_with($cleanPath, '.png') ? 'image/png' : 'image/jpeg')
+            ];
+            $useCid = true;
+        }
+    }
+    unset($item);
+}
+
+// บรรทัดที่ 131: สร้างเนื้อหา HTML ของใบเสร็จรับเงินผ่านเทมเพลต Dolomite Classic
 $htmlBody = renderReceiptEmail($order, $user, [
     'site_url' => $siteUrl,
     'use_cid' => $useCid

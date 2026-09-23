@@ -80,13 +80,22 @@ function renderReceiptEmail($order, $user = null, $options = []) {
             }
         }
 
-        // บรรทัดที่ 87: จัดการ URL ของรูปภาพสินค้า
-        $itemImg = $item['image'] ?? "{$siteUrl}/images/prod_alpine_35l.jpg";
-        if (str_starts_with($itemImg, '/')) {
-            $itemImg = $siteUrl . $itemImg;
+        // บรรทัดที่ 84: จัดการ URL ของรูปภาพสินค้า
+        // กรณีที่ 1: มีการแนบรูปภาพแบบ CID (Inline Embedded Image) ให้ใช้ cid:...
+        if (!empty($item['cid']) && $useCid) {
+            $itemImg = 'cid:' . $item['cid'];
+        } else {
+            // กรณีที่ 2: ใช้ URL รูปภาพออนไลน์ คัดกรองและตัด /via-alto เพื่อป้องกันพาธซ้ำซ้อน
+            $rawImg = $item['image'] ?? '/images/prod_alpine_35l.jpg';
+            if (str_starts_with($rawImg, 'http://') || str_starts_with($rawImg, 'https://')) {
+                $itemImg = $rawImg;
+            } else {
+                $cleanImgPath = preg_replace('#^(/via-alto)?/#', '', $rawImg);
+                $itemImg = "{$siteUrl}/{$cleanImgPath}";
+            }
         }
 
-        // บรรทัดที่ 93: สลับสีพื้นหลังแถวสินค้าเพื่อความสบายตา (Alternating row background)
+        // บรรทัดที่ 98: สลับสีพื้นหลังแถวสินค้าเพื่อความสบายตา (Alternating row background)
         $rowBg = ($idx % 2 === 0) ? '#FFFFFF' : '#FAF7F2';
 
         // บรรทัดที่ 96: ประกอบโค้ด HTML แถวสินค้า
