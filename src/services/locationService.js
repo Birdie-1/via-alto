@@ -98,5 +98,5 @@ export function fetchPostalCode(province, district) {
   return getPostalCodeForDistrict(province, district) || '';
 }
 
-// บรรทัดที่ 106: ส่งออกฟังก์ชันค้นหาข้อมูลจังหวัด
-export { findProvince };
+// บรรทัดที่ 102: ส่งออกฟังก์ชันค้นหาและดึงข้อมูลแบบ Synchronous
+export { findProvince, getProvincesList, getDistrictsByProvince, THAI_PROVINCES_DATA };

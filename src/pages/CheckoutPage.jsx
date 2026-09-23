@@ -20,7 +20,9 @@ import {
   fetchProvinces,
   fetchDistricts,
   fetchPostalCode,
-  findProvince
+  findProvince,
+  getProvincesList,
+  getDistrictsByProvince
 } from '../services/locationService';
 
 export default function CheckoutPage({
@@ -32,6 +34,11 @@ export default function CheckoutPage({
 }) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
+  // คำนวณค่าเริ่มต้นของจังหวัดและอำเภอให้ตรงกับภาษาปัจจุบัน
+  const initialProv = user?.shippingAddress?.province || (lang === 'th' ? 'กรุงเทพมหานคร' : 'Bangkok');
+  const matchedProv = findProvince(initialProv);
+  const localizedProv = matchedProv ? (lang === 'th' ? matchedProv.name_th : matchedProv.name_en) : initialProv;
+
   // Form State
   const [fullName, setFullName] = useState(user?.shippingAddress?.fullName || user?.fullName || '');
   // บรรทัดที่ 46: อีเมลสำหรับรับใบเสร็จ E-Receipt (ดึงจากผู้ใช้ หรือให้กรอกใหม่ได้)
@@ -39,14 +46,26 @@ export default function CheckoutPage({
   const [phone, setPhone] = useState(user?.shippingAddress?.telNo || user?.telNo || '');
   const [address1, setAddress1] = useState(user?.shippingAddress?.address1 || '');
   const [address2, setAddress2] = useState(user?.shippingAddress?.address2 || '');
-  const [district, setDistrict] = useState(user?.shippingAddress?.district || '');
-  const [province, setProvince] = useState(user?.shippingAddress?.province || (lang === 'th' ? 'กรุงเทพมหานคร' : 'Bangkok'));
+  
+  // บรรทัดที่ 48: กำหนดค่าเริ่มต้นของอำเภอและจังหวัดให้ตรงกับข้อมูลที่มี
+  const [province, setProvince] = useState(localizedProv);
+  const [district, setDistrict] = useState(() => {
+    const rawDist = user?.shippingAddress?.district || '';
+    if (!rawDist) return '';
+    const initialDists = getDistrictsByProvince(localizedProv, lang);
+    const match = initialDists.find((d) =>
+      d.name_en.toLowerCase() === rawDist.toLowerCase() ||
+      d.name_th.toLowerCase() === rawDist.toLowerCase() ||
+      d.name_th.replace(/^(เขต|อำเภอ)/, '').toLowerCase() === rawDist.toLowerCase()
+    );
+    return match ? (lang === 'th' ? match.name_th : match.name_en) : rawDist;
+  });
   const [postalCode, setPostalCode] = useState(user?.shippingAddress?.postalCode || '');
   const [saveAddress, setSaveAddress] = useState(true);
 
-  // บรรทัดที่ 48: State สำหรับเก็บรายชื่อ 77 จังหวัด และรายชื่ออำเภอตามจังหวัดที่เลือก
-  const [provincesList, setProvincesList] = useState([]);
-  const [districtsList, setDistrictsList] = useState([]);
+  // บรรทัดที่ 60: State สำหรับเก็บรายชื่อ 77 จังหวัด และรายชื่ออำเภอตามจังหวัดที่เลือก (โหลดทันทีแบบ Synchronous 0ms)
+  const [provincesList, setProvincesList] = useState(() => getProvincesList(lang));
+  const [districtsList, setDistrictsList] = useState(() => getDistrictsByProvince(localizedProv, lang));
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
 
   // บรรทัดที่ 53: โหลดรายชื่อ 77 จังหวัดทั้งหมดเมื่อ Component Mount หรือเมื่อภาษาเปลี่ยน
@@ -324,6 +343,17 @@ export default function CheckoutPage({
     );
   }
 
+  // บรรทัดที่ 345: คำนวณค่าตัวเลือกจังหวัดและอำเภอที่ตรงกับภาษาปัจจุบัน เพื่อให้ Dropdown แสดงผลตรง 100%
+  const activeProv = findProvince(province);
+  const currentProvValue = activeProv ? (lang === 'th' ? activeProv.name_th : activeProv.name_en) : province;
+
+  const activeDist = districtsList.find((d) =>
+    d.name_en.toLowerCase() === district.toLowerCase() ||
+    d.name_th.toLowerCase() === district.toLowerCase() ||
+    d.name_th.replace(/^(เขต|อำเภอ)/, '').toLowerCase() === district.toLowerCase()
+  );
+  const currentDistValue = activeDist ? (lang === 'th' ? activeDist.name_th : activeDist.name_en) : district;
+
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Top Breadcrumb */}
@@ -456,7 +486,7 @@ export default function CheckoutPage({
                 </label>
                 <select
                   required
-                  value={province}
+                  value={currentProvValue}
                   onChange={handleProvinceChange}
                   className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal cursor-pointer"
                 >
@@ -479,7 +509,7 @@ export default function CheckoutPage({
                 </label>
                 <select
                   required
-                  value={district}
+                  value={currentDistValue}
                   onChange={handleDistrictChange}
                   disabled={!province || isLoadingDistricts}
                   className={`w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal cursor-pointer ${
