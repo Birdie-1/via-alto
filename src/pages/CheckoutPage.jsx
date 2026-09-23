@@ -96,23 +96,27 @@ export default function CheckoutPage({
     0
   );
 
-  // Free shipping threshold: 2,000 THB
+  // Free shipping threshold: 2,000 THB (ยอดซื้อครบ 2,000 บาท จัดส่งฟรี)
   const shippingFee = subtotal >= 2000 || subtotal === 0 ? 0 : 150;
 
-  // Calculate voucher discount
-  let voucherDiscount = 0;
+  // บรรทัดที่ 103: คำนวณส่วนลดจากโค้ดคูปอง (Voucher Discount)
+  let discountAmount = 0;
   if (appliedVoucher) {
     if (appliedVoucher.discount.includes('%')) {
       const pct = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
-      voucherDiscount = Math.round((subtotal * pct) / 100);
+      discountAmount = Math.round((subtotal * pct) / 100);
     } else {
-      // Flat discount (e.g. ฿150 OFF)
+      // ส่วนลดแบบจำนวนเงินคงที่ เช่น ฿150 OFF
       const flat = parseInt(appliedVoucher.discount.replace(/[^0-9]/g, ''), 10);
-      voucherDiscount = Math.min(subtotal, flat);
+      discountAmount = Math.min(subtotal, flat);
     }
   }
 
-  const grandTotal = Math.max(0, subtotal - voucherDiscount + shippingFee);
+  // บรรทัดที่ 115: กำหนดค่าธรรมเนียมบริการเก็บเงินปลายทาง (COD) หากเลือกชำระแบบ COD คิด 50 บาท
+  const codFee = paymentMethod === 'cod' ? 50 : 0;
+
+  // บรรทัดที่ 118: คำนวณยอดสุทธิทั้งสิ้น (ยอดรวมสินค้า - ส่วนลด + ค่าส่ง + ค่าบริการ COD)
+  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee + codFee);
 
   // Apply Voucher
   const handleApplyVoucher = (codeToApply) => {

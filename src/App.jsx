@@ -12,7 +12,8 @@ import AccountPage from './pages/AccountPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import EmailPreviewModal from './components/emails/EmailPreviewModal';
-import { sendRegisterWelcomeEmail } from './services/emailService';
+// นำเข้าฟังก์ชันส่งอีเมลต้อนรับสมาชิก และฟังก์ชันส่งใบเสร็จรับเงิน E-Receipt จาก emailService
+import { sendRegisterWelcomeEmail, sendOrderReceiptEmail } from './services/emailService';
 import { PRODUCTS } from './data/products';
 import {
   initializeAuthStore,
@@ -252,6 +253,16 @@ export default function App() {
       setCurrentUser(updatedUser);
       setLastOrder(order);
       setCartItems([]);
+
+      // บรรทัดนี้: จัดส่งอีเมลใบเสร็จรับเงิน E-Receipt (Style 4: Dolomite Classic) กลับไปยังอีเมลของลูกค้าแบบ Asynchronous
+      sendOrderReceiptEmail(order, updatedUser).then((res) => {
+        // บันทึกสถานะการส่งอีเมลลงใน Developer Console
+        console.log('📧 E-Receipt delivery status:', res);
+      }).catch((emailErr) => {
+        // ดักจับข้อผิดพลาดกรณีบริการอีเมลไม่พร้อมใช้งาน โดยไม่กระทบต่อการยืนยันคำสั่งซื้อ
+        console.warn('⚠️ Unable to dispatch receipt email:', emailErr);
+      });
+
       showToast(
         lang === 'th'
           ? `คำสั่งซื้อ #${order.orderId} สำเร็จแล้ว! ได้รับ +${order.pointsEarned} คะแนน`

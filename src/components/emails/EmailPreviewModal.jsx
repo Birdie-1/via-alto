@@ -60,6 +60,7 @@ export default function EmailPreviewModal({
           <div className="flex items-center gap-2">
             {/* Template Selector Tabs */}
             <div className="bg-white/10 rounded-lg p-0.5 flex text-xs">
+              {/* ปุ่มเลือกเทมเพลต 1: อีเมลต้อนรับและสมัครสมาชิก */}
               <button
                 onClick={() => setActiveTemplate('welcome')}
                 className={`px-3 py-1 rounded-md transition-all font-sans cursor-pointer ${
@@ -68,8 +69,9 @@ export default function EmailPreviewModal({
                     : 'text-stone-light hover:text-white'
                 }`}
               >
-                1. {currentLang === 'th' ? 'ต้อนรับ & สมัครสมาชิก' : 'Welcome & Subscription'}
+                1. {currentLang === 'th' ? 'ต้อนรับสมาชิก' : 'Welcome'}
               </button>
+              {/* ปุ่มเลือกเทมเพลต 2: อีเมลแนะนำสินค้าเฉพาะบุคคล */}
               <button
                 onClick={() => setActiveTemplate('recommendation')}
                 className={`px-3 py-1 rounded-md transition-all font-sans cursor-pointer ${
@@ -78,7 +80,18 @@ export default function EmailPreviewModal({
                     : 'text-stone-light hover:text-white'
                 }`}
               >
-                2. {currentLang === 'th' ? 'แนะนำสินค้าเฉพาะคุณ' : 'Personalized Recommendations'}
+                2. {currentLang === 'th' ? 'สินค้าแนะนำ' : 'Recommendations'}
+              </button>
+              {/* ปุ่มเลือกเทมเพลต 3: อีเมลใบเสร็จรับเงิน E-Receipt (Style 4: Dolomite Classic) */}
+              <button
+                onClick={() => setActiveTemplate('receipt')}
+                className={`px-3 py-1 rounded-md transition-all font-sans cursor-pointer ${
+                  activeTemplate === 'receipt'
+                    ? 'bg-beige text-forest font-bold shadow-sm'
+                    : 'text-stone-light hover:text-white'
+                }`}
+              >
+                3. {currentLang === 'th' ? 'ใบเสร็จรับเงิน (E-Receipt)' : 'Order E-Receipt'}
               </button>
             </div>
 
@@ -144,13 +157,17 @@ export default function EmailPreviewModal({
                   src={
                     activeTemplate === 'welcome'
                       ? assetUrl('/images/welcome_email_mockup.jpg')
-                      : assetUrl('/images/recommendation_email_mockup.jpg')
+                      : activeTemplate === 'recommendation'
+                      ? assetUrl('/images/recommendation_email_mockup.jpg')
+                      : assetUrl('/images/receipt_style4.jpg')
                   }
                   onError={(e) => {
                     e.target.src =
                       activeTemplate === 'welcome'
                         ? assetUrl('/images/welcome_email_design_1789012235946.jpg')
-                        : assetUrl('/images/recommendation_email_design_1789012253664.jpg');
+                        : activeTemplate === 'recommendation'
+                        ? assetUrl('/images/recommendation_email_design_1789012253664.jpg')
+                        : assetUrl('/images/receipt_style4.jpg');
                   }}
                   alt="Email Studio Mockup"
                   className="w-full h-auto object-cover max-h-[750px]"
@@ -159,7 +176,9 @@ export default function EmailPreviewModal({
               <p className="text-xs text-stone-light text-center font-sans">
                 {activeTemplate === 'welcome'
                   ? 'Alpine Minimalist Welcome Email rendered on Apple iPhone 16 Pro'
-                  : 'Personalized Product Recommendation Email rendered on Apple iPhone 16 Pro'}
+                  : activeTemplate === 'recommendation'
+                  ? 'Personalized Product Recommendation Email rendered on Apple iPhone 16 Pro'
+                  : 'Dolomite Classic Order E-Receipt Email rendered on Apple iPhone 16 Pro'}
               </p>
             </div>
           ) : (
@@ -374,7 +393,7 @@ export default function EmailPreviewModal({
                     </div>
 
                   </div>
-                ) : (
+                ) : activeTemplate === 'recommendation' ? (
                   /* ========================================================================= */
                   /* TEMPLATE 2: PERSONALIZED RECOMMENDATION EMAIL (VIA ALTO Standard)         */
                   /* ========================================================================= */
@@ -750,6 +769,233 @@ export default function EmailPreviewModal({
                     </div>
 
                   </div>
+                ) : (
+                  /* ========================================================================= */
+                  /* TEMPLATE 3: ORDER E-RECEIPT (Style 4: Dolomite Classic)                   */
+                  /* ใบเสร็จรับเงินคำสั่งซื้ออิเล็กทรอนิกส์ สไตล์ Dolomite Classic (ครึ่งครีม ครึ่งเขียวเข้ม) */
+                  /* ========================================================================= */
+                  <div className="bg-[#FAF7F2] text-[#183C32] font-sans antialiased shadow-md">
+                    
+                    {/* ส่วนที่ 1: แถบแจ้งเตือนเว็บไซต์เพื่อการศึกษา */}
+                    <div className="bg-[#0F2821] text-[#FAF7F2] px-4 py-1.5 text-center text-[10px] font-sans border-b border-white/10">
+                      🎓 <strong>{currentLang === 'th' ? 'เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น' : 'Educational Project Only'}</strong> ({currentLang === 'th' ? 'ไม่มีการจำหน่ายจริง' : 'No commercial sales'})
+                    </div>
+
+                    {/* ส่วนที่ 2: Header แบรนด์ VIA ALTO พื้นสีครีม */}
+                    <div className="px-5 py-4 border-b-2 border-[#E8DDCC] flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={assetUrl('/images/circular_logo.png')}
+                          alt="VIA ALTO Logo"
+                          className="w-10 h-10 rounded-full object-cover border border-[#183C32]/20 shadow-sm"
+                          onError={(e) => { e.target.src = assetUrl('/images/logo.png'); }}
+                        />
+                        <div>
+                          <span className="font-serif text-lg font-bold tracking-wider text-[#183C32] block leading-none">
+                            VIA ALTO
+                          </span>
+                          <span className="text-[8px] tracking-[2px] font-semibold text-[#5C6E63] uppercase block mt-1">
+                            OUTDOOR EQUIPMENT
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] font-extrabold tracking-[2px] text-[#183C32] uppercase block">
+                          GO BEYOND.
+                        </span>
+                        <span className="text-[8px] tracking-[1px] text-[#7D8D84] uppercase block">
+                          DOLOMITES STANDARD
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* ส่วนที่ 3: ข้อความทักทายและข้อมูลคำสั่งซื้อ */}
+                    <div className="p-5">
+                      <div className="text-xs text-[#5C6E63] mb-1">
+                        {currentLang === 'th' ? 'สวัสดีครับ คุณ' : 'Hello,'} <strong className="text-[#183C32]">{userName}</strong>
+                      </div>
+                      <h2 className="font-serif text-xl font-bold text-[#183C32] mb-1">
+                        {currentLang === 'th' ? 'ใบเสร็จรับเงินอิเล็กทรอนิกส์' : 'Electronic Order Receipt'}
+                      </h2>
+                      <p className="text-[11px] text-[#7D8D84] mb-4">
+                        {currentLang === 'th' 
+                          ? 'ขอบคุณสำหรับการสั่งซื้ออุปกรณ์ผจญภัยกับ VIA ALTO คำสั่งซื้อของคุณได้รับการยืนยันเรียบร้อยแล้ว'
+                          : 'Thank you for your expedition equipment purchase. Your order has been confirmed.'}
+                      </p>
+
+                      {/* การ์ดสรุปข้อมูลคำสั่งซื้อ (Order Info Box) */}
+                      <div className="bg-white border-l-4 border-[#183C32] border border-[#EAE5DE] rounded-r p-3 mb-4 flex justify-between items-center text-xs">
+                        <div>
+                          <div className="text-[9px] uppercase tracking-wider text-[#7D8D84] font-bold">
+                            {currentLang === 'th' ? 'หมายเลขคำสั่งซื้อ' : 'ORDER NUMBER'}
+                          </div>
+                          <div className="font-mono font-bold text-[#183C32] text-sm mt-0.5">
+                            #VA-2026-4921
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[9px] uppercase tracking-wider text-[#7D8D84] font-bold">
+                            {currentLang === 'th' ? 'วันที่สั่งซื้อ' : 'ORDER DATE'}
+                          </div>
+                          <div className="font-mono text-stone-700 text-xs mt-0.5">
+                            2026-09-23
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="inline-block bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] text-[10px] font-bold px-2 py-0.5 rounded">
+                            {currentLang === 'th' ? 'กำลังเตรียมจัดส่ง' : 'PROCESSING'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* ตารางรายการสินค้า */}
+                      <div className="border border-[#EAE5DE] rounded overflow-hidden mb-4">
+                        <div className="bg-[#183C32] text-white px-3 py-2 flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                          <span>{currentLang === 'th' ? 'รายการอุปกรณ์' : 'EQUIPMENT'}</span>
+                          <div className="flex gap-6">
+                            <span>{currentLang === 'th' ? 'จำนวน' : 'QTY'}</span>
+                            <span>{currentLang === 'th' ? 'ราคา' : 'PRICE'}</span>
+                          </div>
+                        </div>
+
+                        {/* แถวสินค้าชิ้นที่ 1 */}
+                        <div className="p-3 bg-white border-b border-[#EAE5DE] flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={assetUrl('/images/prod_alpine_35l.jpg')}
+                              alt="Alpine Backpack"
+                              className="w-10 h-10 object-cover rounded border border-[#D5CEBF] bg-[#F7F5F0]"
+                            />
+                            <div>
+                              <div className="text-xs font-bold text-[#183C32]">
+                                {currentLang === 'th' ? 'เป้สะพายหลังเดินป่า Alpine 35L' : 'Alpine 35L Technical Pack'}
+                              </div>
+                              <div className="text-[10px] text-[#7D8D84] flex items-center gap-1 mt-0.5">
+                                <span className="w-2 h-2 rounded-full bg-[#183C32] border border-black/10 inline-block" />
+                                <span>{currentLang === 'th' ? 'เขียวป่าสน' : 'Pine Forest'} &bull; 35L</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-6">
+                            <span className="font-mono text-xs font-bold text-charcoal">1</span>
+                            <span className="font-mono text-xs font-bold text-[#183C32]">฿2,490</span>
+                          </div>
+                        </div>
+
+                        {/* แถวสินค้าชิ้นที่ 2 */}
+                        <div className="p-3 bg-[#FAF7F2] flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={assetUrl('/images/prod_alpine_shell.jpg')}
+                              alt="Summit Storm Shell"
+                              className="w-10 h-10 object-cover rounded border border-[#D5CEBF] bg-[#F7F5F0]"
+                            />
+                            <div>
+                              <div className="text-xs font-bold text-[#183C32]">
+                                {currentLang === 'th' ? 'เสื้อกันลม Summit Storm Shell' : 'Summit Storm Shell Jacket'}
+                              </div>
+                              <div className="text-[10px] text-[#7D8D84] flex items-center gap-1 mt-0.5">
+                                <span className="w-2 h-2 rounded-full bg-[#C2593F] border border-black/10 inline-block" />
+                                <span>{currentLang === 'th' ? 'ส้มประกายไฟ' : 'Ember'} &bull; M</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-6">
+                            <span className="font-mono text-xs font-bold text-charcoal">1</span>
+                            <span className="font-mono text-xs font-bold text-[#183C32]">฿3,690</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* สรุปตัวเลขทางการเงิน */}
+                      <div className="flex justify-end text-xs mb-2">
+                        <div className="w-56 space-y-1.5">
+                          <div className="flex justify-between text-stone-600">
+                            <span>{currentLang === 'th' ? 'ยอดรวมสินค้า:' : 'Subtotal:'}</span>
+                            <span className="font-mono font-bold text-charcoal">฿6,180</span>
+                          </div>
+                          <div className="flex justify-between text-stone-600">
+                            <span>{currentLang === 'th' ? 'ค่าจัดส่ง:' : 'Shipping:'}</span>
+                            <span className="font-mono text-[#059669] font-bold">{currentLang === 'th' ? 'ฟรี' : 'FREE'}</span>
+                          </div>
+                          <div className="flex justify-between text-[#059669] font-medium">
+                            <span>{currentLang === 'th' ? 'ส่วนลดคูปอง (10%):' : 'Voucher (10%):'}</span>
+                            <span className="font-mono font-bold">-฿618</span>
+                          </div>
+                          <div className="pt-2 border-t-2 border-[#183C32] flex justify-between items-baseline">
+                            <span className="font-serif font-bold text-sm text-[#183C32] uppercase">
+                              {currentLang === 'th' ? 'ยอดสุทธิทั้งสิ้น:' : 'Grand Total:'}
+                            </span>
+                            <span className="font-sans font-extrabold text-xl text-[#183C32]">
+                              ฿5,562
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ส่วนที่ 4: ครึ่งล่างสีเขียวเข้ม (Deep Forest Zone) */}
+                    <div className="bg-[#11241D] text-white p-5">
+                      <div className="grid grid-cols-2 gap-4 text-xs pb-4 border-b border-white/10">
+                        {/* ข้อมูลจัดส่ง */}
+                        <div>
+                          <div className="text-[9px] uppercase font-bold tracking-wider text-[#E8DDCC] mb-1">
+                            📍 {currentLang === 'th' ? 'ที่อยู่จัดส่ง' : 'SHIPPING DESTINATION'}
+                          </div>
+                          <div className="font-bold text-white text-xs">{userName}</div>
+                          <div className="text-[10px] text-[#9FB3A6] mt-0.5">089-452-9182</div>
+                          <div className="text-[10px] text-stone-300 mt-1 leading-tight">
+                            88/12 Alpine Ridge Condominium, Sukhumvit 55, Watthana, Bangkok 10110
+                          </div>
+                        </div>
+
+                        {/* วิธีชำระเงินและคะแนน */}
+                        <div className="pl-3 border-l border-white/15">
+                          <div className="text-[9px] uppercase font-bold tracking-wider text-[#E8DDCC] mb-1">
+                            💳 {currentLang === 'th' ? 'วิธีชำระเงิน' : 'PAYMENT'}
+                          </div>
+                          <div className="text-[11px] font-medium text-white">
+                            PromptPay QR (Verified)
+                          </div>
+
+                          <div className="mt-2.5 bg-[#183C32] border border-[#E8DDCC]/60 rounded p-2">
+                            <div className="text-[8px] font-bold uppercase tracking-wider text-[#E8DDCC]">
+                              ✨ {currentLang === 'th' ? 'คะแนนสะสมที่ได้รับ' : 'POINTS EARNED'}
+                            </div>
+                            <div className="font-serif text-base font-bold text-white mt-0.5">
+                              +55 <span className="text-[9px] font-normal text-[#A3E6CD]">Alpine Points</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ปุ่ม CTA ดูคำสั่งซื้อ */}
+                      <div className="text-center pt-4">
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onNavigate?.('account');
+                          }}
+                          className="bg-[#E8DDCC] text-[#183C32] px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg hover:bg-white transition-colors cursor-pointer"
+                        >
+                          {currentLang === 'th' ? 'ดูสถานะคำสั่งซื้อ →' : 'View Order Status →'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ส่วนที่ 5: Footer */}
+                    <div className="bg-[#0E1A15] px-5 py-3 border-t border-white/5 flex items-center justify-between text-[9px] text-[#7E9186]">
+                      <span>&copy; 2026 VIA ALTO. All rights reserved.</span>
+                      <div className="flex gap-2 text-[#A3E6CD]">
+                        <span>{currentLang === 'th' ? 'หน้าแรก' : 'Home'}</span>
+                        <span>&bull;</span>
+                        <span>{currentLang === 'th' ? 'ร้านค้า' : 'Shop'}</span>
+                        <span>&bull;</span>
+                        <span>{currentLang === 'th' ? 'บัญชี' : 'Account'}</span>
+                      </div>
+                    </div>
+
+                  </div>
                 )}
 
               </div>
@@ -771,7 +1017,9 @@ export default function EmailPreviewModal({
             <span>
               {activeTemplate === 'welcome'
                 ? 'Trigger: Sent automatically upon email registration or newsletter subscription'
-                : 'Trigger: Sent 2 minutes after registration based on user profile preferences'}
+                : activeTemplate === 'recommendation'
+                ? 'Trigger: Sent 2 minutes after registration based on user profile preferences'
+                : 'Trigger: Sent automatically to customer email upon completing checkout order'}
             </span>
           </div>
           <span className="text-[11px] text-stone-500">

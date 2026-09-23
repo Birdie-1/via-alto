@@ -138,12 +138,36 @@ function sendViaAltoEmail($toEmail, $toName, $subject, $htmlBody, $altBody = '',
             'message' => 'Email sent successfully via SMTP.'
         ];
     } catch (Exception $e) {
-        // บรรทัดที่ 139: หากเกิดข้อผิดพลาดในการเชื่อมต่อหรือส่งเมล ให้จับข้อผิดพลาดและส่งกลับไปเป็น JSON
+        // บรรทัดที่ 141: บันทึกไฟล์ HTML Preview สำรองลงโฟลเดอร์ logs/ เพื่อให้เปิดดูพรีวิวได้แม้ไม่มีอินเทอร์เน็ต
+        $logDir = $config['log_dir'];
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
+        }
+        $timestamp = date('Y-m-d_H-i-s');
+        $safeEmail = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $toEmail);
+        $previewFile = "{$logDir}/email_{$timestamp}_{$safeEmail}.html";
+        file_put_contents($previewFile, $htmlBody);
+
+        // บรรทัดที่ 151: บันทึกประวัติข้อผิดพลาดลงใน emails.log
+        $logEntry = sprintf(
+            "[%s] FAILED (SMTP) To: %s <%s> | Subject: %s | Error: %s | Saved fallback preview: %s\n",
+            date('c'),
+            $toName,
+            $toEmail,
+            $subject,
+            $mail->ErrorInfo,
+            basename($previewFile)
+        );
+        file_put_contents("{$logDir}/emails.log", $logEntry, FILE_APPEND);
+
+        // บรรทัดที่ 162: ส่งผลลัพธ์พร้อมข้อมูล preview_file กลับไปเพื่อให้เปิดดูใบเสร็จได้
         return [
             'success' => false,
             'driver' => 'smtp',
             'error' => $mail->ErrorInfo,
-            'message' => "Message could not be sent. Mailer Error: {$mail->ErrorInfo}"
+            'preview_file' => $previewFile,
+            'preview_url' => basename($previewFile),
+            'message' => "Message could not be sent via SMTP: {$mail->ErrorInfo}. Saved preview to " . basename($previewFile)
         ];
     }
 }

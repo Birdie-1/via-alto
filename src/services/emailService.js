@@ -124,3 +124,68 @@ export async function sendRegisterWelcomeEmail(user) {
   // บรรทัดที่ 116: กรณีเซิร์ฟเวอร์ PHP ปิดอยู่ ส่งสถานะจำลองสำเร็จเพื่อไม่ให้ขัดขวาง UX การสมัครสมาชิก
   return { success: true, simulated: true };
 }
+
+/**
+ * ฟังก์ชันส่งอีเมลใบเสร็จรับเงินอิเล็กทรอนิกส์ (E-Receipt) หลังจากลูกค้าสั่งซื้อสินค้าสำเร็จ
+ * สไตล์ Dolomite Classic (สอดคล้องกับใบงานและเทมเพลต Style 4)
+ * @param {Object} order - ข้อมูลคำสั่งซื้อที่เพิ่งสร้างเสร็จสมบูรณ์
+ * @param {Object} user - ข้อมูลผู้ใช้ที่เข้าสู่ระบบอยู่ในขณะนั้น
+ */
+export async function sendOrderReceiptEmail(order, user) {
+  // บรรทัดที่ 136: ตรวจสอบความถูกต้อง หากไม่มีข้อมูลคำสั่งซื้อให้ยกเลิกการทำงานทันที
+  if (!order) return { success: false, error: 'No order data provided' };
+
+  // บรรทัดที่ 139: ดึงอีเมลผู้รับ โดยลำดับจาก shippingAddress ก่อน ตามด้วย user email
+  const recipientEmail = order.shippingAddress?.email || user?.email || 'customer@via-alto.com';
+
+  // บรรทัดที่ 142: ประกอบ Payload ข้อมูลสำหรับส่งไปยัง Backend PHP
+  const payload = {
+    order,
+    user: {
+      fullName: user?.fullName || order.shippingAddress?.fullName || 'Explorer',
+      email: recipientEmail,
+      points: user?.points || 0
+    },
+    email: recipientEmail,
+    name: order.shippingAddress?.fullName || user?.fullName || 'Explorer',
+    site_url: 'https://birdie-1.github.io/via-alto'
+  };
+
+  try {
+    // บรรทัดที่ 156: ส่งคำขอ POST ผ่าน Vite Proxy ไปยัง send_receipt.php เป็นลำดับแรก
+    let response = await fetch(`${PHP_API_BASE}/send_receipt.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(() => null);
+
+    // บรรทัดที่ 163: หากผ่าน Proxy ไม่สำเร็จ ให้ลองส่งตรงไปยัง PHP พอร์ต 8000
+    if (!response || !response.ok) {
+      response = await fetch(`${DIRECT_PHP_URL}/send_receipt.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => null);
+    }
+
+    // บรรทัดที่ 172: หากเซิร์ฟเวอร์ตอบกลับ 200 OK
+    if (response && response.ok) {
+      // บรรทัดที่ 174: แปลงผลลัพธ์เป็น JSON
+      const data = await response.json();
+      // บรรทัดที่ 176: พิมพ์ Log ยืนยันการส่งใบเสร็จลงใน Console
+      console.log('✅ PHP Email Service [send_receipt.php]:', data);
+      // บรรทัดที่ 178: ส่งผลลัพธ์สำเร็จกลับไปยัง Component
+      return { success: true, data };
+    }
+  } catch (err) {
+    // บรรทัดที่ 182: ดักจับและแจ้งเตือนข้อผิดพลาดใน Console
+    console.warn('⚠️ PHP E-Receipt Email Service unavailable, using client preview:', err);
+  }
+
+  // บรรทัดที่ 186: โหมดจำลองผลลัพธ์ (Offline Client Fallback) เพื่อให้กระบวนการ Checkout ไม่สะดุด
+  return {
+    success: true,
+    simulated: true,
+    message: 'E-Receipt simulated (offline mode)'
+  };
+}
