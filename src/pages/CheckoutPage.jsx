@@ -43,6 +43,8 @@ export default function CheckoutPage({
 
   // Form State
   const [fullName, setFullName] = useState(user?.shippingAddress?.fullName || user?.fullName || '');
+  // บรรทัดที่ 46: อีเมลสำหรับรับใบเสร็จ E-Receipt (ดึงจากผู้ใช้ หรือให้กรอกใหม่ได้)
+  const [email, setEmail] = useState(user?.shippingAddress?.email || user?.email || '');
   const [phone, setPhone] = useState(user?.shippingAddress?.telNo || user?.telNo || '');
   const [address1, setAddress1] = useState(user?.shippingAddress?.address1 || '');
   const [address2, setAddress2] = useState(user?.shippingAddress?.address2 || '');
@@ -70,6 +72,7 @@ export default function CheckoutPage({
   useEffect(() => {
     if (user?.shippingAddress) {
       setFullName(user.shippingAddress.fullName || user.fullName || '');
+      setEmail(user.shippingAddress.email || user.email || '');
       setPhone(user.shippingAddress.telNo || user.telNo || '');
       setAddress1(user.shippingAddress.address1 || '');
       setAddress2(user.shippingAddress.address2 || '');
@@ -78,6 +81,7 @@ export default function CheckoutPage({
       setPostalCode(user.shippingAddress.postalCode || '');
     } else if (user) {
       if (!fullName) setFullName(user.fullName || '');
+      if (!email) setEmail(user.email || '');
       if (!phone) setPhone(user.telNo || '');
     }
   }, [user]);
@@ -200,6 +204,7 @@ export default function CheckoutPage({
       })),
       shippingAddress: {
         fullName,
+        email,
         telNo: phone,
         address1,
         address2,
@@ -315,6 +320,24 @@ export default function CheckoutPage({
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="e.g. 089-452-9182"
                   className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal font-mono"
+                />
+              </div>
+
+              {/* ช่องกรอกอีเมลสำหรับรับใบเสร็จรับเงินอิเล็กทรอนิกส์ (E-Receipt) */}
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                  <span>{lang === 'th' ? 'อีเมลสำหรับรับใบเสร็จ (E-Receipt Email) *' : 'Email for E-Receipt *'}</span>
+                  <span className="text-[10px] text-stone-500 font-normal">
+                    {lang === 'th' ? 'ระบบจะส่งใบเสร็จรับเงินไปยังอีเมลนี้ทันที' : 'E-Receipt will be dispatched here'}
+                  </span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. narueborde@gmail.com"
+                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
                 />
               </div>
 
