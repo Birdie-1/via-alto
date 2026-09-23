@@ -144,8 +144,8 @@ $altBody = "VIA ALTO — ใบเสร็จรับเงินอิเล�
     . "ตรวจสอบรายละเอียดคำสั่งซื้อได้ที่: {$siteUrl}/?page=account&tab=orders\n"
     . "ขอขอบคุณที่เลือกใช้อุปกรณ์จาก VIA ALTO (GO BEYOND.)";
 
-// บรรทัดที่ 124: กำหนดหัวข้ออีเมล (Email Subject)
-$subject = "🧾 ใบเสร็จรับเงินคำสั่งซื้อ #{$orderId} — VIA ALTO";
+// บรรทัดที่ 148: กำหนดหัวข้ออีเมล (Email Subject) ไม่มีอิโมจิ เพื่อให้ดูเป็นทางการและไม่รกกล่องจดหมาย
+$subject = "ใบเสร็จรับเงินคำสั่งซื้อ #{$orderId} — VIA ALTO";
 
 // บรรทัดที่ 127: ทำการส่งอีเมลผ่านฟังก์ชันกลาง sendViaAltoEmail()
 $sendResult = sendViaAltoEmail(

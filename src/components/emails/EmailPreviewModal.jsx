@@ -776,9 +776,9 @@ export default function EmailPreviewModal({
                   /* ========================================================================= */
                   <div className="bg-[#FAF7F2] text-[#183C32] font-sans antialiased shadow-md">
                     
-                    {/* ส่วนที่ 1: แถบแจ้งเตือนเว็บไซต์เพื่อการศึกษา */}
+                    {/* ส่วนที่ 1: แถบแจ้งเตือนเว็บไซต์เพื่อการศึกษา (ไม่มีอิโมจิ) */}
                     <div className="bg-[#0F2821] text-[#FAF7F2] px-4 py-1.5 text-center text-[10px] font-sans border-b border-white/10">
-                      🎓 <strong>{currentLang === 'th' ? 'เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น' : 'Educational Project Only'}</strong> ({currentLang === 'th' ? 'ไม่มีการจำหน่ายจริง' : 'No commercial sales'})
+                      <strong>{currentLang === 'th' ? 'เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น' : 'Educational Project Only'}</strong> ({currentLang === 'th' ? 'ไม่มีการจำหน่ายจริง' : 'No commercial sales'})
                     </div>
 
                     {/* ส่วนที่ 2: Header แบรนด์ VIA ALTO พื้นสีครีม */}
@@ -937,10 +937,10 @@ export default function EmailPreviewModal({
                     {/* ส่วนที่ 4: ครึ่งล่างสีเขียวเข้ม (Deep Forest Zone) */}
                     <div className="bg-[#11241D] text-white p-5">
                       <div className="grid grid-cols-2 gap-4 text-xs pb-4 border-b border-white/10">
-                        {/* ข้อมูลจัดส่ง */}
+                        {/* ข้อมูลจัดส่ง (ไม่มีอิโมจิ) */}
                         <div>
                           <div className="text-[9px] uppercase font-bold tracking-wider text-[#E8DDCC] mb-1">
-                            📍 {currentLang === 'th' ? 'ที่อยู่จัดส่ง' : 'SHIPPING DESTINATION'}
+                            {currentLang === 'th' ? 'ที่อยู่จัดส่ง' : 'SHIPPING DESTINATION'}
                           </div>
                           <div className="font-bold text-white text-xs">{userName}</div>
                           <div className="text-[10px] text-[#9FB3A6] mt-0.5">089-452-9182</div>
@@ -949,10 +949,10 @@ export default function EmailPreviewModal({
                           </div>
                         </div>
 
-                        {/* วิธีชำระเงินและคะแนน */}
+                        {/* วิธีชำระเงินและคะแนน (ไม่มีอิโมจิ) */}
                         <div className="pl-3 border-l border-white/15">
                           <div className="text-[9px] uppercase font-bold tracking-wider text-[#E8DDCC] mb-1">
-                            💳 {currentLang === 'th' ? 'วิธีชำระเงิน' : 'PAYMENT'}
+                            {currentLang === 'th' ? 'วิธีชำระเงิน' : 'PAYMENT'}
                           </div>
                           <div className="text-[11px] font-medium text-white">
                             PromptPay QR (Verified)
@@ -960,7 +960,7 @@ export default function EmailPreviewModal({
 
                           <div className="mt-2.5 bg-[#183C32] border border-[#E8DDCC]/60 rounded p-2">
                             <div className="text-[8px] font-bold uppercase tracking-wider text-[#E8DDCC]">
-                              ✨ {currentLang === 'th' ? 'คะแนนสะสมที่ได้รับ' : 'POINTS EARNED'}
+                              {currentLang === 'th' ? 'คะแนนสะสมที่ได้รับ' : 'POINTS EARNED'}
                             </div>
                             <div className="font-serif text-base font-bold text-white mt-0.5">
                               +55 <span className="text-[9px] font-normal text-[#A3E6CD]">Alpine Points</span>

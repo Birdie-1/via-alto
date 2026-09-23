@@ -194,7 +194,8 @@ function renderReceiptEmail($order, $user = null, $options = []) {
           <!-- ========================================================================= -->
           <tr>
             <td style="background-color: #0F2821; color: #FAF7F2; padding: 8px 16px; text-align: center; font-size: 11px; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              🎓 <strong>เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น</strong> (ไม่มีการจำหน่ายหรือเรียกเก็บเงินจริง)
+              <!-- ข้อความแจ้งเตือนว่าเป็นเว็บไซต์เพื่อการศึกษา ไม่มีอิโมจิเพื่อให้ดูทางการ -->
+              <strong>เว็บไซต์นี้จัดทำขึ้นเพื่อการศึกษาเท่านั้น</strong> (ไม่มีการจำหน่ายหรือเรียกเก็บเงินจริง)
             </td>
           </tr>
 
@@ -339,7 +340,8 @@ function renderReceiptEmail($order, $user = null, $options = []) {
                   <!-- ด้านซ้าย: ที่อยู่จัดส่งพัสดุ -->
                   <td width="55%" align="left" style="vertical-align: top; padding-right: 14px;">
                     <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #E8DDCC; margin-bottom: 6px;">
-                      📍 ข้อมูลการจัดส่งพัสดุ
+                      <!-- หัวข้อข้อมูลการจัดส่งพัสดุ (ไม่มีอิโมจิ) -->
+                      ข้อมูลการจัดส่งพัสดุ
                     </div>
                     <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; line-height: 1.3;">
                       ' . $recipientName . '
@@ -355,7 +357,7 @@ function renderReceiptEmail($order, $user = null, $options = []) {
                   <!-- ด้านขวา: วิธีชำระเงิน และ คะแนนสะสม Alpine Points -->
                   <td width="45%" align="left" style="vertical-align: top; padding-left: 14px; border-left: 1px solid rgba(255,255,255,0.15);">
                     <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #E8DDCC; margin-bottom: 6px;">
-                      💳 วิธีการชำระเงิน
+                      วิธีการชำระเงิน
                     </div>
                     <div style="font-size: 12px; font-weight: 600; color: #FFFFFF; line-height: 1.3;">
                       ' . $paymentMethodLabel . '
@@ -364,7 +366,7 @@ function renderReceiptEmail($order, $user = null, $options = []) {
                     <!-- แถบแสดงคะแนนสะสม Alpine Points ที่ได้รับ -->
                     <div style="margin-top: 14px; background: linear-gradient(135deg, rgba(24,60,50,0.8) 0%, rgba(13,26,21,0.95) 100%); border: 1px solid #E8DDCC; border-radius: 6px; padding: 10px 12px;">
                       <div style="font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #E8DDCC;">
-                        ✨ คะแนนสะสมที่ได้รับ
+                        คะแนนสะสมที่ได้รับ
                       </div>
                       <div style="font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #FAF7F2; margin-top: 2px;">
                         +' . $pointsEarned . ' <span style="font-size: 11px; font-weight: normal; color: #A3E6CD;">Alpine Points</span>
