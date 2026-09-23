@@ -15,22 +15,13 @@ import {
 import Button from '../components/ui/Button';
 import { formatPrice } from '../data/products';
 import { TRANSLATIONS } from '../data/translations';
-
-const THAI_PROVINCES = [
-  { en: 'Bangkok', th: 'กรุงเทพมหานคร' },
-  { en: 'Chiang Mai', th: 'เชียงใหม่' },
-  { en: 'Chiang Rai', th: 'เชียงราย' },
-  { en: 'Mae Hong Son', th: 'แม่ฮ่องสอน' },
-  { en: 'Nan', th: 'น่าน' },
-  { en: 'Phuket', th: 'ภูเก็ต' },
-  { en: 'Krabi', th: 'กระบี่' },
-  { en: 'Surat Thani', th: 'สุราษฎร์ธานี' },
-  { en: 'Chonburi', th: 'ชลบุรี' },
-  { en: 'Nakhon Ratchasima', th: 'นครราชสีมา' },
-  { en: 'Kanchanaburi', th: 'กาญจนบุรี' },
-  { en: 'Phetchabun', th: 'เพชรบูรณ์' },
-  { en: 'Other Provinces', th: 'จังหวัดอื่นๆ' }
-];
+// บรรทัดที่ 18: นำเข้าฟังก์ชันดึงข้อมูลจังหวัด อำเภอ และรหัสไปรษณีย์จาก locationService
+import {
+  fetchProvinces,
+  fetchDistricts,
+  fetchPostalCode,
+  findProvince
+} from '../services/locationService';
 
 export default function CheckoutPage({
   user,
@@ -49,9 +40,96 @@ export default function CheckoutPage({
   const [address1, setAddress1] = useState(user?.shippingAddress?.address1 || '');
   const [address2, setAddress2] = useState(user?.shippingAddress?.address2 || '');
   const [district, setDistrict] = useState(user?.shippingAddress?.district || '');
-  const [province, setProvince] = useState(user?.shippingAddress?.province || 'Bangkok');
+  const [province, setProvince] = useState(user?.shippingAddress?.province || (lang === 'th' ? 'กรุงเทพมหานคร' : 'Bangkok'));
   const [postalCode, setPostalCode] = useState(user?.shippingAddress?.postalCode || '');
   const [saveAddress, setSaveAddress] = useState(true);
+
+  // บรรทัดที่ 48: State สำหรับเก็บรายชื่อ 77 จังหวัด และรายชื่ออำเภอตามจังหวัดที่เลือก
+  const [provincesList, setProvincesList] = useState([]);
+  const [districtsList, setDistrictsList] = useState([]);
+  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
+
+  // บรรทัดที่ 53: โหลดรายชื่อ 77 จังหวัดทั้งหมดเมื่อ Component Mount หรือเมื่อภาษาเปลี่ยน
+  useEffect(() => {
+    let isMounted = true;
+    fetchProvinces(lang).then((data) => {
+      if (isMounted && data) {
+        setProvincesList(data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [lang]);
+
+  // บรรทัดที่ 66: ดึงรายชื่ออำเภอ/เขต เมื่อเลือกหรือสลับจังหวัด
+  useEffect(() => {
+    if (!province) {
+      setDistrictsList([]);
+      return;
+    }
+
+    let isMounted = true;
+    setIsLoadingDistricts(true);
+
+    fetchDistricts(province, lang)
+      .then((dists) => {
+        if (!isMounted) return;
+        setDistrictsList(dists);
+        setIsLoadingDistricts(false);
+
+        // ตรวจสอบว่าอำเภอที่เลือกไว้เดิม ยังมีอยู่ในจังหวัดใหม่หรือไม่
+        if (district) {
+          const match = dists.find((d) =>
+            d.name_en.toLowerCase() === district.toLowerCase() ||
+            d.name_th.toLowerCase() === district.toLowerCase() ||
+            d.name_th.replace(/^(เขต|อำเภอ)/, '').toLowerCase() === district.toLowerCase()
+          );
+          if (match) {
+            // ซิงค์ชื่ออำเภอให้ตรงกับภาษาที่แสดงผลปัจจุบัน (TH / EN)
+            const localizedName = lang === 'th' ? match.name_th : match.name_en;
+            if (district !== localizedName) {
+              setDistrict(localizedName);
+            }
+            // หากยังไม่มีรหัสไปรษณีย์ ให้เติมรหัสไปรษณีย์หลักของอำเภอให้อัตโนมัติ
+            if (!postalCode && match.zip_code) {
+              setPostalCode(match.zip_code);
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load districts:', err);
+        if (isMounted) setIsLoadingDistricts(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [province, lang]);
+
+  // บรรทัดที่ 113: ฟังก์ชันจัดการเมื่อผู้ใช้เลือกเปลี่ยนจังหวัดใน Dropdown
+  const handleProvinceChange = (e) => {
+    const selectedProv = e.target.value;
+    setProvince(selectedProv);
+    // รีเซ็ตค่าอำเภอและรหัสไปรษณีย์เพื่อป้องกันความขัดแย้งของข้อมูล
+    setDistrict('');
+    setPostalCode('');
+  };
+
+  // บรรทัดที่ 122: ฟังก์ชันจัดการเมื่อผู้ใช้เลือกเขต/อำเภอ พร้อม Auto-fill รหัสไปรษณีย์
+  const handleDistrictChange = (e) => {
+    const selectedDist = e.target.value;
+    setDistrict(selectedDist);
+
+    // Auto-fill รหัสไปรษณีย์อัตโนมัติจากอำเภอที่เลือก
+    if (selectedDist) {
+      const autoZip = fetchPostalCode(province, selectedDist);
+      if (autoZip) {
+        setPostalCode(autoZip);
+      }
+    }
+  };
 
   // Payment Method: 'card' | 'promptpay' | 'cod'
   const [paymentMethod, setPaymentMethod] = useState('promptpay');
@@ -76,8 +154,11 @@ export default function CheckoutPage({
       setPhone(user.shippingAddress.telNo || user.telNo || '');
       setAddress1(user.shippingAddress.address1 || '');
       setAddress2(user.shippingAddress.address2 || '');
+      const rawProv = user.shippingAddress.province || 'Bangkok';
+      const matchedProv = findProvince(rawProv);
+      const localizedProv = matchedProv ? (lang === 'th' ? matchedProv.name_th : matchedProv.name_en) : rawProv;
+      setProvince(localizedProv);
       setDistrict(user.shippingAddress.district || '');
-      setProvince(user.shippingAddress.province || 'Bangkok');
       setPostalCode(user.shippingAddress.postalCode || '');
     } else if (user) {
       if (!fullName) setFullName(user.fullName || '');
@@ -368,44 +449,77 @@ export default function CheckoutPage({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
-                  {t.checkout_district} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                  placeholder="e.g. Watthana"
-                  className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal"
-                />
-              </div>
-
+              {/* บรรทัดที่ 452: ช่องเลือกจังหวัด (Province Dropdown - 77 จังหวัดทั่วไทย) */}
               <div>
                 <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
                   {t.checkout_province} *
                 </label>
                 <select
+                  required
                   value={province}
-                  onChange={(e) => setProvince(e.target.value)}
+                  onChange={handleProvinceChange}
                   className="w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal cursor-pointer"
                 >
-                  {THAI_PROVINCES.map((prov) => (
-                    <option key={prov.en} value={prov.en}>
-                      {lang === 'th' ? prov.th : prov.en}
-                    </option>
-                  ))}
+                  <option value="">{t.checkout_select_province}</option>
+                  {provincesList.map((prov) => {
+                    const provName = lang === 'th' ? prov.name_th : prov.name_en;
+                    return (
+                      <option key={prov.id} value={provName}>
+                        {provName}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
+              {/* บรรทัดที่ 473: ช่องเลือกเขต/อำเภอ (District Dropdown - กรองตามจังหวัดที่เลือก) */}
               <div>
                 <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
-                  {t.checkout_postal_code} *
+                  {t.checkout_district} *
                 </label>
+                <select
+                  required
+                  value={district}
+                  onChange={handleDistrictChange}
+                  disabled={!province || isLoadingDistricts}
+                  className={`w-full px-3.5 py-2.5 text-xs bg-[#F7F5F0] border border-stone-light focus:outline-none focus:border-forest text-charcoal cursor-pointer ${
+                    !province || isLoadingDistricts ? 'opacity-60 cursor-not-allowed bg-stone-100' : ''
+                  }`}
+                >
+                  <option value="">
+                    {!province
+                      ? (lang === 'th' ? '-- กรุณาเลือกจังหวัดก่อน --' : '-- Select Province First --')
+                      : isLoadingDistricts
+                      ? t.checkout_loading_districts
+                      : t.checkout_select_district}
+                  </option>
+                  {districtsList.map((d) => {
+                    const distName = lang === 'th' ? d.name_th : d.name_en;
+                    return (
+                      <option key={d.id} value={distName}>
+                        {distName} {d.zip_code ? `(${d.zip_code})` : ''}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* บรรทัดที่ 505: ช่องรหัสไปรษณีย์ (Auto-fill พร้อม Badge แสดงสถานะและแก้ไขได้) */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider">
+                    {t.checkout_postal_code} *
+                  </label>
+                  {postalCode && district && (
+                    <span className="text-[10px] text-emerald-700 font-medium">
+                      {lang === 'th' ? '✓ เติมอัตโนมัติ' : '✓ Auto-filled'}
+                    </span>
+                  )}
+                </div>
                 <input
                   type="text"
                   required
+                  maxLength={5}
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="e.g. 10110"
