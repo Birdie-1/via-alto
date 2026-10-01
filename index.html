@@ -1,10 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
+    <!-- บรรทัดที่ 4: กำหนดชุดรหัสตัวอักษรเป็น UTF-8 เพื่อรองรับภาษาไทยและภาษาอังกฤษอย่างถูกต้อง -->
     <meta charset="UTF-8" />
+    <!-- บรรทัดที่ 6: ไอคอนแสดงผลบนแท็บเบราว์เซอร์ (Favicon) ของแบรนด์ VIA ALTO -->
     <link rel="icon" type="image/jpeg" href="%BASE_URL%images/logo.png" />
+    <!-- บรรทัดที่ 8: กำหนด Viewport เพื่อให้รองรับการจัดหน้าจอ Responsive บนคอมพิวเตอร์และมือถือ -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VIA ALTO — Go Beyond. Premium Outdoor & Hiking Equipment</title>
+
+    <!-- ========================================================================= -->
+    <!-- 1. กำหนดข้อความใน Title ของเว็บไซต์ (ตามโจทย์แบบฝึกหัด) -->
+    <!-- ========================================================================= -->
+    <!-- บรรทัดที่ 14: Title แสดงชื่อแบรนด์ สโลแกน และประเภทสินค้าชัดเจนสำหรับผู้ใช้และ Search Engine -->
+    <title>VIA ALTO — Go Beyond | อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม</title>
+
+    <!-- ========================================================================= -->
+    <!-- 2. กำหนด Meta Description คำอธิบายเว็บไซต์ (ตามโจทย์แบบฝึกหัด) -->
+    <!-- ========================================================================= -->
+    <!-- บรรทัดที่ 20: กำหนด Description สรุปภาพรวมของเว็บไซต์ เพื่อให้ Google และ Search Engine นำไปแสดงผลใต้ชื่อเว็บ -->
+    <meta
+      name="description"
+      content="VIA ALTO (เวีย อัลโต) แบรนด์อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม สไตล์ Alpine ออกแบบเพื่อทุกการผจญภัย ทั้งกระเป๋าเป้สะพายหลัง เต้นท์ ถุงนอน เสื้อผ้า รองเท้า และอุปกรณ์ยังชีพมาตรฐานสากล เพื่อทุกก้าวสู่ยอดเขา Go Beyond."
+    />
+
+    <!-- ========================================================================= -->
+    <!-- 3. กำหนด Meta Keywords คำสำคัญอย่างน้อย 15 คำ (ตามโจทย์แบบฝึกหัด - กำหนดไว้ 25 คำ) -->
+    <!-- ========================================================================= -->
+    <!-- บรรทัดที่ 28: กำหนด Keywords คำค้นหาครอบคลุมชื่อแบรนด์ หมวดหมู่สินค้า และกิจกรรม ทั้งภาษาไทยและอังกฤษ ครบ 25 คำ -->
+    <meta
+      name="keywords"
+      content="VIA ALTO, เวีย อัลโต, อุปกรณ์เดินป่า, อุปกรณ์เดินเขา, อุปกรณ์แคมป์ปิ้ง, เป้เดินป่า, กระเป๋าเป้สะพายหลัง, เต้นท์เดินป่า, ถุงนอนเดินป่า, รองเท้าเดินป่า, เสื้อกันลมเดินป่า, ไม้เท้าเดินป่า, เดินป่า, แคมป์ปิ้ง, เดินเขา, กิจกรรมเอาท์ดอร์, ท่องเที่ยวธรรมชาติ, hiking equipment, outdoor gear, camping gear, trekking gear, backpacking, alpine gear, mountaineering, Go Beyond"
+    />
+
+    <!-- ========================================================================= -->
+    <!-- 4. Meta Tags เสริมเพื่อ SEO มาตรฐานสากล และการแชร์บน Social Media (Open Graph & Twitter Cards) -->
+    <!-- ========================================================================= -->
+    <!-- บรรทัดที่ 36: ระบุผู้เขียนและเจ้าของเว็บไซต์ -->
+    <meta name="author" content="VIA ALTO" />
+    <!-- บรรทัดที่ 38: กำหนดให้ Search Engine ทำการจัดทำดัชนี (Index) และติดตามลิงก์ภายในเว็บ (Follow) -->
+    <meta name="robots" content="index, follow" />
+    <!-- บรรทัดที่ 40: กำหนดสีแถบสถานะของเบราว์เซอร์บนมือถือ (Forest Green) -->
+    <meta name="theme-color" content="#183C32" />
+
+    <!-- บรรทัดที่ 43: Open Graph Tags สำหรับการแชร์ลิงก์บน Facebook, LINE และแอปพลิเคชันสื่อสาร -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://birdie-1.github.io/via-alto/" />
+    <meta property="og:title" content="VIA ALTO — Go Beyond | อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม" />
+    <meta
+      property="og:description"
+      content="VIA ALTO แบรนด์อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม สไตล์ Alpine ออกแบบเพื่อทุกการผจญภัยมาตรฐานสากล Go Beyond."
+    />
+    <meta property="og:image" content="https://birdie-1.github.io/via-alto/images/hero.jpg" />
+
+    <!-- บรรทัดที่ 53: Twitter Card Tags สำหรับการแสดงผลการ์ดรูปขนาดใหญ่บนแพลตฟอร์ม X / Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VIA ALTO — Go Beyond | อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม" />
+    <meta
+      name="twitter:description"
+      content="VIA ALTO แบรนด์อุปกรณ์เดินป่า เดินเขา และแคมป์ปิ้งระดับพรีเมียม สไตล์ Alpine ออกแบบเพื่อทุกการผจญภัยมาตรฐานสากล Go Beyond."
+    />
+    <meta name="twitter:image" content="https://birdie-1.github.io/via-alto/images/hero.jpg" />
+
+    <!-- บรรทัดที่ 63: เชื่อมต่อฟอนต์ตัวอักษร Google Fonts (Cormorant Garamond และ Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
