@@ -198,14 +198,19 @@ export default function ShopPage({
             lang={lang}
           />
         </div>
-      </div>
 
-      {/* 3.5 Recently Viewed Products (Step 5 Behavioral Recommendation) */}
-      <RecentlyViewed
-        products={recentProducts}
-        onSelectProduct={(p) => setQuickViewProduct(p)}
-        lang={lang}
-      />
+        {/* 3.5 Recently Viewed Products (Step 5 Behavioral Recommendation) */}
+        <RecentlyViewed
+          products={recentProducts}
+          onAddToCart={onAddToCart}
+          onQuickView={(p) => setQuickViewProduct(p)}
+          wishlist={wishlist}
+          onToggleWishlist={onToggleWishlist}
+          comparedProducts={comparedProducts}
+          onToggleCompare={handleToggleCompare}
+          lang={lang}
+        />
+      </div>
 
       {/* 4. Quick View / Product Detail Modal */}
       {quickViewProduct && (
