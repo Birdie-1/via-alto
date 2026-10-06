@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Compass,
@@ -44,6 +44,13 @@ export default function GearFinderModal({
   lang = 'en'
 }) {
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Reset to Step 1 whenever modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(1);
+    }
+  }, [isOpen]);
   const [answers, setAnswers] = useState({
     destination: 'winter_alpine',
     duration: 'weekend_camp',

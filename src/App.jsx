@@ -45,9 +45,15 @@ export default function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-  // Language state (en / th) with localStorage persistence
+  // Language state (en / th) with localStorage persistence & URL query parameter support
   const [lang, setLang] = useState(() => {
     if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang');
+      if (urlLang === 'th' || urlLang === 'en') {
+        localStorage.setItem('via_alto_lang', urlLang);
+        return urlLang;
+      }
       return localStorage.getItem('via_alto_lang') || 'en';
     }
     return 'en';
@@ -114,6 +120,13 @@ export default function App() {
         setCurrentPage(pageParam);
         if (catParam) setShopCategory(catParam);
         if (tabParam) setAccountInitialTab(tabParam);
+      }
+
+      // 5. Gear Finder Deep Linking (Direct modal popup for LINE Rich Message, Posters & Social Media campaigns)
+      const finderParam = params.get('finder') || params.get('gearfinder') || params.get('quiz');
+      const isHashFinder = typeof window !== 'undefined' && (window.location.hash === '#finder' || window.location.hash === '#gearfinder');
+      if (finderParam === '1' || finderParam === 'true' || params.get('modal') === 'finder' || params.get('modal') === 'gearfinder' || isHashFinder) {
+        setIsGearFinderOpen(true);
       }
     }
   }, []);
@@ -533,7 +546,30 @@ export default function App() {
       {/* 7. Interactive Gear Finder & Product Recommender Modal */}
       <GearFinderModal
         isOpen={isGearFinderOpen}
-        onClose={() => setIsGearFinderOpen(false)}
+        onClose={() => {
+          setIsGearFinderOpen(false);
+          if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            let hasChanged = false;
+            ['finder', 'gearfinder', 'quiz'].forEach((key) => {
+              if (url.searchParams.has(key)) {
+                url.searchParams.delete(key);
+                hasChanged = true;
+              }
+            });
+            if (url.searchParams.get('modal') === 'finder' || url.searchParams.get('modal') === 'gearfinder') {
+              url.searchParams.delete('modal');
+              hasChanged = true;
+            }
+            if (url.hash === '#finder' || url.hash === '#gearfinder') {
+              url.hash = '';
+              hasChanged = true;
+            }
+            if (hasChanged) {
+              window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + (url.hash ? url.hash : ''));
+            }
+          }
+        }}
         onAddToCartBatch={handleAddToCartBatch}
         lang={lang}
       />
