@@ -12,7 +12,8 @@ import {
   Maximize2,
   Check,
   Plus,
-  Sparkles
+  Sparkles,
+  Share2
 } from 'lucide-react';
 import StarRating from '../ui/StarRating';
 import Button from '../ui/Button';
@@ -26,7 +27,20 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
   const [selectedColor, setSelectedColor] = useState(product?.selectedColor || product?.colors?.[0] || null);
   const [quantity, setQuantity] = useState(1);
   const [addedPairedId, setAddedPairedId] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  const handleCopyShareLink = () => {
+    if (!product) return;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://birdie-1.github.io';
+    const hasViaAltoPath = typeof window !== 'undefined' && window.location.pathname.includes('/via-alto');
+    const shareUrl = `${origin}${hasViaAltoPath ? '/via-alto' : ''}/?product=${product.id}&lang=${lang}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -76,6 +90,24 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
         className="relative bg-[#F7F5F0] w-full max-w-4xl border border-stone-light/80 shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Share / Copy Link Button */}
+        <div className="absolute top-4 right-14 z-20 flex items-center">
+          {copiedLink && (
+            <span className="mr-2 px-2.5 py-1 bg-forest text-offwhite text-[10px] font-sans font-medium rounded shadow-md animate-in fade-in duration-150 whitespace-nowrap">
+              {lang === 'th' ? '✓ คัดลอกลิงก์แล้ว' : '✓ Link copied!'}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleCopyShareLink}
+            className="p-2 bg-white/80 hover:bg-white text-charcoal rounded-full border border-stone-light/60 transition-all cursor-pointer shadow-xs flex items-center justify-center"
+            title={lang === 'th' ? 'คัดลอกลิงก์สินค้านี้สำหรับแชร์ (Line / Social)' : 'Copy product link to share'}
+            aria-label="Share product"
+          >
+            {copiedLink ? <Check size={18} className="text-emerald-600" /> : <Share2 size={18} />}
+          </button>
+        </div>
+
         {/* Close Button */}
         <button
           onClick={onClose}

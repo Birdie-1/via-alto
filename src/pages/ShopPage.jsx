@@ -78,6 +78,32 @@ export default function ShopPage({
     setSortBy('featured');
   };
 
+  const handleOpenProductDetail = (product) => {
+    setQuickViewProduct(product);
+    if (typeof window !== 'undefined' && product?.id) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('product', product.id);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  const handleCloseProductDetail = () => {
+    setQuickViewProduct(null);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      let changed = false;
+      ['product', 'p', 'id'].forEach((key) => {
+        if (url.searchParams.has(key)) {
+          url.searchParams.delete(key);
+          changed = true;
+        }
+      });
+      if (changed) {
+        window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + (url.hash ? url.hash : ''));
+      }
+    }
+  };
+
   // Compare Handlers
   const handleToggleCompare = (product) => {
     setComparedProducts((prev) => {
@@ -187,7 +213,7 @@ export default function ShopPage({
             sortBy={sortBy}
             onSortChange={setSortBy}
             onAddToCart={onAddToCart}
-            onQuickView={(product) => setQuickViewProduct(product)}
+            onQuickView={handleOpenProductDetail}
             onOpenMobileFilters={() => setIsMobileFilterOpen(true)}
             activeFilterCount={activeFilterCount}
             onResetFilters={handleResetFilters}
@@ -203,7 +229,7 @@ export default function ShopPage({
         <RecentlyViewed
           products={recentProducts}
           onAddToCart={onAddToCart}
-          onQuickView={(p) => setQuickViewProduct(p)}
+          onQuickView={handleOpenProductDetail}
           wishlist={wishlist}
           onToggleWishlist={onToggleWishlist}
           comparedProducts={comparedProducts}
@@ -216,7 +242,7 @@ export default function ShopPage({
       {quickViewProduct && (
         <ProductDetailModal
           product={quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
+          onClose={handleCloseProductDetail}
           onAddToCart={onAddToCart}
           lang={lang}
         />

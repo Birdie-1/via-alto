@@ -104,14 +104,15 @@ export default function App() {
         );
       }
 
-      // 3. Product Deep Linking (Direct modal popup)
-      if (prodId) {
-        const targetProd = PRODUCTS.find((p) => p.id === parseInt(prodId, 10));
+      // 3. Product Deep Linking (Direct modal popup for LINE Rich Message, Ads & Social Sharing)
+      const rawProd = params.get('product') || params.get('p') || params.get('id');
+      if (rawProd) {
+        const cleanId = parseInt(rawProd.toString().replace(/\D/g, ''), 10);
+        const targetProd = PRODUCTS.find((p) => p.id === cleanId || p.id === parseInt(rawProd, 10));
         if (targetProd) {
           setQuickViewProduct(targetProd);
           setCurrentPage('shop');
           if (catParam) setShopCategory(catParam);
-          return;
         }
       }
 
@@ -138,10 +139,24 @@ export default function App() {
         setCurrentPage(event.state.page);
         if (event.state.params?.category) setShopCategory(event.state.params.category);
         if (event.state.params?.tab) setAccountInitialTab(event.state.params.tab);
+        if (event.state.params?.product) {
+          const p = PRODUCTS.find((item) => item.id === parseInt(event.state.params.product, 10));
+          if (p) setQuickViewProduct(p);
+        } else {
+          setQuickViewProduct(null);
+        }
       } else if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
         const p = params.get('page') || 'home';
         setCurrentPage(p);
+        const prodParam = params.get('product') || params.get('p');
+        if (prodParam) {
+          const cleanId = parseInt(prodParam.toString().replace(/\D/g, ''), 10);
+          const item = PRODUCTS.find((i) => i.id === cleanId || i.id === parseInt(prodParam, 10));
+          if (item) setQuickViewProduct(item);
+        } else {
+          setQuickViewProduct(null);
+        }
       }
     };
 
@@ -178,8 +193,11 @@ export default function App() {
       if (params.tab) url.searchParams.set('tab', params.tab);
       else url.searchParams.delete('tab');
 
+      // Clear or set product deep link param
+      if (params.product) url.searchParams.set('product', params.product);
+      else url.searchParams.delete('product');
+
       // Clear one-time action params
-      url.searchParams.delete('product');
       url.searchParams.delete('voucher');
       url.searchParams.delete('unsubscribe');
 
