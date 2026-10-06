@@ -129,14 +129,6 @@ export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) 
                   {t.phil_cta}
                 </button>
               </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('home')}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  {t.hero_slogan}
-                </button>
-              </li>
             </ul>
           </div>
 
