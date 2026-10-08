@@ -8,6 +8,7 @@ import CompareBar from '../components/shop/CompareBar';
 import CompareModal from '../components/shop/CompareModal';
 import RecentlyViewed from '../components/shop/RecentlyViewed';
 import { PRODUCTS } from '../data/products';
+import { getStoredProducts } from '../data/productsStore';
 import { getRecentlyViewed } from '../services/behaviorService';
 
 export default function ShopPage({
@@ -20,9 +21,16 @@ export default function ShopPage({
   onOpenGearFinder,
   lang = 'en'
 }) {
+  const [allProducts, setAllProducts] = useState(getStoredProducts);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
+
+  useEffect(() => {
+    const handleUpdate = () => setAllProducts(getStoredProducts());
+    window.addEventListener('via_alto_products_updated', handleUpdate);
+    return () => window.removeEventListener('via_alto_products_updated', handleUpdate);
+  }, []);
 
   // Comparison State
   const [comparedProducts, setComparedProducts] = useState([]);
@@ -129,7 +137,7 @@ export default function ShopPage({
 
   // Filter & Sort Logic
   const filteredAndSortedProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return allProducts.filter((product) => {
       // 1. Category filter
       if (filters.category !== 'all' && product.categoryId !== filters.category) {
         return false;
@@ -169,7 +177,7 @@ export default function ShopPage({
       // 'featured'
       return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
     });
-  }, [filters, sortBy, lang]);
+  }, [allProducts, filters, sortBy, lang]);
 
   const activeFilterCount =
     (filters.category !== 'all' ? 1 : 0) +
@@ -182,7 +190,7 @@ export default function ShopPage({
     <div className="w-full bg-[#F7F5F0] min-h-screen relative pb-16">
       {/* 1. Shop Header */}
       <ShopHeader
-        totalProducts={PRODUCTS.length}
+        totalProducts={allProducts.length}
         onOpenGearFinder={onOpenGearFinder}
         lang={lang}
       />

@@ -11,10 +11,12 @@ import ShopPage from './pages/ShopPage';
 import AccountPage from './pages/AccountPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import AdminPage from './pages/AdminPage';
 import EmailPreviewModal from './components/emails/EmailPreviewModal';
 // นำเข้าฟังก์ชันส่งอีเมลต้อนรับสมาชิก และฟังก์ชันส่งใบเสร็จรับเงิน E-Receipt จาก emailService
 import { sendRegisterWelcomeEmail, sendOrderReceiptEmail } from './services/emailService';
 import { PRODUCTS } from './data/products';
+import { getStoredProducts } from './data/productsStore';
 import {
   initializeAuthStore,
   getCurrentUser,
@@ -108,7 +110,8 @@ export default function App() {
       const rawProd = params.get('product') || params.get('p') || params.get('id');
       if (rawProd) {
         const cleanId = parseInt(rawProd.toString().replace(/\D/g, ''), 10);
-        const targetProd = PRODUCTS.find((p) => p.id === cleanId || p.id === parseInt(rawProd, 10));
+        const allProds = getStoredProducts();
+        const targetProd = allProds.find((p) => p.id === cleanId || p.id === parseInt(rawProd, 10));
         if (targetProd) {
           setQuickViewProduct(targetProd);
           setCurrentPage('shop');
@@ -135,12 +138,13 @@ export default function App() {
   // Listen to browser Back / Forward popstate
   useEffect(() => {
     const handlePopState = (event) => {
+      const allProds = getStoredProducts();
       if (event.state && event.state.page) {
         setCurrentPage(event.state.page);
         if (event.state.params?.category) setShopCategory(event.state.params.category);
         if (event.state.params?.tab) setAccountInitialTab(event.state.params.tab);
         if (event.state.params?.product) {
-          const p = PRODUCTS.find((item) => item.id === parseInt(event.state.params.product, 10));
+          const p = allProds.find((item) => item.id === parseInt(event.state.params.product, 10));
           if (p) setQuickViewProduct(p);
         } else {
           setQuickViewProduct(null);
@@ -152,7 +156,7 @@ export default function App() {
         const prodParam = params.get('product') || params.get('p');
         if (prodParam) {
           const cleanId = parseInt(prodParam.toString().replace(/\D/g, ''), 10);
-          const item = PRODUCTS.find((i) => i.id === cleanId || i.id === parseInt(prodParam, 10));
+          const item = allProds.find((i) => i.id === cleanId || i.id === parseInt(prodParam, 10));
           if (item) setQuickViewProduct(item);
         } else {
           setQuickViewProduct(null);
@@ -440,21 +444,31 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F5F0] text-[#292B28] font-sans selection:bg-[#183C32] selection:text-white">
-      {/* 1. Sticky Navigation Header */}
-      <Header
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-        cartCount={totalCartCount}
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenCart={() => setIsCartOpen(true)}
-        currentUser={currentUser}
-        onOpenAuthModal={() => handleOpenAuth('signin')}
-        lang={lang}
-        onToggleLang={handleToggleLang}
-      />
+      {/* 1. Sticky Navigation Header (Storefront Only) */}
+      {currentPage !== 'admin' && (
+        <Header
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          cartCount={totalCartCount}
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenCart={() => setIsCartOpen(true)}
+          currentUser={currentUser}
+          onOpenAuthModal={() => handleOpenAuth('signin')}
+          lang={lang}
+          onToggleLang={handleToggleLang}
+        />
+      )}
 
       {/* 2. Main Page Content */}
       <main className="flex-1">
+        {currentPage === 'admin' && (
+          <AdminPage
+            onNavigate={handleNavigate}
+            showToast={showToast}
+            lang={lang}
+          />
+        )}
+
         {currentPage === 'home' && (
           <HomePage
             onNavigate={handleNavigate}
@@ -520,12 +534,14 @@ export default function App() {
         )}
       </main>
 
-      {/* 3. Footer */}
-      <Footer
-        onNavigate={handleNavigate}
-        onOpenEmailPreview={handleOpenEmailPreview}
-        lang={lang}
-      />
+      {/* 3. Footer (Storefront Only) */}
+      {currentPage !== 'admin' && (
+        <Footer
+          onNavigate={handleNavigate}
+          onOpenEmailPreview={handleOpenEmailPreview}
+          lang={lang}
+        />
+      )}
 
       {/* 4. Global Search Modal */}
       <SearchModal

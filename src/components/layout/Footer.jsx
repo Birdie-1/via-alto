@@ -199,10 +199,17 @@ export default function Footer({ onNavigate, onOpenEmailPreview, lang = 'en' }) 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone font-sans gap-4">
           <span>© {new Date().getFullYear()} {t.footer_rights}</span>
-          <div className="flex space-x-6">
+          <div className="flex items-center space-x-6">
             <span>GO BEYOND.</span>
             <span>ELEVATION: 3,842M</span>
             <span>DOLOMITES, ITALY</span>
+            <button
+              onClick={() => onNavigate('admin')}
+              className="text-stone hover:text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+              title="เปิดระบบหลังบ้าน Admin Dashboard"
+            >
+              <span>⚙️ Admin Portal</span>
+            </button>
           </div>
         </div>
       </div>

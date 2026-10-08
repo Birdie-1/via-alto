@@ -276,3 +276,183 @@ export const createOrder = (userId, orderData) => {
   return { updatedUser, order: newOrder };
 };
 
+// ============================================================================
+// ADMIN DASHBOARD HELPER METHODS (MODULE 2 & MODULE 4)
+// ============================================================================
+
+const GUEST_ORDERS_KEY = 'via_alto_guest_orders';
+
+/**
+ * Get all orders across all registered users and guests for Admin Dashboard
+ * @returns {Array} List of orders with customer details
+ */
+export const getAllOrdersAdmin = () => {
+  if (typeof window === 'undefined') return [];
+  const users = getRegisteredUsers();
+  const allOrders = [];
+
+  // 1. Gather orders from registered members
+  users.forEach((user) => {
+    if (Array.isArray(user.mockOrders)) {
+      user.mockOrders.forEach((order) => {
+        allOrders.push({
+          ...order,
+          customerName: user.fullName || 'Registered Member',
+          customerEmail: user.email || 'N/A',
+          customerTier: user.tier || 'Alpine Explorer',
+          userId: user.id,
+          isGuest: false
+        });
+      });
+    }
+  });
+
+  // 2. Gather guest orders if any
+  try {
+    const rawGuest = localStorage.getItem(GUEST_ORDERS_KEY);
+    if (rawGuest) {
+      const guestOrders = JSON.parse(rawGuest);
+      if (Array.isArray(guestOrders)) {
+        guestOrders.forEach((order) => {
+          allOrders.push({
+            ...order,
+            customerName: order.shippingAddress?.fullName || 'Guest Customer',
+            customerEmail: order.guestEmail || 'Guest (Checkout)',
+            customerTier: 'Guest',
+            isGuest: true
+          });
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to parse guest orders:', err);
+  }
+
+  // Sort descending by date or order ID
+  return allOrders.sort((a, b) => {
+    const dateA = new Date(a.date || 0).getTime();
+    const dateB = new Date(b.date || 0).getTime();
+    return dateB - dateA;
+  });
+};
+
+/**
+ * Update the status of an order in the database (Processing, Shipped, Delivered, Cancelled)
+ * @param {string} orderId 
+ * @param {string} newStatus 
+ * @returns {boolean} Success status
+ */
+export const updateOrderStatusAdmin = (orderId, newStatus) => {
+  if (typeof window === 'undefined') return false;
+  let found = false;
+
+  // 1. Check in registered users
+  const users = getRegisteredUsers();
+  const updatedUsers = users.map((user) => {
+    if (Array.isArray(user.mockOrders)) {
+      const orderIdx = user.mockOrders.findIndex((o) => o.orderId === orderId);
+      if (orderIdx !== -1) {
+        found = true;
+        const updatedOrders = [...user.mockOrders];
+        updatedOrders[orderIdx] = {
+          ...updatedOrders[orderIdx],
+          status: newStatus
+        };
+        const updatedUser = { ...user, mockOrders: updatedOrders };
+
+        // If this is the current active session, update current session as well
+        const current = getCurrentUser();
+        if (current && current.id === user.id) {
+          saveCurrentUser(updatedUser);
+        }
+        return updatedUser;
+      }
+    }
+    return user;
+  });
+
+  if (found) {
+    localStorage.setItem(USERS_DB_KEY, JSON.stringify(updatedUsers));
+    return true;
+  }
+
+  // 2. Check in guest orders
+  try {
+    const rawGuest = localStorage.getItem(GUEST_ORDERS_KEY);
+    if (rawGuest) {
+      const guestOrders = JSON.parse(rawGuest);
+      const guestIdx = guestOrders.findIndex((o) => o.orderId === orderId);
+      if (guestIdx !== -1) {
+        guestOrders[guestIdx].status = newStatus;
+        localStorage.setItem(GUEST_ORDERS_KEY, JSON.stringify(guestOrders));
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn('Error updating guest order status:', err);
+  }
+
+  return false;
+};
+
+/**
+ * Delete a registered member from the database
+ * @param {string} userId 
+ * @returns {Array} Updated user list
+ */
+export const deleteMemberAdmin = (userId) => {
+  if (typeof window === 'undefined') return [];
+  const users = getRegisteredUsers();
+  const updatedUsers = users.filter((u) => u.id !== userId);
+  localStorage.setItem(USERS_DB_KEY, JSON.stringify(updatedUsers));
+
+  // If deleted user was currently signed in, log out
+  const current = getCurrentUser();
+  if (current && current.id === userId) {
+    saveCurrentUser(null);
+  }
+
+  return updatedUsers;
+};
+
+/**
+ * Update member tier and loyalty points
+ * @param {string} userId 
+ * @param {number} newPoints 
+ * @param {string} newTier 
+ * @returns {Object|null} Updated user
+ */
+export const updateMemberTierPointsAdmin = (userId, newPoints, newTier) => {
+  if (typeof window === 'undefined') return null;
+  const users = getRegisteredUsers();
+  const index = users.findIndex((u) => u.id === userId);
+  if (index === -1) return null;
+
+  const updatedUser = {
+    ...users[index],
+    points: typeof newPoints === 'number' ? newPoints : users[index].points,
+    tier: newTier || users[index].tier
+  };
+
+  users[index] = updatedUser;
+  localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
+
+  const current = getCurrentUser();
+  if (current && current.id === userId) {
+    saveCurrentUser(updatedUser);
+  }
+
+  return updatedUser;
+};
+
+/**
+ * Reset all registered members to initial DEMO_USER only
+ * @returns {Array}
+ */
+export const resetAllMembersAdmin = () => {
+  if (typeof window === 'undefined') return [DEMO_USER];
+  localStorage.setItem(USERS_DB_KEY, JSON.stringify([DEMO_USER]));
+  saveCurrentUser(DEMO_USER);
+  return [DEMO_USER];
+};
+
