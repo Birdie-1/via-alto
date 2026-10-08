@@ -19,13 +19,14 @@ import AdminSubscribersTab from '../components/admin/AdminSubscribersTab';
 import AdminOrdersTab from '../components/admin/AdminOrdersTab';
 import { getStoredProducts } from '../data/productsStore';
 import { getRegisteredUsers, getAllOrdersAdmin } from '../data/auth';
+import { getStoredSubscribers, syncWithBackendSubscribers } from '../data/subscribersStore';
 
 export default function AdminPage({ onNavigate, showToast, lang = 'th' }) {
   const [activeTab, setActiveTab] = useState('products'); // products, members, subscribers, orders
   const [stats, setStats] = useState({
     productsCount: 30,
     membersCount: 1,
-    subscribersCount: 0,
+    subscribersCount: 1,
     ordersCount: 1
   });
 
@@ -34,34 +35,37 @@ export default function AdminPage({ onNavigate, showToast, lang = 'th' }) {
     const products = getStoredProducts();
     const members = getRegisteredUsers();
     const orders = getAllOrdersAdmin();
+    const subscribers = getStoredSubscribers();
 
     setStats((prev) => ({
       ...prev,
       productsCount: products.length,
       membersCount: members.length,
-      ordersCount: orders.length
+      ordersCount: orders.length,
+      subscribersCount: subscribers.length
     }));
 
     // Check subscribers count from backend if available
-    fetch('/php-api/api/admin.php?action=stats')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.stats) {
-          setStats((prev) => ({
-            ...prev,
-            subscribersCount: data.stats.subscribersCount || 0
-          }));
-        }
-      })
-      .catch(() => {});
+    syncWithBackendSubscribers().then((backendSubs) => {
+      if (Array.isArray(backendSubs)) {
+        setStats((prev) => ({
+          ...prev,
+          subscribersCount: backendSubs.length
+        }));
+      }
+    });
   };
 
   useEffect(() => {
     refreshStats();
-    // Listen for custom products updated event
-    const handleProductsUpdated = () => refreshStats();
-    window.addEventListener('via_alto_products_updated', handleProductsUpdated);
-    return () => window.removeEventListener('via_alto_products_updated', handleProductsUpdated);
+    // Listen for custom products and subscribers updated events
+    const handleRefresh = () => refreshStats();
+    window.addEventListener('via_alto_products_updated', handleRefresh);
+    window.addEventListener('via_alto_subscribers_updated', handleRefresh);
+    return () => {
+      window.removeEventListener('via_alto_products_updated', handleRefresh);
+      window.removeEventListener('via_alto_subscribers_updated', handleRefresh);
+    };
   }, [activeTab]);
 
   const navItems = [

@@ -12,46 +12,34 @@ import {
   Users,
   ExternalLink
 } from 'lucide-react';
+import {
+  getStoredSubscribers,
+  deleteSubscriber,
+  clearAllSubscribers,
+  syncWithBackendSubscribers
+} from '../../data/subscribersStore';
 
 export default function AdminSubscribersTab({ onToast }) {
-  const [subscribers, setSubscribers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [subscribers, setSubscribers] = useState(getStoredSubscribers);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copied, setCopied] = useState(false);
   const [deleteEmail, setDeleteEmail] = useState(null);
   const [isClearAllModalOpen, setIsClearAllModalOpen] = useState(false);
 
-  // Fetch subscribers from backend API
-  const fetchSubscribers = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/php-api/api/admin.php?action=subscribers');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && Array.isArray(data.subscribers)) {
-          setSubscribers(data.subscribers);
-          setLoading(false);
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn('Could not fetch subscribers from PHP API, checking local fallback:', err);
-    }
-
-    // Fallback: check localStorage cache if PHP offline
-    const cached = localStorage.getItem('via_alto_cached_subscribers');
-    if (cached) {
-      try {
-        setSubscribers(JSON.parse(cached));
-      } catch {}
-    } else {
-      setSubscribers([]);
-    }
-    setLoading(false);
-  };
-
+  // Sync with backend API on mount
   useEffect(() => {
-    fetchSubscribers();
+    syncWithBackendSubscribers().then((list) => {
+      if (Array.isArray(list)) setSubscribers(list);
+    });
+
+    const handleUpdate = (e) => {
+      if (e.detail) setSubscribers(e.detail);
+      else setSubscribers(getStoredSubscribers());
+    };
+
+    window.addEventListener('via_alto_subscribers_updated', handleUpdate);
+    return () => window.removeEventListener('via_alto_subscribers_updated', handleUpdate);
   }, []);
 
   // Filtered subscribers list
@@ -102,32 +90,16 @@ export default function AdminSubscribersTab({ onToast }) {
 
   // Handle Delete Single Subscriber
   const handleDeleteSubscriber = async (email) => {
-    try {
-      const res = await fetch('/php-api/api/admin.php?action=delete_subscriber', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      if (res.ok) {
-        onToast(`ลบอีเมล ${email} ออกจากระบบเรียบร้อยแล้ว`);
-      }
-    } catch (err) {
-      console.warn('API delete error:', err);
-    }
-
-    const updated = subscribers.filter((s) => s.email !== email);
+    const updated = await deleteSubscriber(email);
     setSubscribers(updated);
-    localStorage.setItem('via_alto_cached_subscribers', JSON.stringify(updated));
     setDeleteEmail(null);
+    onToast(`ลบอีเมล ${email} ออกจากระบบเรียบร้อยแล้ว`);
   };
 
   // Handle Clear All Subscribers
   const handleClearAll = async () => {
-    try {
-      await fetch('/php-api/api/admin.php?action=clear_subscribers', { method: 'POST' });
-    } catch {}
+    await clearAllSubscribers();
     setSubscribers([]);
-    localStorage.removeItem('via_alto_cached_subscribers');
     setIsClearAllModalOpen(false);
     onToast('ล้างรายชื่อผู้รับข่าวสารทั้งหมดเรียบร้อยแล้ว');
   };

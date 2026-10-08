@@ -4,6 +4,8 @@
  * ครอบคลุมทั้ง Step 2 (Newsletter Subscription) และ Step 4 (Registration Welcome & Personalized Recommendation)
  */
 
+import { addSubscriber } from '../data/subscribersStore';
+
 // บรรทัดที่ 8: กำหนด Base Path สำหรับเรียกผ่าน Vite Proxy (ช่วยเลี่ยงปัญหา CORS ในช่วง Development)
 const PHP_API_BASE = '/php-api';
 // บรรทัดที่ 10: กำหนด Direct URL ไปยังเซิร์ฟเวอร์ PHP พอร์ต 8000 เผื่อกรณีไม่ได้รันผ่าน Vite Proxy
@@ -16,6 +18,9 @@ const DIRECT_PHP_URL = 'http://localhost:8000';
  * @param {string} source - แหล่งที่มา เช่น 'homepage_cta' หรือ 'footer'
  */
 export async function sendSubscribeEmail(email, name = 'Explorer', source = 'homepage_cta', options = {}) {
+  // บันทึกลง subscribersStore ทันทีเพื่อให้แสดงผลในหน้า Admin และ LocalStorage ได้แบบเรียลไทม์
+  addSubscriber(email, name, source);
+
   // บรรทัดที่ 20: จัดเตรียมข้อมูล Payload ที่จะส่งไปยัง Backend ในรูปแบบ Object (พร้อมข้อมูล Consent และ site_url ชี้ไปที่ GitHub Pages)
   const payload = {
     email,
