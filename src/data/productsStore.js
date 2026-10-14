@@ -79,9 +79,11 @@ export const updateProduct = (productId, updates) => {
   const products = getStoredProducts();
   const updated = products.map((p) => {
     if (p.id === productId) {
+      const finalImage = updates.image ? assetUrl(updates.image) : p.image;
       return {
         ...p,
         ...updates,
+        image: finalImage,
         specs: {
           ...(p.specs || {}),
           ...(updates.specs || {})

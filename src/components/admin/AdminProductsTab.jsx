@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Search,
   Plus,
@@ -10,7 +10,10 @@ import {
   Package,
   Sparkles,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Upload,
+  Image as ImageIcon,
+  Link as LinkIcon
 } from 'lucide-react';
 import {
   getStoredProducts,
@@ -22,6 +25,185 @@ import {
   resetProductsToDefault
 } from '../../data/productsStore';
 import { CATEGORIES, formatPrice } from '../../data/products';
+
+// Quick Preset Product Images from existing catalog
+const PRESET_PRODUCT_IMAGES = [
+  { label: 'Alpine 35L Pack', url: '/images/prod_alpine_35l.jpg' },
+  { label: 'Summit 50L Pack', url: '/images/prod_summit_50l.jpg' },
+  { label: 'Trail 25L Pack', url: '/images/prod_trail_25l.jpg' },
+  { label: 'Summit 18L Pack', url: '/images/prod_summit_18l.jpg' },
+  { label: 'Alpine Shell', url: '/images/prod_alpine_shell.jpg' },
+  { label: 'Down Jacket', url: '/images/prod_down_jacket.jpg' },
+  { label: 'Windbreaker', url: '/images/prod_windbreaker.jpg' },
+  { label: 'Alto Boots', url: '/images/prod_alto_boots.jpg' },
+  { label: 'Trail Runners', url: '/images/prod_trail_runners.jpg' },
+  { label: 'Terra Shoes', url: '/images/prod_terra_shoes.jpg' },
+  { label: 'Alpine Tent', url: '/images/prod_alpine_tent.jpg' },
+  { label: 'Sleeping Bag', url: '/images/prod_sleeping_bag.jpg' },
+  { label: 'Camp Lantern', url: '/images/prod_camp_lantern.jpg' },
+  { label: 'Titanium Stove', url: '/images/prod_titanium_stove.jpg' },
+  { label: 'Headlamp', url: '/images/prod_headlamp.jpg' },
+  { label: 'Trekking Poles', url: '/images/prod_trekking_poles.jpg' },
+  { label: 'Hydration Vest', url: '/images/prod_hydration_vest.jpg' },
+  { label: 'First Aid Kit', url: '/images/prod_first_aid.jpg' }
+];
+
+// Helper: Resize and compress image file to compact Base64 JPEG to preserve localStorage limits
+const compressImageFile = (file, callback) => {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxDim = 800;
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      callback(dataUrl);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+// Reusable Product Image Selector Component
+function ProductImageField({ label = 'รูปภาพสินค้า (Product Image)', value, onChange, categoryDefault }) {
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('กรุณาเลือกไฟล์รูปภาพเท่านั้น (PNG, JPG, WebP)');
+      return;
+    }
+
+    setIsUploading(true);
+    compressImageFile(file, (dataUrl) => {
+      onChange(dataUrl);
+      setIsUploading(false);
+    });
+  };
+
+  return (
+    <div className="space-y-2 border border-stone-light/80 rounded-xl p-3.5 bg-sand-light/30">
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-semibold text-charcoal">
+          {label}
+        </label>
+        {value && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange('');
+              if (fileInputRef.current) fileInputRef.current.value = '';
+            }}
+            className="text-[11px] text-red-600 hover:text-red-700 hover:underline cursor-pointer"
+          >
+            ลบรูป / ใช้รูปหมวดหมู่
+          </button>
+        )}
+      </div>
+
+      <div className="flex gap-3 items-start">
+        {/* Thumbnail Preview */}
+        <div className="w-20 h-20 rounded-lg border-2 border-dashed border-stone-light bg-white overflow-hidden flex items-center justify-center shrink-0 relative shadow-2xs">
+          {value ? (
+            <img
+              src={value}
+              alt="Preview"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = categoryDefault || '/images/cat_backpacks.jpg';
+              }}
+            />
+          ) : (
+            <div className="text-center p-1">
+              <ImageIcon className="w-6 h-6 text-stone/40 mx-auto" />
+              <span className="text-[9px] text-stone/60 block mt-0.5">รูปหมวดหมู่</span>
+            </div>
+          )}
+        </div>
+
+        {/* Upload Button & URL Input */}
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-light text-charcoal text-xs font-medium rounded-lg hover:bg-sand-light shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5 text-forest" />
+              <span>{isUploading ? 'กำลังประมวลผลรูป...' : 'อัปโหลดรูปจากเครื่อง...'}</span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <span className="text-[11px] text-stone">PNG, JPG, WebP</span>
+          </div>
+
+          <div className="relative">
+            <LinkIcon className="w-3.5 h-3.5 text-stone absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="หรือวาง URL รูปภาพ (https://... หรือ /images/...)"
+              value={value || ''}
+              onChange={(e) => onChange(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-xs border border-stone-light rounded-lg focus:outline-none focus:border-forest bg-white font-mono"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Preset Quick Images */}
+      <div className="pt-2 border-t border-stone-light/50">
+        <div className="text-[10px] text-stone font-medium mb-1.5">หรือเลือกรูปด่วนจากแคตตาล็อก:</div>
+        <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto pr-1">
+          {PRESET_PRODUCT_IMAGES.map((preset) => (
+            <button
+              key={preset.url}
+              type="button"
+              onClick={() => {
+                onChange(preset.url);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+              }}
+              className={`text-[10px] px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                value === preset.url
+                  ? 'bg-forest text-offwhite border-forest font-semibold'
+                  : 'bg-white text-stone hover:text-charcoal hover:bg-sand-light border-stone-light'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminProductsTab({ onToast, onPreviewProduct }) {
   const [products, setProducts] = useState(getStoredProducts);
@@ -38,6 +220,7 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
     name_th: '',
     categoryId: 'backpacks',
     price: 1990,
+    image: '',
     badge: 'NEW',
     badge_th: 'สินค้าใหม่',
     isFeatured: false,
@@ -118,6 +301,7 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
       name_th: '',
       categoryId: 'backpacks',
       price: 1990,
+      image: '',
       badge: 'NEW',
       badge_th: 'สินค้าใหม่',
       isFeatured: false,
@@ -520,6 +704,13 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
                 </div>
               </div>
 
+              {/* Product Image Field */}
+              <ProductImageField
+                value={editingProduct.image || ''}
+                onChange={(imgUrl) => setEditingProduct({ ...editingProduct, image: imgUrl })}
+                categoryDefault={CATEGORIES.find((c) => c.id === editingProduct.categoryId)?.image}
+              />
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-charcoal mb-1">
@@ -667,6 +858,13 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
                   </select>
                 </div>
               </div>
+
+              {/* Product Image Field */}
+              <ProductImageField
+                value={newProd.image || ''}
+                onChange={(imgUrl) => setNewProd({ ...newProd, image: imgUrl })}
+                categoryDefault={CATEGORIES.find((c) => c.id === newProd.categoryId)?.image}
+              />
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
