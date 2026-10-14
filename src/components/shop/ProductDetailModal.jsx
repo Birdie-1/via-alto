@@ -120,11 +120,15 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, lang
         <div className="grid grid-cols-1 md:grid-cols-12 min-h-[520px]">
           {/* Product Image Area */}
           <div className="md:col-span-5 relative bg-white border-b md:border-b-0 md:border-r border-stone-light/60 overflow-hidden flex flex-col justify-between">
-            <div className="relative aspect-square w-full">
+            <div className="relative aspect-square w-full bg-[#F7F5F0] flex items-center justify-center shrink-0">
               <img
                 src={activeImage}
                 alt={productName}
-                className="w-full h-full object-cover object-center transition-all duration-500"
+                className={`w-full h-full object-center transition-all duration-500 ${
+                  (product.imageFit === 'contain' || (!product.imageFit && (activeImage?.startsWith('data:') || product.id > 30)))
+                    ? 'object-contain p-6 max-w-[90%] max-h-[90%]'
+                    : 'object-cover'
+                }`}
               />
               {productBadge && (
                 <div className="absolute top-4 left-4 bg-forest text-offwhite text-[10px] uppercase font-bold tracking-brand px-3 py-1 shadow-xs">

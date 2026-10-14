@@ -127,6 +127,7 @@ export const addProduct = (newProductData) => {
     badge: newProductData.badge || 'NEW',
     badge_th: newProductData.badge_th || 'ใหม่',
     isFeatured: Boolean(newProductData.isFeatured),
+    imageFit: newProductData.imageFit || 'contain',
     sizes: newProductData.sizes || ['One Size'],
     inStock: newProductData.inStock !== false,
     colors: newProductData.colors || [

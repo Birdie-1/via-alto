@@ -48,17 +48,19 @@ const PRESET_PRODUCT_IMAGES = [
   { label: 'First Aid Kit', url: '/images/prod_first_aid.jpg' }
 ];
 
-// Helper: Resize and compress image file to compact Base64 JPEG to preserve localStorage limits
-const compressImageFile = (file, callback) => {
+// Helper: Resize and compress image file to compact Base64 JPEG (default maxDim 480px for fast loading and low storage footprint)
+const compressImageFile = (file, callback, targetDim = 480) => {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (event) => {
     const img = new Image();
     img.onload = () => {
+      const naturalW = img.naturalWidth || img.width;
+      const naturalH = img.naturalHeight || img.height;
       const canvas = document.createElement('canvas');
-      const maxDim = 800;
-      let width = img.width;
-      let height = img.height;
+      const maxDim = targetDim || 480;
+      let width = naturalW;
+      let height = naturalH;
       if (width > height) {
         if (width > maxDim) {
           height = Math.round((height * maxDim) / width);
@@ -74,18 +76,90 @@ const compressImageFile = (file, callback) => {
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-      callback(dataUrl);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+      callback(dataUrl, { width, height });
     };
     img.src = event.target.result;
   };
   reader.readAsDataURL(file);
 };
 
-// Reusable Product Image Selector Component
-function ProductImageField({ label = 'รูปภาพสินค้า (Product Image)', value, onChange, categoryDefault }) {
+// Helper: Apply instant transformation (scale down, un-squeeze horizontally, fit square with background padding)
+const transformImage = (
+  sourceUrl,
+  {
+    stretchX = 1.0,
+    stretchY = 1.0,
+    scaleContent = 1.0,
+    fitSquare = false,
+    padding = 0.08,
+    bgColor = '#F7F5F0',
+    targetDim = 480
+  },
+  callback
+) => {
+  if (!sourceUrl) return;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const naturalW = img.naturalWidth || img.width;
+    const naturalH = img.naturalHeight || img.height;
+    const canvas = document.createElement('canvas');
+
+    let targetW = Math.round(naturalW * stretchX);
+    let targetH = Math.round(naturalH * stretchY);
+    const maxDim = targetDim || 480;
+    const maxCurrent = Math.max(targetW, targetH);
+    if (maxCurrent > maxDim) {
+      const factor = maxDim / maxCurrent;
+      targetW = Math.round(targetW * factor);
+      targetH = Math.round(targetH * factor);
+    }
+
+    if (fitSquare || scaleContent < 1.0) {
+      canvas.width = maxDim;
+      canvas.height = maxDim;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, maxDim, maxDim);
+
+      const effectivePadding = Math.max(padding, (1 - scaleContent) / 2);
+      const drawArea = maxDim * (1 - effectivePadding * 2);
+      const scale = Math.min(drawArea / targetW, drawArea / targetH);
+      const dw = Math.round(targetW * scale);
+      const dh = Math.round(targetH * scale);
+      const dx = Math.round((maxDim - dw) / 2);
+      const dy = Math.round((maxDim - dh) / 2);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    } else {
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+    }
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+    callback(dataUrl);
+  };
+  img.src = sourceUrl;
+};
+
+// Reusable Product Image Selector Component with Aspect-Ratio & Fit Tuning
+function ProductImageField({
+  label = 'รูปภาพสินค้า (Product Image)',
+  value,
+  onChange,
+  imageFit = 'contain',
+  onImageFitChange,
+  categoryDefault
+}) {
   const [isUploading, setIsUploading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [justTuned, setJustTuned] = useState(false);
+  const [resizeTarget, setResizeTarget] = useState(480);
   const fileInputRef = useRef(null);
+
+  const approxKb = value && value.startsWith('data:') ? Math.round((value.length * 3) / 4 / 1024) : null;
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -100,14 +174,35 @@ function ProductImageField({ label = 'รูปภาพสินค้า (Prod
     compressImageFile(file, (dataUrl) => {
       onChange(dataUrl);
       setIsUploading(false);
+    }, resizeTarget);
+  };
+
+  const handleApplyTransform = (options) => {
+    if (!value) return;
+    setIsProcessing(true);
+    transformImage(value, { targetDim: resizeTarget, ...options }, (newDataUrl) => {
+      onChange(newDataUrl);
+      setIsProcessing(false);
+      setJustTuned(true);
+      setTimeout(() => setJustTuned(false), 2000);
     });
   };
 
   return (
-    <div className="space-y-2 border border-stone-light/80 rounded-xl p-3.5 bg-sand-light/30">
+    <div className="space-y-3 border border-stone-light/80 rounded-xl p-3.5 bg-sand-light/30">
       <div className="flex items-center justify-between">
-        <label className="block text-xs font-semibold text-charcoal">
-          {label}
+        <label className="block text-xs font-semibold text-charcoal flex items-center gap-1.5">
+          <span>{label}</span>
+          {approxKb && (
+            <span className="text-[10px] text-stone font-mono bg-white px-2 py-0.5 rounded border border-stone-light/60">
+              ขนาด ~{approxKb} KB
+            </span>
+          )}
+          {justTuned && (
+            <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-normal animate-fadeIn">
+              ✓ ปรับรูปเรียบร้อย
+            </span>
+          )}
         </label>
         {value && (
           <button
@@ -125,12 +220,12 @@ function ProductImageField({ label = 'รูปภาพสินค้า (Prod
 
       <div className="flex gap-3 items-start">
         {/* Thumbnail Preview */}
-        <div className="w-20 h-20 rounded-lg border-2 border-dashed border-stone-light bg-white overflow-hidden flex items-center justify-center shrink-0 relative shadow-2xs">
+        <div className="w-24 h-24 rounded-lg border-2 border-dashed border-stone-light bg-[#F7F5F0] overflow-hidden flex items-center justify-center shrink-0 relative shadow-2xs p-1.5">
           {value ? (
             <img
               src={value}
               alt="Preview"
-              className="w-full h-full object-cover"
+              className={`w-full h-full ${imageFit === 'contain' ? 'object-contain max-h-[90%] max-w-[90%]' : 'object-cover'}`}
               onError={(e) => {
                 e.currentTarget.src = categoryDefault || '/images/cat_backpacks.jpg';
               }}
@@ -141,15 +236,20 @@ function ProductImageField({ label = 'รูปภาพสินค้า (Prod
               <span className="text-[9px] text-stone/60 block mt-0.5">รูปหมวดหมู่</span>
             </div>
           )}
+          {isProcessing && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-[10px] text-white font-medium">
+              กำลังปรับ...
+            </div>
+          )}
         </div>
 
-        {/* Upload Button & URL Input */}
+        {/* Upload Button, Resize Target & URL Input */}
         <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
+              disabled={isUploading || isProcessing}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-light text-charcoal text-xs font-medium rounded-lg hover:bg-sand-light shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
             >
               <Upload className="w-3.5 h-3.5 text-forest" />
@@ -162,7 +262,30 @@ function ProductImageField({ label = 'รูปภาพสินค้า (Prod
               className="hidden"
               onChange={handleFileChange}
             />
-            <span className="text-[11px] text-stone">PNG, JPG, WebP</span>
+
+            {/* Target Resolution Preset Pills */}
+            <div className="flex items-center gap-1 bg-white/70 p-0.5 rounded-md border border-stone-light/60">
+              <span className="text-[10px] text-stone pl-1 pr-0.5">Resize:</span>
+              {[
+                { dim: 400, label: '400px (กะทัดรัด)' },
+                { dim: 480, label: '480px (แนะนำ)' },
+                { dim: 600, label: '600px' }
+              ].map((opt) => (
+                <button
+                  key={opt.dim}
+                  type="button"
+                  onClick={() => setResizeTarget(opt.dim)}
+                  className={`text-[9px] px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
+                    resizeTarget === opt.dim
+                      ? 'bg-forest text-offwhite font-bold'
+                      : 'text-stone hover:text-charcoal'
+                  }`}
+                  title={`ย่อขนาดด้านยาวสุดไม่เกิน ${opt.dim}px`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="relative">
@@ -177,6 +300,121 @@ function ProductImageField({ label = 'รูปภาพสินค้า (Prod
           </div>
         </div>
       </div>
+
+      {/* Image Display Fit & Aspect Ratio Tuning Tool */}
+      {value && (
+        <div className="p-2.5 bg-white/80 rounded-lg border border-stone-light/70 space-y-2.5">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="font-semibold text-charcoal">การจัดวางรูปภาพ (Display Fit):</span>
+            <div className="inline-flex rounded-md border border-stone-light overflow-hidden bg-sand-light/50">
+              <button
+                type="button"
+                onClick={() => onImageFitChange?.('contain')}
+                className={`px-2.5 py-1 text-[11px] font-medium transition-colors cursor-pointer ${
+                  imageFit === 'contain'
+                    ? 'bg-forest text-offwhite font-semibold'
+                    : 'text-stone hover:text-charcoal'
+                }`}
+              >
+                ✓ พอดีกรอบ (Contain - แนะนำ)
+              </button>
+              <button
+                type="button"
+                onClick={() => onImageFitChange?.('cover')}
+                className={`px-2.5 py-1 text-[11px] font-medium transition-colors cursor-pointer ${
+                  imageFit === 'cover'
+                    ? 'bg-forest text-offwhite font-semibold'
+                    : 'text-stone hover:text-charcoal'
+                }`}
+              >
+                เต็มกรอบ (Cover)
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Resize / Scale Down Tools (แก้ปัญหารูปใหญ่เกินไป) */}
+          <div className="pt-2 border-t border-stone-light/50 text-[11px]">
+            <div className="text-stone font-medium mb-1.5 flex items-center justify-between">
+              <span>ย่อขนาดรูป / เว้นขอบระบาย (Scale Down):</span>
+              <span className="text-[10px] text-stone/70">ป้องกันรูปดูใหญ่ล้นกล่อง</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ scaleContent: 0.85, fitSquare: true, bgColor: '#F7F5F0', padding: 0.08 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-charcoal border border-stone-light rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="ย่อขนาดรูปลง 15% พร้อมเพิ่มระยะขอบสบายตา"
+              >
+                🔍 ย่อลง -15% (เพิ่มขอบระบาย)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ scaleContent: 0.75, fitSquare: true, bgColor: '#F7F5F0', padding: 0.12 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-charcoal border border-stone-light rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="ย่อขนาดรูปลง 25% ให้กะทัดรัดยิ่งขึ้น"
+              >
+                🔍 ย่อลง -25% (กะทัดรัด)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ targetDim: 400 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-forest border border-forest/30 rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="บีบอัดขนาดไฟล์ลงเหลือสูงสุด 400px"
+              >
+                ⚡ ย่อความละเอียดเป็น 400px
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Un-squeeze & Aspect Correction (แก้ปัญหารูปบีบ) */}
+          <div className="pt-2 border-t border-stone-light/50 text-[11px]">
+            <div className="text-stone font-medium mb-1.5 flex items-center justify-between">
+              <span>แก้อาการรูปบีบ / ขยายสัดส่วนกว้าง (Un-squeeze):</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ stretchX: 1.15 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-charcoal border border-stone-light rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="ขยายแนวนอนขึ้น 15%"
+              >
+                +15% กว้างขึ้น
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ stretchX: 1.25 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[10px] font-semibold transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+                title="ขยายแนวนอนขึ้น 25% (แก้รูปบีบยอดนิยม)"
+              >
+                +25% กว้างขึ้น (แก้รูป Squeeze)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ stretchX: 1.35 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-charcoal border border-stone-light rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="ขยายแนวนอนขึ้น 35%"
+              >
+                +35% กว้างขึ้น
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApplyTransform({ fitSquare: true, bgColor: '#F7F5F0', padding: 0.08 })}
+                disabled={isProcessing}
+                className="px-2 py-1 bg-white hover:bg-sand-light text-forest border border-forest/30 rounded text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-50"
+                title="จัดวางกึ่งกลางกรอบสี่เหลี่ยม 1:1 พร้อมพื้นหลัง Dolomite Sand"
+              >
+                จัดกลาง 1:1 + พื้นหลัง Sand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Preset Quick Images */}
       <div className="pt-2 border-t border-stone-light/50">
@@ -221,6 +459,7 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
     categoryId: 'backpacks',
     price: 1990,
     image: '',
+    imageFit: 'contain',
     badge: 'NEW',
     badge_th: 'สินค้าใหม่',
     isFeatured: false,
@@ -302,6 +541,7 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
       categoryId: 'backpacks',
       price: 1990,
       image: '',
+      imageFit: 'contain',
       badge: 'NEW',
       badge_th: 'สินค้าใหม่',
       isFeatured: false,
@@ -511,7 +751,7 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
                           <img
                             src={p.image}
                             alt={p.name}
-                            className="w-12 h-12 rounded-lg object-cover bg-sand-light border border-stone-light shrink-0"
+                            className="w-12 h-12 rounded-lg object-contain bg-[#F7F5F0] p-1 border border-stone-light shrink-0"
                             onError={(e) => {
                               e.currentTarget.src = '/images/cat_backpacks.jpg';
                             }}
@@ -708,6 +948,8 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
               <ProductImageField
                 value={editingProduct.image || ''}
                 onChange={(imgUrl) => setEditingProduct({ ...editingProduct, image: imgUrl })}
+                imageFit={editingProduct.imageFit || 'contain'}
+                onImageFitChange={(fit) => setEditingProduct({ ...editingProduct, imageFit: fit })}
                 categoryDefault={CATEGORIES.find((c) => c.id === editingProduct.categoryId)?.image}
               />
 
@@ -863,6 +1105,8 @@ export default function AdminProductsTab({ onToast, onPreviewProduct }) {
               <ProductImageField
                 value={newProd.image || ''}
                 onChange={(imgUrl) => setNewProd({ ...newProd, image: imgUrl })}
+                imageFit={newProd.imageFit || 'contain'}
+                onImageFitChange={(fit) => setNewProd({ ...newProd, imageFit: fit })}
                 categoryDefault={CATEGORIES.find((c) => c.id === newProd.categoryId)?.image}
               />
 

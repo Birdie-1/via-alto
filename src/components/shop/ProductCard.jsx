@@ -37,11 +37,15 @@ export default function ProductCard({
     <div className="group bg-white border border-stone-light/60 hover:border-forest/50 transition-all duration-300 flex flex-col justify-between shadow-2xs hover:shadow-md relative">
       
       {/* Product Image Area */}
-      <div className="relative aspect-square overflow-hidden bg-[#F7F5F0]">
+      <div className="relative w-full aspect-square overflow-hidden bg-[#F7F5F0] flex items-center justify-center shrink-0">
         <img
           src={activeImage}
           alt={productName}
-          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+          className={`w-full h-full object-center transition-transform duration-700 ease-out group-hover:scale-105 ${
+            (product.imageFit === 'contain' || (!product.imageFit && (activeImage?.startsWith('data:') || product.id > 30)))
+              ? 'object-contain p-4 sm:p-5 max-w-[90%] max-h-[90%]'
+              : 'object-cover'
+          }`}
         />
 
         {/* Badge */}

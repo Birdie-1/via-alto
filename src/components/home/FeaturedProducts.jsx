@@ -55,12 +55,16 @@ export default function FeaturedProducts({ onAddToCart, onSelectProduct, onNavig
                 {/* Product Image Area */}
                 <div
                   onClick={() => onSelectProduct(product)}
-                  className="relative aspect-square overflow-hidden bg-[#F7F5F0] cursor-pointer"
+                  className="relative w-full aspect-square overflow-hidden bg-[#F7F5F0] flex items-center justify-center shrink-0 cursor-pointer"
                 >
                   <img
                     src={product.image}
                     alt={productName}
-                    className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    className={`w-full h-full object-center transition-transform duration-500 group-hover:scale-105 ${
+                      (product.imageFit === 'contain' || (!product.imageFit && (product.image?.startsWith('data:') || product.id > 30)))
+                        ? 'object-contain p-3'
+                        : 'object-cover'
+                    }`}
                   />
                   
                   {/* Badge */}
